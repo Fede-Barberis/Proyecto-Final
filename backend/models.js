@@ -1,0 +1,1 @@
+//! Define cómo interactuar con la base de datos (por ejemplo, usando Mongoose para MongoDB).

@@ -1,0 +1,23 @@
+{
+  "name": "proyecto-final",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Fede-Barberis/Proyecto-Final.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Fede-Barberis/Proyecto-Final/issues"
+  },
+  "homepage": "https://github.com/Fede-Barberis/Proyecto-Final#readme",
+  "description": "",
+  "dependencies": {
+    "express": "^4.21.2"
+  }
+}
