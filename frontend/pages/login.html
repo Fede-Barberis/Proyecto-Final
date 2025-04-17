@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+    <link rel="stylesheet" href="/frontend/css/login.css">
+    <script src="/frontend/scripts/login.js" defer></script>
+</head>
+<body>
+    <div class="container" id="container">
+        <div class="sign-up">
+            <form id="registrarse">
+                <h1>Crear Cuenta</h1>
+                <input type="text" id="user" name="user" placeholder="Nombre" >
+                <input type="password" id="password" name="password" placeholder="Password">
+                <input type="email" id="email" name="email" placeholder="E-mail">
+                <button type="submit">Sign Up</button>
+                <p class="msj-error escondido" id="msj-error1">Error al registrarse</p>
+            </form>
+        </div>
+        <div class="sign-in">
+            <form id="iniciarSesion">
+                <h1>Iniciar Sesion</h1>
+                <input type="email" id="email2" name="email" placeholder="E-mail">
+                <input type="password" id="password2" name="password"  placeholder="Password">
+                <button type="submit">Sign In</button>
+                <p class="msj-error escondido" id="msj-error2"></p>
+            </form>
+        </div>
+        <div class="toogle-container">
+            <div class="toogle">
+                <div class="toogle-panel toogle-left">
+                    <h1>Bienvenido Usuario</h1>
+                    <p>Si ya tienes una cuenta</p>
+                    <button class="hidden" id="login">Sign In</button>
+                </div>
+                <div class="toogle-panel toogle-right">
+                    <h1>Hola, Usuario!</h1>
+                    <p>Si no tienes una cuenta</p>
+                    <button class="hidden" id="register">Sign Up</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

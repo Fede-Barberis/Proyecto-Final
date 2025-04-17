@@ -1,0 +1,323 @@
+:root {
+    --color-principal: #6489ff;
+    --color-secundario: #ffb347;
+    --color-acento: #ffcc5c;
+    --color-neutro: #f7f7f7;
+    --color-contraste: #ff6f61;
+    --color-fondo: #ffffff;
+    --color-texto: #333333;
+}
+
+.main {
+    display: flex;
+    flex-direction: column;
+    width: 90%;
+    height: 100%;
+    margin: 0 auto;
+}
+
+.main-text {
+    margin: 20px 0;
+    font-size: 22px;
+    font-family: 'Lexend'
+}
+
+.main-text span {
+    font-weight: bold;
+
+}
+
+.card-conteiner {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr); /* Crea 4 columnas de igual tamaño */
+    gap: 40px; /* Espacio entre las cartas */
+    width: 100%;
+    height: 150px;
+    justify-items: center;
+    margin-bottom: 15px;
+}
+
+.card {
+    background: white;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    box-shadow: 3px 3px 8px rgba(0, 0, 0, 0.3);
+    margin: 10px;
+    padding: 20px;
+    width: 100%;
+    height: 100px;
+    transition: all 200ms ease;
+}
+
+.card:hover {
+    transform: scale(1.03, 1.03);
+}
+
+.card h3 {
+    font-size: 16px;
+    font-family: 'Trebuchet MS', sans-serif;
+    text-transform: uppercase;
+    color: #777;
+}
+
+.card p {
+    margin-top: 16px;
+    font-size: 30px;
+    font-weight: 600;
+}
+
+/*********************************************************************/
+
+.main-section {
+    display: flex;
+    flex-direction: column;
+    width:100%;
+    height: 405px;
+    margin: 0 auto;
+}
+
+.main-header {
+    display: grid;
+    grid-template-columns: 2fr 1fr; /* Dos columnas iguales */
+    gap: 40%;
+}
+
+.main-section h3 {
+    padding-left: 0px;
+    font-weight: 600;
+    color: #777;
+}
+
+.filtro-container {
+    display: flex;
+    flex-direction: row;
+    justify-content: left;
+    align-items: center;
+    width: 100%;
+    padding: 10px 0 0 5px;
+    font-family: 'Lexend';
+}
+
+label {
+    font-size: 18px;
+    border: none;
+    border-bottom: 3px solid #4c76ff;
+    padding: 5px 5px 0 0;
+    font-weight: 600;
+}
+
+.filtro, #filtrarBtn {
+    height: 30px;
+    margin: 5px 20px;
+    padding: 5px 5px;
+    border-radius: 5px;
+    letter-spacing: 1.25px;
+    color: #fff;
+    background-color: #6489ff;
+    border: none;
+    box-shadow: 5px 4px 8px rgba(0, 0, 0, 0.2);
+    transition: all 0.3s ease 0s;
+    cursor: pointer;
+    outline: none;
+    text-transform: uppercase;
+    font-weight: 600;
+}
+
+.filtro option {
+    background-color: #eee;
+    color: #000;
+}
+
+#filtrarBtn {
+    margin-left: 10%;
+    padding: 5px 15px;
+}
+
+#filtrarBtn:hover {
+    background-color: var(--color-acento);
+    box-shadow: 5px 4px 8px rgba(0, 0, 0, 0.4);
+    color: #000;
+    transform: translateY(-1px);
+}
+
+#filtrarBtn:active {
+    transform: translateY(-1px);
+}
+
+/*********************************************************************/
+
+.section-container {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 40px;
+    height: 315px;
+    overflow: hidden;
+}
+
+.table-container {
+    margin: 0 0 5px 2px;
+    border-radius: 18px;
+    justify-items: center;
+    margin-top: 10px;
+    overflow-y: auto;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+}
+
+.table-container::-webkit-scrollbar {
+    display: none;
+}
+
+.table {
+    padding: 20px;
+    width: 100%;
+    height: 100%;
+    border-collapse: collapse; /* Une los bordes de las celdas */
+    border-spacing: 0; /* Evita separación entre celdas */
+    font-family: 'Lexend';
+}
+
+.head-table th {
+    background-color: #a5baff;
+    padding: 10px;
+}
+
+th, td {
+    padding: 12px;
+    text-align: left;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+    background-color: rgba(220, 220, 255, 0.1)
+}
+
+tr:hover {
+    background-color: #a5baffe4;
+    transition: 0.3s;
+}
+
+/*********************************************************************/
+
+.card-main {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    height: 93%;
+    margin-top: 10px;
+    border-radius: 10px;
+}
+
+.main-btn {
+    width: 250px;
+    height: 50px;
+    margin: 0.5em;
+    background: var(--color-acento);
+    color: white;
+    border: none;
+    border-radius: 0.625em;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    position: relative;
+    z-index: 1;
+    overflow: hidden;
+    box-shadow: 3px 3px 8px rgba(0, 0, 0, 0.3);
+    font-family: 'Lexend';
+    text-transform: uppercase;
+}
+
+.main-btn a{
+    text-decoration: none;
+    color: #fff;
+    transition: color 0.3s ease-in-out;
+}
+
+.main-btn:hover a{
+    color: #000;
+}
+
+.main-btn:after {
+    content: "";
+    background: white;
+    position: absolute;
+    z-index: -1;
+    left: -20%;
+    right: -20%;
+    top: 0;
+    bottom: 0;
+    transform: skewX(-45deg) scale(0, 1);
+    transition: all 0.5s;
+}
+
+.main-btn:hover:after {
+    transform: skewX(-45deg) scale(1, 1);
+    -webkit-transition: all 0.5s;
+    transition: all 0.5s;
+}
+
+/*********************************************************************/
+
+.main-footer {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: row;
+    margin-top: 30px;
+    width: 100%;
+    height: 50px;
+}
+
+.footer {
+    width: 100%;
+    height: 100%;
+    padding: 10px;
+    border-radius: 10px;
+    border: 1px solid #ccc;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+/*********************************************************************/
+
+.ticket-container {
+    width: 100%;
+    background-color: var(--color-fondo);
+    border: 1px solid #ccc;
+    border-radius: 20px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    font-family: 'Lexend', sans-serif;
+    text-align: left;
+}
+
+.ticket-container h3 {
+    text-align: center;
+    font-size: 18px;
+    color: var(--color-principal);
+    margin-bottom: 15px;
+}
+
+.ticket-container p {
+    font-size: 14px;
+    margin: 5px 0;
+    color: var(--color-texto);
+}
+
+.main-btn2 {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 80%;
+    margin: auto;
+    margin-top: 15px;
+    padding: 10px;
+    background-color: var(--color-principal);
+    color: #fff;
+    border: none;
+    border-radius: 45px;
+    font-size: 14px;
+    font-weight: bold;
+    cursor: pointer;
+    text-transform: uppercase;
+}
+
+.ticket-container button:hover {
+    background-color: var(--color-secundario);
+    color: #000;
+}

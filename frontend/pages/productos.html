@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Productos</title>
+    <link rel="stylesheet" href="/frontend/css/header-asidebar.css">
+    <link rel="stylesheet" href="/frontend/css/productos.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css">
+    <script src="/frontend/scripts/productos.js" defer></script>
+</head>
+<body >
+    <header class="header">
+        <div class="left-header">
+            <img src="/frontend/img/500 MILLAS _Logo-6.jpg" alt="Logo" class="logo">
+            <span>500Millas</span>
+        </div>
+    </header>
+
+    <aside class="sidebar">
+        <nav class="sidebar-menu">
+            <a href="/frontend/pages/admin.html" class="sidebar-text"><i class="bi bi-house"></i>Inicio</a>
+            <h4>Tienda</h4>
+            <a href="/frontend/pages/productos.html" class="sidebar-text active"><i class="bi bi-ui-checks-grid"></i></i>Productos</a>
+            <a href="/frontend/pages/materiaPrima.html" class="sidebar-text"><i class="bi bi-clipboard-data"></i>Materia Prima</a>
+            <a href="#" class="sidebar-text"><i class="bi bi-bell"></i>Pedidos</a>
+            <h4>Analizis</h4>
+            <a href="#" class="sidebar-text"><i class="bi bi-graph-up"></i>Performance</a>
+            <a href="#" class="sidebar-text"><i class="bi bi-person"></i>Personal</a>
+        </nav>
+        <div class="sidebar-footer">
+            <a href="#" class="sidebar-text"><i class="bi bi-gear"></i>Settings</a>
+            <button id="cerrarSesion"><a href="#" class="sidebar-text"><i class="bi bi-box-arrow-right"></i>Logout</a></button>
+        </div>
+    </aside>
+
+    <main class="main">
+        <div class="text-container">
+            <h4 class="text-header">Productos disponibles</h4>
+        </div>
+        <section class="main-section">
+            
+            <div class="card">
+                <div class="card-img">
+                    <img src="/frontend/img/500 MILLAS_ bolsaAlfajores.jpg" class="img" alt="alfajor">
+                </div>
+                <div class="card-content">
+                    <h3>Alfajores</h3>
+                    <div class="stock" data-producto="ALFAJORES">
+                        <i class="bi bi-box-seam"></i>
+                        <span class="stock-value"></span>
+                        <span class="stock-change"></span>
+                    </div>
+                    <p class="msj-stock"></p>
+                </div>
+                <hr class="card-divider">
+                <div class="card-footer">
+                    <button class="card-btn agregar open-modal" data-form="form1" data-producto="ALFAJORES">
+                        Agregar
+                    </button>
+                    <button class="card-btn venta open-modal" data-form="form2" data-producto="ALFAJORES">
+                        Vender
+                    </button>
+                </div>
+                <button class="card-btn pedidos open-modal" data-form="form3" data-producto="ALFAJORES">
+                    Reservar Pedido
+                </button>
+            </div>
+            
+            <div class="card">
+                <div class="card-img">
+                    <img src="/frontend/img/500 MILLAS_ Bolsa galletas-1.jpg" class="img" alt="Bolsa de galletas marinas sin semillas">
+                </div>
+                <div class="card-content">
+                    <h3>Galletas marinas s/s</h3>
+                    <div class="stock" data-producto="GALLETAS MARINAS S/S">
+                        <i class="bi bi-box-seam"></i>
+                        <span class="stock-value"></span>
+                        <span class="stock-change"></span>
+                    </div>
+                    <p class="msj-stock"></p>
+                </div>
+                <hr class="card-divider">
+                <div class="card-footer">
+                    <button class="card-btn agregar open-modal" data-form="form1" data-producto="GALLETAS MARINAS S/S">
+                        Agregar
+                    </button>
+                    <button class="card-btn venta open-modal" data-form="form2" data-producto="GALLETAS MARINAS S/S">
+                        Vender
+                    </button>
+                </div>
+                <button class="card-btn pedidos open-modal" data-form="form3" data-producto="GALLETAS MARINAS S/S">
+                    Reservar Pedido
+                </button>
+            </div>
+            
+            <div class="card">
+                <div class="card-img">
+                    <img src="/frontend/img/500 MILLAS_ Bolsa galletas-3.jpg" class="img" alt="Bolsa de galletas marinas con semillas">
+                </div>
+                <div class="card-content">
+                    <h3>Galletas marinas c/s</h3>
+                    <div class="stock" data-producto="GALLETAS MARINAS C/S">
+                        <i class="bi bi-box-seam"></i>
+                        <span class="stock-value"></span>
+                        <span class="stock-change"></span>
+                    </div>
+                    <p class="msj-stock"></p>
+                </div>
+                <hr class="card-divider">
+                <div class="card-footer">
+                    <button class="card-btn agregar open-modal"  data-form="form1" data-producto="GALLETAS MARINAS C/S">
+                        Agregar
+                    </button>
+                    <button class="card-btn venta open-modal" data-form="form2" data-producto="GALLETAS MARINAS C/S">
+                        Vender
+                    </button>
+                </div>
+                <button class="card-btn pedidos open-modal" data-form="form3" data-producto="GALLETAS MARINAS C/S">
+                    Reservar Pedido
+                </button>
+            </div>
+        </section>
+
+        <div class="flecha">
+            <button id="btn-abajo"><i class="bi bi-arrow-down icono"></i></button>
+        </div>
+
+
+        <section class="main-section2" id="section2">
+            <div class="text-container ">
+                <h4 class="text-header">HISTORIAL PRODUCCION</h4>
+            </div>
+            <div class="filtro-container">
+                <label class="label" for="filtro">FILTRAR POR:</label>
+                <select class="filtro" id="filtro-prod">
+                    <option value="todas">Todas</option>
+                    <option value="hoy">Hoy</option>
+                    <option value="1">Enero</option>
+                    <option value="2">Febrero</option>
+                    <option value="3">Marzo</option>
+                    <option value="4">Abril</option>
+                    <option value="5">Mayo</option>
+                    <option value="6">Junio</option>
+                    <option value="7">Julio</option>
+                    <option value="8">Agosto</option>
+                    <option value="9">Septiembre</option>
+                    <option value="10">Octubre</option>
+                    <option value="11">Noviembre</option>
+                    <option value="12">Diciembre</option>
+                </select>
+                <select class="filtro" id="filtro-prod2">
+                    <option value="todos">Todos</option>
+                    <option value="ALFAJORES">Alfajores</option>
+                    <option value="GALLETAS MARINAS S/S">Galletas S/S</option>
+                    <option value="GALLETAS MARINAS C/S">Galletas C/S</option>
+                </select>
+                <button class="filtrarBtn" id="filtrarBtn">Filtrar</button>
+            </div>
+            <div class="table-container">
+                <table class="table">
+                    <thead class="head-table">
+                        <tr class="tr-prod ">
+                            <th>Id</th>
+                            <th>Fecha</th>
+                            <th>Producto</th>
+                            <th>Receta</th>
+                            <th>Cantidad</th>
+                            <th>Lote</th>
+                            <th>Fecha vencimiento</th>
+                            <th>Eliminar</th>
+                        </tr>
+                    </thead>
+                    <tbody class="body-table">
+
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <section class="main-section2">
+            <div class="text-container ">
+                <h4 class="text-header">HISTORIAL VENTAS</h4>
+            </div>
+            <div class="filtro-container">
+                <label class="label-venta" for="filtro">FILTRAR POR:</label>
+                <select class="filtro filtro-ventas" id="filtro-venta">
+                    <option value="todas">Todas</option>
+                    <option value="hoy">Hoy</option>
+                    <option value="1">Enero</option>
+                    <option value="2">Febrero</option>
+                    <option value="3">Marzo</option>
+                    <option value="4">Abril</option>
+                    <option value="5">Mayo</option>
+                    <option value="6">Junio</option>
+                    <option value="7">Julio</option>
+                    <option value="8">Agosto</option>
+                    <option value="9">Septiembre</option>
+                    <option value="10">Octubre</option>
+                    <option value="11">Noviembre</option>
+                    <option value="12">Diciembre</option>
+                </select>
+                <select class="filtro filtro-ventas" id="filtro-venta2">
+                    <option value="todos">Todos</option>
+                    <option value="ALFAJORES">Alfajores</option>
+                    <option value="GALLETAS MARINAS S/S">Galletas S/S</option>
+                    <option value="GALLETAS MARINAS C/S">Galletas C/S</option>
+                </select>
+                <button class="filtrarBtn filtrarBtn-ventas" id="filtrarBtn2">Filtrar</button>
+            </div>
+            <div class="table-container">
+                <table class="table">
+                    <thead class="head-table head-ventas">
+                        <tr class="tr-ventas">
+                            <th>Id</th>
+                            <th>Fecha</th>
+                            <th>Producto</th>
+                            <th>Cantidad</th>
+                            <th>Precio unitario</th>
+                            <th>Importe total</th>
+                            <th>Persona</th>
+                            <th>Eliminar</th>
+                        </tr>
+                    </thead>
+                    <tbody class="body-table2">
+                        
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    </main>
+
+    <!-- Modal -->
+    <div class="modal" id="modal">
+        <div class="modal-content">
+            <span class="close">x</span>
+            <div id="form1" class="form-container">
+                <h2>Agregar Produccion</h2>
+                <form id="formProduccion">
+                    <input class="form-input" type="date" name="fecha" id="fecha">
+                    <select class="form-input" name="producto1" id="producto1">
+                        <option value="1">ALFAJORES</option>
+                        <option value="2">GALLETAS MARINAS S/S</option>
+                        <option value="3">GALLETAS MARINAS C/S</option>
+                    </select>
+                    <select class="form-input" name="receta" id="receta">
+                        <option value="">Receta para:</option>
+                        <option value="1">100</option>
+                        <option value="2">120</option>
+                        <option value="3">130</option>
+                        <option value="4">140</option>
+                        <option value="5">150</option>
+                        <option value="6">160</option>
+                        <option value="7">180</option>
+                    </select>
+                    <!-- <input class="form-input" type="number" name="receta" id="receta" placeholder="Receta para"> -->
+                    <input class="form-input" type="number" name="cantidad" id="cantidad" placeholder="Cantidad">
+                    <input class="form-input" type="text" name="lote" id="lote" placeholder="Lote">
+                    <input class="form-input" type="date" name="vencimiento" id="vencimiento">
+                    <button class="form-btn" type="submit">Guardar</button>
+                    <p class="msj-error escondido" id="msj-error1"></p>
+                </form>
+            </div>
+
+            <div id="form2" class="form-container">
+                <h2>Agregar Venta</h2>   
+                <form id="formVentas">
+                    <input class="form-input" type="date" name="fecha" id="fecha2">
+                    <select class="form-input" name="producto2" id="producto2">
+                        <option value="1">ALFAJORES</option>
+                        <option value="2">GALLETAS MARINAS S/S</option>
+                        <option value="3">GALLETAS MARINAS C/S</option>
+                    </select>
+                    <input class="form-input" type="number" name="cantidad" id="cantidad2" placeholder="Cantidad">
+                    <input class="form-input" type="number" name="precio" id="precio" placeholder="Precio">
+                    <input class="form-input" type="text" name="persona" id="persona" placeholder="Persona">
+                    <button class="form-btn" type="submit">Vender</button>
+                    <p class="msj-error escondido" id="msj-error2"></p>
+                </form>
+            </div>
+
+            <div id="form3" class="form-container">
+                <h2>PEDIDO</h2>
+                <form id="formPedidos">
+                    <input class="form-input" type="date" name="fechaEntrega" id="fechaEntrega">
+
+                    <input class="form-input" type="text" name="personaPedido" id="personaPedido" placeholder="Persona">
+
+                    <div id="productosPedido">
+                        <!-- Aquí se agregan los productos dinámicamente -->
+                    </div>
+
+                    <button id="btnAgregarProducto" class="agregar-producto" type="button">+ Agregar producto</button>
+                    
+                    <button class="form-btn" type="submit">Guardar Pedido</button>
+                    
+                    <p class="msj-error escondido" id="msj-error3"></p>
+                </form>
+            </div>
+        </div>
+    </div>
+</body>

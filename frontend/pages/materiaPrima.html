@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Materias Primas</title>
+    <link rel="stylesheet" href="/frontend/css/header-asidebar.css">
+    <link rel="stylesheet" href="/frontend/css/materiaPrima.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css">
+    <script src="/frontend/scripts/materiaPrima.js" defer></script>
+</head>
+<body >
+    <header class="header">
+        <div class="left-header">
+            <img src="/frontend/img/500 MILLAS _Logo-6.jpg" alt="Logo" class="logo">
+            <span>500Millas</span>
+        </div>
+    </header>
+
+    <aside class="sidebar">
+        <nav class="sidebar-menu">
+            <a href="/frontend/pages/admin.html" class="sidebar-text"><i class="bi bi-house"></i>Inicio</a>
+            <h4>Tienda</h4>
+            <a href="/frontend/pages/productos.html" class="sidebar-text"><i class="bi bi-ui-checks-grid"></i></i>Productos</a>
+            <a href="#" class="sidebar-text active"><i class="bi bi-clipboard-data"></i>Materia Prima</a>
+            <a href="/frontend/pages/pedidos.html" class="sidebar-text"><i class="bi bi-bell"></i>Pedidos</a>
+            <h4>Analizis</h4>
+            <a href="#" class="sidebar-text"><i class="bi bi-graph-up"></i>Performance</a>
+            <a href="#" class="sidebar-text"><i class="bi bi-person"></i>Personal</a>
+        </nav>
+        <div class="sidebar-footer">
+            <a href="#" class="sidebar-text"><i class="bi bi-gear"></i>Settings</a>
+            <button id="cerrarSesion"><a href="#" class="sidebar-text"><i class="bi bi-box-arrow-right"></i>Logout</a></button>
+        </div>
+    </aside>
+
+    <main class="main">
+        <div class="text-container">
+            <h4 class="text-header">Materia Prima disponible</h4>
+        </div>
+        <section class="main-section">
+
+            <div class="card">
+                <div class="card-img">
+                    <img src="/frontend/img/harina.jpeg" class="img" alt="Bolsa de harina">
+                </div>
+                <div class="card-content">
+                    <h3>Harina</h3>
+                    <div class="stock" data-producto="HARINA">
+                        <i class="bi bi-box-seam"></i>
+                        <span class="stock-value"></span>
+                        <span class="stock-change"></span>
+                    </div>
+                    <p class="msj-stock"></p>
+                    <hr class="card-divider">
+                    <div class="card-footer">
+                        <button class="card-btn agregar open-modal" data-form="form-mp" data-producto="HARINA">
+                            Agregar
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-img">
+                    <img src="/frontend/img/huevo.webp" class="img" alt="Huevos">
+                </div>
+                <div class="card-content">
+                    <h3>Huevos</h3>
+                    <div class="stock" data-producto="HUEVOS">
+                        <i class="bi bi-box-seam"></i>
+                        <span class="stock-value"></span>
+                        <span class="stock-change"></span>
+                    </div>
+                    <p class="msj-stock"></p>
+                    <hr class="card-divider">
+                    <div class="card-footer">
+                        <button class="card-btn agregar open-modal" data-form="form-mp" data-producto="HUEVOS">
+                            Agregar
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card">
+                <div class="card-img">
+                    <img src="/frontend/img/grasa.webp" class="img" alt="Grasa">
+                </div>
+                <div class="card-content">
+                    <h3>Grasa</h3>
+                    <div class="stock" data-producto="GRASA">
+                        <i class="bi bi-box-seam"></i>
+                        <span class="stock-value"></span>
+                        <span class="stock-change"></span>
+                    </div>
+                    <p class="msj-stock"></p>
+                    <hr class="card-divider">
+                    <div class="card-footer">
+                        <button class="card-btn agregar open-modal" data-form="form-mp" data-producto="GRASA">
+                            Agregar
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card">
+                <div class="card-img">
+                    <img src="/frontend/img/dulce_de_leche.webp" class="img" alt="Dulce de Leche">
+                </div>
+                <div class="card-content" >
+                    <h3>D. de Leche</h3>
+                    <div class="stock" data-producto="DULCE DE LECHE">
+                        <i class="bi bi-box-seam"></i>
+                        <span class="stock-value"></span>
+                        <span class="stock-change"></span>
+                    </div>
+                    <p class="msj-stock"></p>
+                    <hr class="card-divider">
+                    <div class="card-footer">
+                        <button class="card-btn agregar open-modal" data-form="form-mp" data-producto="DULCE DE LECHE">
+                            Agregar
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card">
+                <div class="card-img">
+                    <img src="/frontend/img/sal.jpeg" class="img" alt="Sal">
+                </div>
+                <div class="card-content">
+                    <h3>Sal</h3>
+                    <div class="stock" data-producto="SAL">
+                        <i class="bi bi-box-seam"></i>
+                        <span class="stock-value"></span>
+                        <span class="stock-change"></span>
+                    </div>
+                    <p class="msj-stock"></p>
+                    <hr class="card-divider">
+                    <div class="card-footer">
+                        <button class="card-btn agregar open-modal" data-form="form-mp" data-producto="SAL">
+                            Agregar
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card">
+                <div class="card-img">
+                    <img src="/frontend/img/azucar.jpg" class="img" alt="Azúcar">
+                </div>
+                <div class="card-content">
+                    <h3>Azúcar</h3>
+                    <div class="stock" data-producto="AZUCAR">
+                        <i class="bi bi-box-seam"></i>
+                        <span class="stock-value"></span>
+                        <span class="stock-change"></span>
+                    </div>
+                    <p class="msj-stock"></p>
+                    <hr class="card-divider">
+                    <div class="card-footer">
+                        <button class="card-btn agregar open-modal" data-form="form-mp" data-producto="AZUCAR">
+                            Agregar
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="main-section2">
+            <div class="text-container ">
+                <h4 class="text-header">HISTORIAL DE COMPRA</h4>
+            </div>
+            <div class="filtro-container">
+                <label class="label" for="filtro-1">FILTRAR POR:</label>
+                <select class="filtro" id="filtro-1">
+                    <option value="todas">Todas</option>
+                    <option value="hoy">Hoy</option>
+                    <option value="1">Enero</option>
+                    <option value="2">Febrero</option>
+                    <option value="3">Marzo</option>
+                    <option value="4">Abril</option>
+                    <option value="5">Mayo</option>
+                    <option value="6">Junio</option>
+                    <option value="7">Julio</option>
+                    <option value="8">Agosto</option>
+                    <option value="9">Septiembre</option>
+                    <option value="10">Octubre</option>
+                    <option value="11">Noviembre</option>
+                    <option value="12">Diciembre</option>
+                </select>
+                <select class="filtro" id="filtro-2">
+                    <option value="todos">Todos</option>
+                    <option value="HARINA">Harina</option>
+                    <option value="HUEVOS">Huevos</option>
+                    <option value="GRASA">Grasa</option>
+                    <option value= "DULCE DE LECHE">Dulce de leche</option>
+                    <option value="SAL">Sal</option> 
+                    <option value="AZUCAR">Azucar</option> 
+                </select>
+                <button class="filtrarBtn" id="filtrarBtn">Filtrar</button>
+            </div>
+            <div class="table-container">
+                <table class="table">
+                    <thead class="head-table">
+                        <tr class="tr-prod ">
+                            <th>Id</th>
+                            <th>Fecha</th>
+                            <th>Producto</th>
+                            <th>Cantidad</th>
+                            <!-- <th>Unidad</th> -->
+                            <th>Lote</th>
+                            <!-- <th>Fecha venc.</th> -->
+                            <th>Precio</th>
+                            <th>Importe total</th>
+                            <th>Pagado</th>
+                            <th>Accion</th>
+                            <th>Eliminar</th>
+                        </tr>
+                    </thead>
+                    <tbody class="body-table">
+                        <!-- Las filas se cargan dinamicamente desde js. -->
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    </main>
+
+    <!-- Modal -->
+    <div class="modal" id="modal">
+        <div class="modal-content">
+            <span class="close">x</span>
+            <div id="form-mp" class="form-container">
+                <h2>Agregar M. P.</h2>
+                <form id="formMateriaPrima">
+                    <input class="form-input" type="date" name="fecha" id="fecha">
+                    <select class="form-input" name="producto" id="producto">
+                        <option value="1">HARINA</option>
+                        <option value="2">HUEVOS</option>
+                        <option value="3">GRASA</option>
+                        <option value="4">DULCE DE LECHE</option>
+                        <option value="5">SAL</option>
+                        <option value="6">AZUCAR</option>
+                    </select>
+
+                    <div class="input-group">
+                        <input class="form-input" type="number" name="cantidad" id="cantidad" placeholder="Cantidad">
+                        <select class="form-input" name="unidad" id="unidad">
+                            <option value="kg">Kg</option>
+                            <option value="Docenas">Docenas</option>
+                        </select>
+                    </div>
+
+                    <input class="form-input" type="text" name="lote" id="lote" placeholder="Lote">
+                    <input class="form-input" type="date" name="vencimiento" id="vencimiento">
+                    <input class="form-input" type="number" name="precio" id="precio" placeholder="Precio">
+
+                    <div class="checkbox-container">
+                        <label id="isPagado" for="pago">Pagado: 
+                            <input class="form-checkbox" type="checkbox" name="isPagado" id="pago">
+                        </label>
+                    </div>
+                    
+                    <button class="form-btn" type="submit">Guardar</button>
+                    <p class="msj-error escondido" id="msj-error"></p>
+                </form>
+            </div>
+        </div>
+    </div>
+</body>
