@@ -21,7 +21,10 @@ router.delete("/eliminarCompra/:id", authentication.eliminarCompra);
 router.delete("/eliminarProduccion/:id", authentication.eliminarProduccion);
 router.delete("/eliminarVenta/:id", authentication.eliminarVenta);
 router.post("/guardarPedido", authentication.guardarPedido);
-
+router.get("/obtenerPedidos", authentication.obtenerPedidos);
+router.get("/obtenerCantidadPedidos", authentication.obtenerCantidadPedidos);
+router.put("/actualizarEstadoEntrega/:id", authentication.actualizarEstadoEntrega);
+router.delete("/eliminarPedido/:id", authentication.eliminarPedido);
 
 
 export default router;

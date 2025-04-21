@@ -98,6 +98,10 @@ body {
     font-size: 15px;
     font-family: 'Lexend';
     transition: background-color 0.3s ease;
+
+    & i {
+        padding-right: 15px;
+    }
 }
 
 .sidebar-text.active,
@@ -108,9 +112,7 @@ body {
     text-transform: uppercase;
 }
 
-.bi {
-    padding-right: 15px;
-}
+
 
 .sidebar-footer {
     display: flex;

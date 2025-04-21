@@ -100,22 +100,31 @@ export const addProduction = async (fecha, idProducto, receta, cantidad, lote, v
 export const getProduccion = async (filtroFecha, filtroProducto) => {
     try {
         let query = `
-                SELECT pr.id_produccion, pr.fecha, p.nombre AS producto, pr.receta, pr.cantidad, pr.lote, pr.fch_vencimiento 
+                SELECT 
+                    pr.id_produccion, 
+                    pr.fecha, 
+                    p.nombre AS producto, 
+                    r.cantidad AS receta, 
+                    pr.cantidad, 
+                    pr.lote, 
+                    pr.fch_vencimiento 
                 FROM produccion pr 
-                JOIN productos p 
-                ON pr.id_producto = p.id_producto `
+                JOIN productos p ON pr.id_producto = p.id_producto
+                JOIN receta r ON pr.receta = r.id_receta `
 
         let conditions = [];
+        let params = [];
 
         if (filtroFecha === "hoy") {
             conditions.push("DATE(pr.fecha) = CURDATE()");
         } else if (!isNaN(filtroFecha) && filtroFecha >= 1 && filtroFecha <= 12) {
-            // Directamente usa el número sin conversión
-            conditions.push(`MONTH(pr.fecha) = ${filtroFecha} AND YEAR(pr.fecha) = YEAR(CURDATE())`);
+            conditions.push(`MONTH(pr.fecha) = ?`);
+            params.push(filtroFecha);
         }
 
         if (filtroProducto !== "todos") {
-            conditions.push(`p.nombre = '${filtroProducto}'`);
+            conditions.push(`p.nombre = ?`);
+            params.push(filtroProducto);
         }
 
         if (conditions.length > 0) {
@@ -124,7 +133,7 @@ export const getProduccion = async (filtroFecha, filtroProducto) => {
 
         query += "ORDER BY pr.id_produccion DESC"
     
-        const [result] = await pool.query(query)
+        const [result] = await pool.query(query, params)
         return result
     } catch (error) {
         console.log(error);
@@ -151,14 +160,6 @@ export const eliminarProduccionYActualizarStock = async (id) => {
         for (const ing of ingredientes) {
             await pool.query( "UPDATE materia_prima SET stock = stock + ? WHERE id_materiaPrima = ?", [ing.cantidad_necesaria, ing.id_materiaPrima]);
         }
-
-        // 3. Obtener las materia primas de la receta seleccionada
-        // const [rowsReceta] = await pool.query("SELECT id_materiaPrima, cantidad_necesaria FROM receta_materiaPrima WHERE id_receta = ?", [receta]);
-
-        // 4. Sumar la cantidad al stock total de materia prima
-        // for(const row of rowsReceta){
-        //     await pool.query("UPDATE materia_prima SET stock = stock + ? WHERE id_materiaPrima = ?", [row.cantidad_necesaria, row.id_materiaPrima]);
-        // }
         
         const gramosPorDocena = 260
         const cantidadDulceDeLeche = (cantidad * gramosPorDocena) / 1000 // Convertir a kg
@@ -207,25 +208,28 @@ export const getVentas = async (filtroFecha, filtroProducto) => {
                 ON v.id_producto = p.id_producto `
 
         let conditions = [];
+        let params = [];
 
         if (filtroFecha === "hoy") {
-            conditions.push("DATE(v.fecha) = CURDATE()");
+            conditions.push("DATE(v.fecha_entrega) = CURDATE()");
         } else if (!isNaN(filtroFecha) && filtroFecha >= 1 && filtroFecha <= 12) {
-            // Directamente usa el número sin conversión
-            conditions.push(`MONTH(v.fecha) = ${filtroFecha} AND YEAR(v.fecha) = YEAR(CURDATE())`);
+            conditions.push("MONTH(v.fecha) = ?");
+            params.push(filtroFecha);
         }
 
         if (filtroProducto !== "todos") {
-            conditions.push(`p.nombre = '${filtroProducto}'`);
+            conditions.push("p.nombre = ?");
+            params.push(filtroProducto);
         }
 
         if (conditions.length > 0) {
-            query += "WHERE " + conditions.join(" AND ");
+            query += " WHERE " + conditions.join(" AND ");
         }
+
 
         query += "ORDER BY v.id_venta DESC"
     
-        const [result] = await pool.query(query)
+        const [result] = await pool.query(query, params)
         return result
     } catch (error) {
         console.log(error);
@@ -294,27 +298,27 @@ export const getMateriaPrima = async (filtroFecha, filtroProducto) => {
                 ON cmp.id_materiaPrima = mp.id_materiaPrima `
 
         let conditions = [];
+        const params = [];
 
         if (filtroFecha === "hoy") {
             conditions.push("DATE(cmp.fecha) = CURDATE()");
+        } else if (!isNaN(filtroFecha) && filtroFecha >= 1 && filtroFecha <= 12) {
+            conditions.push("MONTH(cmp.fecha) = ?");
+            params.push(filtroFecha);
         }
-        else if (!isNaN(filtroFecha) && filtroFecha >= 1 && filtroFecha <= 12) {
-                // Directamente usa el número sin conversión
-                conditions.push(`MONTH(cmp.fecha) = ${filtroFecha} AND YEAR(cmp.fecha) = YEAR(CURDATE())`);
-        }
-
 
         if (filtroProducto !== "todos") {
-            conditions.push(`mp.nombre = '${filtroProducto}'`);
+            conditions.push("mp.nombre = ?");
+            params.push(filtroProducto);
         }
 
         if (conditions.length > 0) {
-            query += "WHERE " + conditions.join(" AND ");
+            query += " WHERE " + conditions.join(" AND ");
         }
 
         query += "ORDER BY cmp.id_compra DESC"
 
-        const [result] = await pool.query(query)
+        const [result] = await pool.query(query, params)
         return result
     } catch (error) {
         console.log(error);
@@ -368,13 +372,15 @@ export const addPedido = async (fechaEntrega, personaPedido) => {
     }
 }
 
+//? **********   **********   **********   **********   **********   **********   **********   **********   **********   **********   **********    ?//
+
 // Guardar los productos del pedido en detalle_pedido
 export const guardarDetallePedido = async (pedidoId, productos) => {
     try {
         for (const producto of productos) {
             await pool.query(
-            'INSERT INTO detalle_pedido (id_pedido, id_producto, cantidad) VALUES (?, ?, ?)',
-            [pedidoId, producto.nombre, producto.cantidad]
+            'INSERT INTO detalle_pedido (id_pedido, id_producto, cantidad, precio) VALUES (?, ?, ?, ?)',
+            [pedidoId, producto.nombre, producto.cantidad, producto.precio]
             );
         }
     } catch (error) {
@@ -382,6 +388,73 @@ export const guardarDetallePedido = async (pedidoId, productos) => {
         throw error;
     }
 };
+
+//? **********   **********   **********   **********   **********   **********   **********   **********   **********   **********   **********    ?//
+
+export const getPedidos = async (filtroFecha, filtroProducto) => {
+    try {
+        let query = `
+            SELECT 
+                p.id_pedido, 
+                p.fecha_entrega, 
+                p.persona, 
+                pr.nombre AS producto, 
+                dp.cantidad, 
+                dp.precio, 
+                dp.estado 
+            FROM pedidos p 
+            JOIN detalle_pedido dp ON p.id_pedido = dp.id_pedido
+            JOIN productos pr ON dp.id_producto = pr.id_producto
+        `;
+
+        const conditions = [];
+        const params = [];
+
+        if (filtroFecha === "hoy") {
+            conditions.push("DATE(p.fecha_entrega) = CURDATE()");
+        } else if (!isNaN(filtroFecha) && filtroFecha >= 1 && filtroFecha <= 12) {
+            conditions.push("MONTH(p.fecha_entrega) = ?");
+            params.push(filtroFecha);
+        }
+
+        if (filtroProducto !== "todos") {
+            conditions.push("pr.nombre = ?");
+            params.push(filtroProducto);
+        }
+
+        if (conditions.length > 0) {
+            query += " WHERE " + conditions.join(" AND ");
+        }
+
+        query += " ORDER BY p.id_pedido DESC";
+
+        const [result] = await pool.query(query, params);
+        return result;
+    } catch (error) {
+        console.log(error);
+    }
+};
+
+//? **********   **********   **********   **********   **********   **********   **********   **********   **********   **********   **********    ?//
+
+export const getCantidadPedidos = async () => {
+    try{
+        const [result] = await pool.query(`
+            SELECT pr.nombre, SUM(dp.cantidad) AS cantidad
+            FROM pedidos p
+            JOIN detalle_pedido dp ON p.id_pedido = dp.id_pedido
+            JOIN productos pr ON pr.id_producto = dp.id_producto
+            WHERE dp.estado = 'pendiente'
+            GROUP BY pr.nombre`
+        );
+        
+        console.log("pedidos devueltos");
+        return result
+    }
+    catch(error){
+        console.log(error);
+    }
+}
 
 //! ==================================================================================================================================================
 
@@ -414,5 +487,40 @@ export const actualizarPago = async (id, isPagado) => {
     catch(error){
         console.log(error);
         return false
+    }
+}
+
+export const actualizarEntrega = async (id, estado) => {
+    try {
+        const [result] = await pool.query("UPDATE detalle_pedido SET estado = ? WHERE id_pedido = ?", [estado, id]);
+        console.log({ "mensaje": "Pedido actualizada correctamente", "id": id});
+        return result.affectedRows > 0;
+    }
+    catch(error){
+        console.log(error);
+        return false
+    }
+}
+
+
+export const eliminarPedidos = async (id) => {
+    try{
+        const [rows] = await pool.query("SELECT id_pedido, cantidad FROM detalle_pedido WHERE id_pedido = ?", [id]);
+        
+        if(rows.length === 0) {
+            console.log("No se encontró el pedido con el ID proporcionado.");
+            return;
+        }
+        
+        // 2. Restar la cantidad al stock total
+        await pool.query("DELETE FROM detalle_pedido WHERE id_pedido = ?", [id]);
+        await pool.query("DELETE FROM pedidos WHERE id_pedido = ?", [id]);
+        console.log({ "mensaje": "Pedido eliminada correctamente y stock actualizado", "id": id});
+
+        return true;
+    }
+    catch(error){
+        console.log("Error al eliminar la compra y actualizar el stock:", error);
+        return false;
     }
 }

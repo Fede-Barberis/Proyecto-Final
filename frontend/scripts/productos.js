@@ -6,7 +6,6 @@ const openModalBtns = document.querySelectorAll(".open-modal");
 const forms = document.querySelectorAll(".form-container");
 const selectProducto1 = document.getElementById("producto1");
 const selectProducto2 = document.getElementById("producto2");
-// const selectProducto3 = document.getElementById("producto3");
 
 //* ==================== Funciones Auxiliares ====================
 
@@ -81,6 +80,7 @@ document.getElementById("formProduccion").addEventListener("submit", async (e) =
         if (res.ok) {
             document.getElementById("formProduccion").reset();
             await cargarStock();
+            await cargarCantPedidos();
             const filtroFecha = document.getElementById("filtro-prod").value || "todas";
             const filtroProducto = document.getElementById("filtro-prod2").value || "todos";
             await cargarProduccion(filtroFecha, filtroProducto);
@@ -119,6 +119,7 @@ document.getElementById("formVentas").addEventListener("submit", async (e) => {
         if (res.ok) {
             document.getElementById("formVentas").reset();
             await cargarStock();
+            await cargarCantPedidos();
             const filtroFecha = document.getElementById("filtro-venta").value || "todas";
             const filtroProducto = document.getElementById("filtro-venta2").value || "todos";
             await cargarVentas(filtroFecha, filtroProducto);
@@ -142,7 +143,6 @@ document.addEventListener("DOMContentLoaded", () => {
         btnAgregar.addEventListener("click", agregarProducto);
     }
 
-    // 2. Definimos la función
     function agregarProducto() {
         const container = document.getElementById('productosPedido');
         if (!container) {
@@ -162,16 +162,15 @@ document.addEventListener("DOMContentLoaded", () => {
             <option value="2">GALLETAS MARINAS S/S</option>
             <option value="3">GALLETAS MARINAS C/S</option>
         </select>
-        <input class="producto-item" type="number" name="producto_cantidad_${index}" placeholder="Cantidad" min="1" required>
-        <button class="btn-eliminarPedido" type="button" onclick="this.parentElement.remove()">Eliminar</button>
+        <input class="producto-item" type="number" name="producto_cantidad" placeholder="Cantidad" min="1" required>
+        <input class="producto-item" type="number" name="producto_precio" placeholder="Precio unitario" min="1" required>
+        <button class="btn-eliminarPedido" type="button" onclick="this.parentElement.remove()">ELIMINAR</i></button>
         
         `;
 
         container.appendChild(div);
         console.log(`Producto agregado: producto_nombre_${index}`);
     }
-
-    // window.agregarProducto = agregarProducto;
 });
 
 document.getElementById('formPedidos').addEventListener('submit', async function (e) {
@@ -188,10 +187,11 @@ document.getElementById('formPedidos').addEventListener('submit', async function
 
     filas.forEach((fila) => {
         const nombre = fila.querySelector('select').value;
-        const cantidad = fila.querySelector('input[type="number"]').value;
+        const cantidad = fila.querySelector(`input[name="producto_cantidad"]`).value;
+        const precio = fila.querySelector(`input[name="producto_precio"]`).value;
 
-        if (nombre && cantidad > 0) {
-            productos.push({ nombre, cantidad });
+        if (nombre && cantidad > 0 && precio > 0) {
+            productos.push({ nombre, cantidad, precio });
         }
     });
 
@@ -202,14 +202,18 @@ document.getElementById('formPedidos').addEventListener('submit', async function
             body: JSON.stringify({ fechaEntrega, personaPedido, productos }),
         });
 
-        if (!res.ok) {
-            const errorData = await res.json();
-            msjError.textContent = errorData.message;
-            msjError.classList.remove("escondido");
-        } else {
+        if (res.ok) {
             alert("✅ Pedido guardado correctamente");
             document.getElementById("productosPedido").innerHTML = "";
             document.getElementById("formPedidos").reset();
+            cargarCantPedidos();
+            const filtroFecha = document.getElementById("filtro-venta").value || "todas";
+            const filtroProducto = document.getElementById("filtro-venta2").value || "todos";
+            cargarPedidos(filtroFecha, filtroProducto);
+        } else {
+            const errorData = await res.json();
+            msjError.textContent = errorData.message;
+            msjError.classList.remove("escondido");
         }
     } catch (error) {
         console.error("Error al guardar el pedido:", error);
@@ -217,6 +221,55 @@ document.getElementById('formPedidos').addEventListener('submit', async function
         msjError.classList.remove("escondido");
     }
 });
+
+
+async function cargarCantPedidos() {
+    try {
+        const resPedidos = await fetch("http://localhost:4000/api/obtenerCantidadPedidos");
+        const pedidos = await resPedidos.json();
+
+        const resProductos = await fetch("http://localhost:4000/api/obtenerProductos");
+        const productos = await resProductos.json();
+
+        const pedidosMap = new Map(pedidos.map(p => [p.nombre, p.cantidad]));
+        const productosMap = new Map(productos.map(p => [p.nombre, p.stock]));
+
+        const pedidoDivs = document.querySelectorAll(".reserva");
+
+        pedidoDivs.forEach(div => {
+            const nombre = div.getAttribute("data-producto");
+            const value = div.querySelector(".reserva-value");
+            const change = div.querySelector(".reserva-change");
+
+            const actual = pedidosMap.get(nombre) || 0;
+            const anterior = parseInt(value.textContent, 10) || 0;
+            const stockDisponible = productosMap.get(nombre) || 0;
+
+            // Actualizar texto
+            value.textContent = actual;
+
+            // Mostrar flecha de cambio
+            if (actual > anterior) {
+                change.textContent = "↑";
+                change.style.color = "green";
+                change.classList.add("show");
+            } else if (actual < anterior) {
+                change.textContent = "↓";
+                change.style.color = "red";
+                change.classList.add("show");
+            } else {
+                change.textContent = "-";
+                change.style.color = "#888";
+                change.classList.add("show");
+            }
+
+            // Comparar con stock
+            value.style.color = actual > stockDisponible ? "red" : "black";
+        }); 
+    } catch (error) {
+        console.log(error);
+    }
+}
 
 //* ==================== Stock ====================
 
@@ -288,7 +341,7 @@ async function cargarProduccion(filtroFecha = "todas", filtroProducto = "todos")
             <td>${prod.cantidad}</td>
             <td>${prod.lote}</td>
             <td>${new Date(prod.fch_vencimiento).toLocaleDateString()}</td>
-            <td><button class="btn-eliminar" data-id="${prod.id_produccion}">X</button></td>
+            <td><button class="btn-eliminar" data-id="${prod.id_produccion}"><i class="bi bi-trash3"></i></button></td>
         `;
 
         row.querySelector(".btn-eliminar").addEventListener("click", async () => {
@@ -312,13 +365,6 @@ async function cargarProduccion(filtroFecha = "todas", filtroProducto = "todos")
 
 //* ==================== Tabla Ventas ====================
 
-document.getElementById("filtrarBtn2").addEventListener("click", async () => {
-    await cargarVentas(
-        document.getElementById("filtro-venta").value,
-        document.getElementById("filtro-venta2").value
-    );
-});
-
 async function cargarVentas(filtroFecha = "todas", filtroProducto = "todos") {
     const res = await fetch(`http://localhost:4000/api/obtenerVentas?filtroFecha=${filtroFecha}&filtroProducto=${filtroProducto}`);
     const ventas = await res.json();
@@ -337,7 +383,7 @@ async function cargarVentas(filtroFecha = "todas", filtroProducto = "todos") {
             <td>${venta.precio}</td>
             <td>$${venta.precio * venta.cantidad}</td>
             <td>${venta.persona}</td>
-            <td><button class="btn-eliminar" data-id="${venta.id_venta}">X</button></td>
+            <td><button class="btn-eliminar" data-id="${venta.id_venta}"><i class="bi bi-trash3"></i></button></td>
         `;
 
         row.querySelector(".btn-eliminar").addEventListener("click", async () => {
@@ -359,13 +405,114 @@ async function cargarVentas(filtroFecha = "todas", filtroProducto = "todos") {
     });
 }
 
+//* ==================== Tabla Pedidos ====================
+
+async function cargarPedidos(filtroFecha = "todas", filtroProducto = "todos") {
+    const res = await fetch(`http://localhost:4000/api/obtenerPedidos?filtroFecha=${filtroFecha}&filtroProducto=${filtroProducto}`);
+    const pedidos = await res.json();
+    const body = document.querySelector(".body-table3");
+    if (!body) return;
+
+    body.innerHTML = "";
+
+    let ultimoId = null;
+    let usarColor1 = true;
+    
+    pedidos.forEach(pedido => {
+        // Si el pedido cambió, alternamos color
+        if (pedido.id_pedido !== ultimoId) {
+            usarColor1 = !usarColor1;
+            ultimoId = pedido.id_pedido;
+        }
+
+        const row = document.createElement("tr");
+        row.className = "fila-pedidos";
+        row.classList.add(usarColor1 ? "fila-color1" : "fila-color2");
+
+        row.innerHTML = `
+            <td>${pedido.id_pedido}</td>
+            <td>${new Date(pedido.fecha_entrega).toLocaleDateString()}</td>
+            <td>${pedido.persona}</td>
+            <td>${pedido.producto}</td>
+            <td>${pedido.cantidad}</td>
+            <td>${pedido.precio}</td>
+            <td>${(pedido.precio * pedido.cantidad)}</td>
+            <td>
+                <button class="btn-estado ${pedido.estado ? 'btn-entregado' : 'btn-pendiente'}" data-id="${pedido.id_pedido}">
+                ${pedido.estado ? '<i class="bi bi-truck"></i>' : '<i class="bi bi-hourglass-split"></i>'}
+                </button>
+            </td>
+            <td>
+                <button class="btn-eliminar" data-id="${pedido.id_pedido}"><i class="bi bi-trash3"></i></button>
+            </td>
+        `;
+        body.appendChild(row);
+
+        const btn = row.querySelector(".btn-estado");
+        if (btn) {    
+            btn.addEventListener("click", async function () {
+                const id = this.getAttribute("data-id");
+                const nuevoEstado = pedido.estado ? false : true;
+
+                try {
+                    const res = await fetch(`http://localhost:4000/api/actualizarEstadoEntrega/${id}`, {
+                        method: "PUT",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({ estado: nuevoEstado })
+                    });
+
+                    if (!res.ok) throw new Error("Error al actualizar el estado de entrega");
+
+                    // Recargar tabla
+                    await cargarPedidos(filtroFecha, filtroProducto);
+                    await cargarCantPedidos();
+
+                } catch (error) {
+                    console.error(error);
+                }
+            });
+        }
+
+        row.querySelector(".btn-eliminar").addEventListener("click", async () => {
+            try {
+                const res = await fetch(`http://localhost:4000/api/eliminarPedido/${pedido.id_pedido}`, { 
+                    method: "DELETE" 
+                });
+
+                if (!res.ok) throw new Error("Error al eliminar el pedido");
+                
+                await cargarPedidos(filtroFecha, filtroProducto);
+                await cargarStock();
+                await cargarCantPedidos();
+            } catch (error) {
+                console.log(error);
+            }
+        });
+    });
+}
+
 //* ==================== Inicio ====================
 
 document.addEventListener("DOMContentLoaded", () => {
     document.getElementById("filtrarBtn").addEventListener("click", async () => {
-        const filtroFecha = document.getElementById("filtro-prod").value;
-        const filtroProducto = document.getElementById("filtro-prod2").value;
-        await cargarProduccion(filtroFecha, filtroProducto);
+        await cargarProduccion(
+            document.getElementById("filtro-prod").value,
+            document.getElementById("filtro-prod2").value
+        );
+    });
+
+    document.getElementById("filtrarBtn2").addEventListener("click", async () => {
+        await cargarVentas(
+            document.getElementById("filtro-venta").value,
+            document.getElementById("filtro-venta2").value
+        );
+    });
+
+    document.getElementById("filtrarBtn3").addEventListener("click", async () => {
+        await cargarPedidos(
+            document.getElementById("filtro-pedidos").value,
+            document.getElementById("filtro-pedidos2").value
+        );
     });
 
     document.getElementById("cerrarSesion").addEventListener("click", (e) => {
@@ -376,8 +523,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
     window.onload = () => {
         cargarStock();
+        cargarCantPedidos();
         cargarProduccion();
         cargarVentas();
+        cargarPedidos();
     };
     
 });
@@ -387,3 +536,9 @@ document.addEventListener("DOMContentLoaded", () => {
 document.getElementById("btn-abajo").addEventListener("click", () => {
     document.getElementById("section2").scrollIntoView({ behavior: "smooth" });
 });
+
+
+
+
+
+

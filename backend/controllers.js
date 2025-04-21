@@ -2,7 +2,7 @@
 import bcrypts from "bcryptjs";
 import jsonWebToken from "jsonwebtoken";
 import dotenv from "dotenv";
-import { getUsersRegister, addUserRegister, addProduction, addSale, getProductos, getVentas, getTarjetas, getProduccion, getMateriaPrima, addMateriaPrima, getMp, actualizarPago, eliminarCompraYActualizarStock, eliminarProduccionYActualizarStock, eliminarVentaYActualizarStock, addPedido, guardarDetallePedido } from "./models.js";
+import { getUsersRegister, addUserRegister, addProduction, addSale, getProductos, getVentas, getTarjetas, getProduccion, getMateriaPrima, addMateriaPrima, getMp, actualizarPago, eliminarCompraYActualizarStock, eliminarProduccionYActualizarStock, eliminarVentaYActualizarStock, addPedido, guardarDetallePedido, getPedidos, getCantidadPedidos, actualizarEntrega, eliminarPedidos } from "./models.js";
 
 dotenv.config() // permite acceder a las variables de entorno}
 
@@ -363,6 +363,11 @@ export const guardarPedido = async (req, res) => {
         if(productos.length === 0){
             return res.status(400).json({ status: "Error", message: "No se han seleccionado productos" });
         }
+
+        if(productos.precio < 0){
+            return res.status(400).json({ status: "Error", message: "El precio debe ser mayor a 0" });
+
+        }
     
         const pedidoId = await addPedido(fechaEntrega, personaPedido, productos);
         await guardarDetallePedido(pedidoId, productos);
@@ -378,6 +383,46 @@ export const guardarPedido = async (req, res) => {
     }
 }
 
+//? **********   **********   **********   **********   **********   **********   **********   **********   **********   **********   **********    ?//
+
+export const obtenerPedidos = async (req, res) => {
+    try {
+        const { filtroFecha, filtroProducto } = req.query; // Obtener filtro desde la URL
+        const pedidos = await getPedidos(filtroFecha, filtroProducto)
+        res.json(pedidos)
+    } catch (error) {
+        res.status(400).json({ status: "Error", message: "Error al obtener pedidos" });
+    }
+};
+
+//? **********   **********   **********   **********   **********   **********   **********   **********   **********   **********   **********    ?//
+
+export const obtenerCantidadPedidos = async (req, res) => {
+    try {
+        const pedidos = await getCantidadPedidos();
+        res.json(pedidos)
+    } catch (error) {
+        res.status(400).json({ status: "Error", message: "Error al obtener la cantidad de pedidos" });
+    }
+};
+
+
+
+export const eliminarPedido = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const exito = await eliminarPedidos(id);
+
+        if (!exito) {
+            return res.status(404).json({ error: "No se pudo eliminar el pedido o no existe" });
+        }
+
+        return res.status(200).json({ mensaje: "Pedido eliminado y stock actualizado" });
+    } catch (error) {
+        console.error("Error en eliminarPedidoController:", error);
+        return res.status(400).json({ error: "Error del servidor" });
+    }
+};
 
 
 //! ==================================================================================================================================================
@@ -443,6 +488,25 @@ export const actualizarEstadoPago = async (req, res) => {
     }
 }
 
+export const actualizarEstadoEntrega = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { estado } = req.body; // recibimos true o false
+
+        const entregaActualizada = await actualizarEntrega(id, estado);
+        
+        if (!entregaActualizada) {
+            return res.status(404).json({ error: "No se encontró el pedido" });
+        }
+    
+        return res.status(200).json({ success: true, message: "Estado de la entrega actualizado" });
+
+    } catch (error) {
+        console.error("Error en actualizarEstadoEntrega:", error);
+        return res.status(400).json({ error: "Error al actualizar el estado de la entrega" });
+    }
+}
+
 //! ===================================================================================================================================================
 
 export const methods = {
@@ -464,4 +528,8 @@ export const methods = {
     verificarStock,
     actualizarEstadoPago,
     obtenerTarjetas,
+    obtenerPedidos,
+    obtenerCantidadPedidos,
+    actualizarEstadoEntrega,
+    eliminarPedido,
 }

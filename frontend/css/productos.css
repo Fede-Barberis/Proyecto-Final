@@ -14,7 +14,6 @@
     --pastel-blanco: #FFF0F5;
 }
 
-
 .main {
     display: flex;
     flex-direction: column;
@@ -27,6 +26,14 @@
     display: flex;
     align-items: center;
     gap: 10px; /* Espaciado entre el texto y la línea */
+
+    &::after {
+        content: "";
+        flex-grow: 1; 
+        height: 4px; 
+        background: linear-gradient(to right, #0a0090, #000047);
+        margin-bottom: 13px;
+    }
 }
 
 .text-header {
@@ -39,13 +46,7 @@
     white-space: nowrap;
 }
 
-.text-container::after {
-    content: "";
-    flex-grow: 1; 
-    height: 4px; 
-    background: linear-gradient(to right, #0a0090, #000047);
-    margin-bottom: 13px;
-}
+
 
 .main-section {
     display: grid;
@@ -75,7 +76,7 @@
     height: auto;
     background: #ffffff;
     border: none;
-    box-shadow: 5px 5px 15px 3px rgba(0, 0, 0, 0.3);
+    box-shadow: 5px 5px 15px 3px rgba(12, 0, 91, 0.3);
     border-radius: 10px;
     padding: 20px;
     gap: 10px;
@@ -84,16 +85,20 @@
     overflow: hidden;
     transition: all 0.5s;
     position: relative; /* Necesario para el pseudo-elemento ::after */
+
+    &:hover {
+        transform: scale(1.05, 1.05);
+    }
 }
 
-.card:hover {
-    transform: scale(1.05, 1.05);
-}
+
 
 .card-img {
     width: 100%;
     height: 175px;
     overflow: hidden;
+    border: 1px solid #777;
+    border-radius: 10px;
 }
 
 .img {
@@ -104,34 +109,57 @@
     border-radius: 10px;
 }
 
+.card-content {
+    display: flex;
+    flex-direction: column;
+    height: auto;
+}
+
 .card-content h3 {
     text-transform: uppercase;
     margin: 10px 0 15px 0;
     font-size: 20px;
-    font-weight: 500;
+    font-weight: 600;
     text-align: left;
     color: #000;
 }
 
-.stock {
+.stock-reserva {
+    display: grid;
+    grid-template-columns: repeat(2, auto); /* Dos columnas de igual tamaño */
+    grid-template-rows: auto; /* Las filas se ajustan automáticamente */
+
+    & i {
+        padding-right: 15px;
+    }
+}
+
+.stock-col {
+    flex: 1; /* que ocupe el lado izquierdo */
+}
+
+.stock, .reserva  {
+    display: flex;
+    justify-content: left;
+    gap: 5px;
     font-size: 22px;
+    position: relative;
     font-weight: 600;
     color: #000;
-    position: relative;
 }
 
 /* Flechas de cambio de stock */
-.stock-change {
+.stock-change, .reserva-change {
     font-size: 20px;
     font-weight: bold;
     font-family: Impact;
     display: none; 
     position: absolute;
-    right: 0;
-}
-
-.stock-change.show {
-    display: inline; /* Mostrar cuando sea necesario */
+    left: 90px;
+    
+    &.show {
+        display: inline; /* Mostrar cuando sea necesario */
+    }
 }
 
 /* Mensajes de stock */
@@ -139,6 +167,7 @@
     font-size: 18px;
     font-weight: 500;
     margin-top: 15px;
+    text-align: left;
 }
 
 .card-divider {
@@ -171,30 +200,30 @@
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
     font-family: 'Lexend';
     letter-spacing: 0.8px;
-}
 
-.card-btn:hover {
-    color: #000;
-    transition: color 0.3s ease-in-out;
-}
+    &:hover {
+        color: #000;
+        transition: color 0.3s ease-in-out;
+    }
+    
+    &::after {
+        content: "";
+        background: white;
+        position: absolute;
+        z-index: -1;
+        left: -20%;
+        right: -20%;
+        top: 0;
+        bottom: 0;
+        transform: skewX(-45deg) scale(0, 1);
+        transition: all 0.5s;
+    }
 
-.card-btn:after {
-    content: "";
-    background: white;
-    position: absolute;
-    z-index: -1;
-    left: -20%;
-    right: -20%;
-    top: 0;
-    bottom: 0;
-    transform: skewX(-45deg) scale(0, 1);
-    transition: all 0.5s;
-}
-
-.card-btn:hover:after {
-    transform: skewX(-45deg) scale(1, 1);
-    -webkit-transition: all 0.5s;
-    transition: all 0.5s;
+    &:hover:after {
+        transform: skewX(-45deg) scale(1, 1);
+        -webkit-transition: all 0.5s;
+        transition: all 0.5s;
+    }
 }
 
 .agregar{
@@ -209,7 +238,6 @@
     background-color: var(--pastel-verde);
     width: 100%;
 }
-
 
 /*======================================================*/
 
@@ -227,12 +255,14 @@
     justify-content: center;
     align-items: center;
     z-index: 1000;
+
+    &.active {
+        visibility: visible;
+        opacity: 1;
+    }
 }
 
-.modal.active {
-    visibility: visible;
-    opacity: 1;
-}
+
 
 .modal-content {
     width: 350px;
@@ -248,10 +278,10 @@
 
 .form-container {
     display: none;
-}
 
-.form-container.active {
-    display: block;
+    &.active {
+        display: block;
+    }
 }
 
 .close {
@@ -288,10 +318,10 @@
     padding: 0 10px;
     box-shadow: 1px 2px 3px 1px rgba(0, 0, 0, 0.2);
     outline: none;
-}
 
-.form-input option {
-    background-color: #eee;
+    & option {
+        background-color: var(--color-neutro);
+    }
 }
 
 .form-btn {
@@ -309,17 +339,17 @@
     transition: all 0.3s ease 0s;
     cursor: pointer;
     outline: none;
-}
 
-.form-btn:hover {
-    background-color: #6489ff;
-    box-shadow: 0px 15px 20px rgba(46, 101, 229, 0.4);
-    color: #fff;
-    transform: translateY(-7px);
-}
-
-.form-btn:active {
-    transform: translateY(-1px);
+    &:hover {
+        background-color: #6489ff;
+        box-shadow: 0px 15px 20px rgba(46, 101, 229, 0.4);
+        color: #fff;
+        transform: translateY(-7px);
+    }
+    
+    &:active {
+        transform: translateY(-1px);
+    }
 }
 
 /* ==================================================================== */
@@ -345,8 +375,6 @@
     border-radius: 6px;
     background-color: transparent;
     outline: none;
-    /* border: none;
-    border-bottom: 1px solid var(--color-texto); */
 }
 
 .agregar-producto {
@@ -363,13 +391,13 @@
     text-transform: uppercase;
     font-size: 14px;
     transition: all 0.3s ease 0s;
-}
 
-.agregar-producto:hover {
-    transform: translateY(-2px);
-    background-color: rgb(91, 255, 91);
-    width: 70%;
-    border-radius: 50px;
+    &:hover {
+        transform: translateY(-2px);
+        background-color: rgb(91, 255, 91);
+        width: 70%;
+        border-radius: 50px;
+    }
 }
 
 .btn-eliminarPedido {
@@ -388,11 +416,11 @@
     cursor: pointer;
     margin-bottom: 10px;
     outline: none;
-}
 
-.btn-eliminarPedido:hover {
-    transform: translateY(-1px);
-    background-color: rgb(255, 0, 0);
+    &:hover {
+        transform: translateY(-1px);
+        background-color: rgb(255, 0, 0);
+    }
 }
 
 .msj-error {
@@ -431,24 +459,20 @@ input.producto-item {
     transition-duration: .3s;
     box-shadow: 2px 4px 8px rgba(0, 0, 0, 0.2);
     margin: auto;
-}
 
-#btn-abajo .bi {
-    padding-left: 15PX;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 24px;
-    color: #fff;
-}
+    & i {
+        font-size: 24px;
+        color: #fff;
+    }
 
-#btn-abajo:hover {
-    width: 100px;
-    border-radius: 50px;
-    transition-duration: .3s;
-    background-color: var(--color-contraste);
-    align-items: center;
-    justify-content: center;
+    &:hover {
+        width: 100px;
+        border-radius: 50px;
+        transition-duration: .3s;
+        background-color: var(--color-contraste);
+        align-items: center;
+        justify-content: center;
+    }
 }
 
 /* ======================================================*/
@@ -473,7 +497,7 @@ input.producto-item {
     font-family: 'Lexend';
 }
 
-.label, .label-venta {
+.label {
     font-size: 18px;
     border: none;
     border-bottom: 3px solid var(--color-principal);
@@ -481,8 +505,16 @@ input.producto-item {
     font-weight: 600;
 }
 
+.label-produccion {
+    border-bottom: 3px solid var(--color-principal);
+}
+
 .label-venta {
     border-bottom: 3px solid var(--color-acento);
+}
+
+.label-pedidos {
+    border-bottom: 3px solid var(--pastel-verde);
 }
 
 .filtro, .filtrarBtn {
@@ -491,8 +523,6 @@ input.producto-item {
     padding: 5px 5px;
     border-radius: 5px;
     letter-spacing: 1.25px;
-    color: #fff;
-    background-color: var(--color-principal);
     border: none;
     box-shadow: 5px 4px 8px rgba(0, 0, 0, 0.2);
     transition: all 0.3s ease 0s;
@@ -502,8 +532,18 @@ input.producto-item {
     font-weight: bold;
 }
 
+.filtro-produccion, .filtrarBtn-produccion {
+    background-color: var(--color-principal);
+    color: var(--color-texto);
+}
+
 .filtro-ventas, .filtrarBtn-ventas {
     background-color: var(--color-acento);
+    color: var(--color-texto);
+}
+
+.filtro-pedidos, .filtrarBtn-pedidos {
+    background-color: var(--pastel-verde);
     color: var(--color-texto);
 }
 
@@ -515,17 +555,17 @@ input.producto-item {
 .filtrarBtn {
     margin-left: auto;
     padding: 5px 15px;
-}
 
-.filtrarBtn:hover {
-    background-color: var(--color-texto);
-    box-shadow: 5px 4px 8px rgba(0, 0, 0, 0.4);
-    color: var(--color-neutro);
-    transform: translateY(-1px);
-}
+    &:hover {
+        background-color: var(--color-texto);
+        box-shadow: 5px 4px 8px rgba(0, 0, 0, 0.4);
+        color: var(--color-neutro);
+        transform: translateY(-1px);
+    }
 
-.filtrarBtn:active {
-    transform: translateY(-1px);
+    &:active {
+        transform: translateY(-1px);
+    }
 }
 
 /*********************************************************************/
@@ -539,10 +579,10 @@ input.producto-item {
     overflow-y: auto;
     border-radius: 8px;
     box-shadow: 3px 3px 10px 3px rgba(0, 0, 0, 0.3); 
-}
 
-.table-container::-webkit-scrollbar {
-    display: none;
+    &::-webkit-scrollbar {
+        display: none;
+    }
 }
 
 .table {
@@ -552,13 +592,21 @@ input.producto-item {
     border-collapse: collapse; /* Une los bordes de las celdas */
     border-spacing: 0; /* Evita separación entre celdas */
     font-family: 'Lexend';
+
+    & tbody:hover tr {
+        filter: blur(0.8px); /* Aplica blur a todas las filas */
+        transition: filter 0.3s ease;
+    }
+    
+    & tbody tr:hover {
+        filter: none; /* Quita blur solo a la fila sobre la que se pasa el mouse */
+    }
 }
 
 .head-table {
     position: sticky; /* Hace que el encabezado sea "pegajoso" */
     top: 0; /* Fija el encabezado en la parte superior */
     z-index: 2;
-    background-color: #a5baff;
 }
 
 th {
@@ -573,18 +621,16 @@ td {
     border-bottom: 1px solid rgba(220, 220, 255, 1); 
 }
 
-.table tbody:hover tr {
-    filter: blur(1px); /* Aplica blur a todas las filas */
-    transition: filter 0.3s ease;
+.head-produccion {
+    background-color: var(--color-principal);
 }
-
-.table tbody tr:hover {
-    filter: none; /* Quita blur solo a la fila sobre la que se pasa el mouse */
-}
-
 
 .head-ventas {
     background-color: var(--color-acento);
+}
+
+.head-pedidos {
+    background-color: var(--pastel-verde);
 }
 
 .fila-prod:hover {
@@ -594,6 +640,19 @@ td {
 
 .fila-ventas:hover {
     background-color: #ffce47c0;
+    transition: 0.3s;
+}
+
+.fila-color1 {
+    background-color: #f4f4f4;
+}
+
+.fila-color2 {
+    background-color: #ffffff;
+}
+
+.fila-pedidos:hover {
+    background-color: #bae4bcf1;;
     transition: 0.3s;
 }
 
@@ -611,27 +670,66 @@ td {
     position: relative;
     transition-duration: .3s;
     box-shadow: 2px 4px 8px rgba(0, 0, 0, 0.2);
-    margin: auto;
-}
 
-.btn-eliminar:hover {
-    width: 90%;
-    transform: scale(1.1, 1.1);
-    transition-duration: .3s;
-    background-color: rgb(255, 0, 0);
-}
-
-@media (max-width: 768px) {
-    
-    .main {
-        padding: 10px;
+    & i {
+        
+        font-size: 17px;
     }
 
-    .table-container {
-        max-height: 300px;
-    }
-
-    .modal-content {
+    &:hover {
         width: 90%;
+        transform: scale(1.1, 1.1);
+        transition-duration: .3s;
+        background-color: rgb(255, 0, 0);
     }
 }
+
+.btn-entregado, .btn-pendiente {
+    width: 90%;
+    height: 30px;
+    border: none;
+    border-radius: 50px;
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    position: relative;
+    transition-duration: .3s;
+    box-shadow: 2px 4px 8px rgba(0, 0, 0, 0.2);
+    font-family: 'Lexend';
+}
+
+.btn-entregado {
+    background-color: rgba(0, 227, 0, 0.6);
+
+    &:hover {
+        width: 100%;
+        transform: scale(1.1, 1.1);
+        transition-duration: .3s;
+        background-color: rgb(72, 255, 0);
+    }
+}
+
+.btn-pendiente {
+    background-color: rgba(255, 157, 0, 0.583);
+
+    &:hover {
+        width: 100%;
+        transform: scale(1.1, 1.1);
+        transition-duration: .3s;
+        background-color: rgb(255, 157, 0);
+    }
+}
+
+
+.bi-calendar2-week {
+    color: var(--color-secundario);
+}
+
+.btn-estado i {
+    font-size: 17px;
+}
+
+/* ======================================================*/
+

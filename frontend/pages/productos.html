@@ -42,16 +42,27 @@
             
             <div class="card">
                 <div class="card-img">
-                    <img src="/frontend/img/500 MILLAS_ bolsaAlfajores.jpg" class="img" alt="alfajor">
+                    <img src="/frontend/img/500 MILLAS _Logo-2.jpg" class="img" alt="alfajor">
                 </div>
                 <div class="card-content">
                     <h3>Alfajores</h3>
-                    <div class="stock" data-producto="ALFAJORES">
-                        <i class="bi bi-box-seam"></i>
-                        <span class="stock-value"></span>
-                        <span class="stock-change"></span>
+                    <div class="stock-reserva">
+                        <!-- Columna izquierda: stock + mensaje -->
+                        <div class="stock-col">
+                            <div class="stock" data-producto="ALFAJORES">
+                                <i class="bi bi-box-seam"></i>
+                                <span class="stock-value"></span>
+                                <span class="stock-change"></span>
+                            </div>
+                            <p class="msj-stock"></p>
+                        </div>
+                        <!-- Columna derecha: reserva -->
+                        <div class="reserva" data-producto="ALFAJORES">
+                            <i class="bi bi-calendar2-week"></i>
+                            <span class="reserva-value"></span>
+                            <span class="reserva-change"></span>
+                        </div>
                     </div>
-                    <p class="msj-stock"></p>
                 </div>
                 <hr class="card-divider">
                 <div class="card-footer">
@@ -73,25 +84,31 @@
                 </div>
                 <div class="card-content">
                     <h3>Galletas marinas s/s</h3>
-                    <div class="stock" data-producto="GALLETAS MARINAS S/S">
-                        <i class="bi bi-box-seam"></i>
-                        <span class="stock-value"></span>
-                        <span class="stock-change"></span>
+                    <div class="stock-reserva">
+                        <!-- Columna izquierda: stock + mensaje -->
+                        <div class="stock-col">
+                            <div class="stock" data-producto="GALLETAS MARINAS S/S">
+                                <i class="bi bi-box-seam"></i>
+                                <span class="stock-value"></span>
+                                <span class="stock-change"></span>
+                            </div>
+                            <p class="msj-stock"></p>
+                        </div>
+
+                        <!-- Columna derecha: reserva -->
+                        <div class="reserva" data-producto="GALLETAS MARINAS S/S">
+                            <i class="bi bi-calendar2-week"></i>
+                            <span class="reserva-value"></span>
+                            <span class="reserva-change"></span>
+                        </div>
                     </div>
-                    <p class="msj-stock"></p>
                 </div>
                 <hr class="card-divider">
                 <div class="card-footer">
-                    <button class="card-btn agregar open-modal" data-form="form1" data-producto="GALLETAS MARINAS S/S">
-                        Agregar
-                    </button>
-                    <button class="card-btn venta open-modal" data-form="form2" data-producto="GALLETAS MARINAS S/S">
-                        Vender
-                    </button>
+                    <button class="card-btn agregar open-modal" data-form="form1" data-producto="GALLETAS MARINAS S/S">Agregar</button>
+                    <button class="card-btn venta open-modal" data-form="form2" data-producto="GALLETAS MARINAS S/S">Vender</button>
                 </div>
-                <button class="card-btn pedidos open-modal" data-form="form3" data-producto="GALLETAS MARINAS S/S">
-                    Reservar Pedido
-                </button>
+                <button class="card-btn pedidos open-modal" data-form="form3" data-producto="GALLETAS MARINAS S/S">Reservar Pedido</button>
             </div>
             
             <div class="card">
@@ -100,25 +117,31 @@
                 </div>
                 <div class="card-content">
                     <h3>Galletas marinas c/s</h3>
-                    <div class="stock" data-producto="GALLETAS MARINAS C/S">
-                        <i class="bi bi-box-seam"></i>
-                        <span class="stock-value"></span>
-                        <span class="stock-change"></span>
+                    <div class="stock-reserva">
+                        <!-- Columna izquierda: stock + mensaje -->
+                        <div class="stock-col">
+                            <div class="stock" data-producto="GALLETAS MARINAS C/S">
+                                <i class="bi bi-box-seam"></i>
+                                <span class="stock-value"></span>
+                                <span class="stock-change"></span>
+                            </div>
+                            <p class="msj-stock"></p>
+                        </div>
+
+                        <!-- Columna derecha: reserva -->
+                        <div class="reserva" data-producto="GALLETAS MARINAS C/S">
+                            <i class="bi bi-calendar2-week"></i>
+                            <span class="reserva-value"></span>
+                            <span class="reserva-change"></span>
+                        </div>
                     </div>
-                    <p class="msj-stock"></p>
                 </div>
                 <hr class="card-divider">
                 <div class="card-footer">
-                    <button class="card-btn agregar open-modal"  data-form="form1" data-producto="GALLETAS MARINAS C/S">
-                        Agregar
-                    </button>
-                    <button class="card-btn venta open-modal" data-form="form2" data-producto="GALLETAS MARINAS C/S">
-                        Vender
-                    </button>
+                    <button class="card-btn agregar open-modal" data-form="form1" data-producto="GALLETAS MARINAS C/S">Agregar</button>
+                    <button class="card-btn venta open-modal" data-form="form2" data-producto="GALLETAS MARINAS C/S">Vender</button>
                 </div>
-                <button class="card-btn pedidos open-modal" data-form="form3" data-producto="GALLETAS MARINAS C/S">
-                    Reservar Pedido
-                </button>
+                <button class="card-btn pedidos open-modal" data-form="form3" data-producto="GALLETAS MARINAS C/S">Reservar Pedido</button>
             </div>
         </section>
 
@@ -132,8 +155,8 @@
                 <h4 class="text-header">HISTORIAL PRODUCCION</h4>
             </div>
             <div class="filtro-container">
-                <label class="label" for="filtro">FILTRAR POR:</label>
-                <select class="filtro" id="filtro-prod">
+                <label class="label label-produccion" for="filtro">FILTRAR POR:</label>
+                <select class="filtro filtro-produccion" id="filtro-prod">
                     <option value="todas">Todas</option>
                     <option value="hoy">Hoy</option>
                     <option value="1">Enero</option>
@@ -149,17 +172,17 @@
                     <option value="11">Noviembre</option>
                     <option value="12">Diciembre</option>
                 </select>
-                <select class="filtro" id="filtro-prod2">
+                <select class="filtro filtro-produccion" id="filtro-prod2">
                     <option value="todos">Todos</option>
                     <option value="ALFAJORES">Alfajores</option>
                     <option value="GALLETAS MARINAS S/S">Galletas S/S</option>
                     <option value="GALLETAS MARINAS C/S">Galletas C/S</option>
                 </select>
-                <button class="filtrarBtn" id="filtrarBtn">Filtrar</button>
+                <button class="filtrarBtn filtrarBtn-produccion" id="filtrarBtn">Filtrar</button>
             </div>
             <div class="table-container">
                 <table class="table">
-                    <thead class="head-table">
+                    <thead class="head-table head-produccion">
                         <tr class="tr-prod ">
                             <th>Id</th>
                             <th>Fecha</th>
@@ -183,7 +206,7 @@
                 <h4 class="text-header">HISTORIAL VENTAS</h4>
             </div>
             <div class="filtro-container">
-                <label class="label-venta" for="filtro">FILTRAR POR:</label>
+                <label class="label label-venta" for="filtro">FILTRAR POR:</label>
                 <select class="filtro filtro-ventas" id="filtro-venta">
                     <option value="todas">Todas</option>
                     <option value="hoy">Hoy</option>
@@ -228,6 +251,59 @@
                 </table>
             </div>
         </section>
+
+        <section class="main-section3">
+            <div class="text-container ">
+                <h4 class="text-header">PEDIDOS ACTIVOS</h4>
+            </div>
+            <div class="filtro-container">
+                <label class="label label-pedidos" for="filtro">FILTRAR POR:</label>
+                <select class="filtro filtro-pedidos" id="filtro-pedidos">
+                    <option value="todas">Todas</option>
+                    <option value="hoy">Hoy</option>
+                    <option value="1">Enero</option>
+                    <option value="2">Febrero</option>
+                    <option value="3">Marzo</option>
+                    <option value="4">Abril</option>
+                    <option value="5">Mayo</option>
+                    <option value="6">Junio</option>
+                    <option value="7">Julio</option>
+                    <option value="8">Agosto</option>
+                    <option value="9">Septiembre</option>
+                    <option value="10">Octubre</option>
+                    <option value="11">Noviembre</option>
+                    <option value="12">Diciembre</option>
+                </select>
+                <select class="filtro filtro-pedidos" id="filtro-pedidos2">
+                    <option value="todos">Todos</option>
+                    <option value="ALFAJORES">Alfajores</option>
+                    <option value="GALLETAS MARINAS S/S">Galletas S/S</option>
+                    <option value="GALLETAS MARINAS C/S">Galletas C/S</option>
+                </select>
+                <button class="filtrarBtn filtrarBtn-pedidos" id="filtrarBtn3">Filtrar</button>
+            </div>
+            <div class="table-container">
+                <table class="table">
+                    <thead class="head-table head-pedidos">
+                        <tr class="tr-pedidos">
+                            <th>Id</th>
+                            <th>F. Entrega</th>
+                            <th>Persona</th>
+                            <th>Producto</th>
+                            <th>Cant</th>
+                            <th>Precio</th>
+                            <th>Total</th>
+                            <th>Estado</th>
+                            <th>Eliminar</th>
+                        </tr>
+                    </thead>
+                    <tbody class="body-table3">
+                        <!-- Aquí se agregarán las filas de pedidos dinámicamente -->
+                    </tbody>
+                </table>
+            </div>
+        </section>
+        
     </main>
 
     <!-- Modal -->
@@ -283,17 +359,12 @@
                 <h2>PEDIDO</h2>
                 <form id="formPedidos">
                     <input class="form-input" type="date" name="fechaEntrega" id="fechaEntrega">
-
                     <input class="form-input" type="text" name="personaPedido" id="personaPedido" placeholder="Persona">
-
                     <div id="productosPedido">
                         <!-- Aquí se agregan los productos dinámicamente -->
                     </div>
-
                     <button id="btnAgregarProducto" class="agregar-producto" type="button">+ Agregar producto</button>
-                    
                     <button class="form-btn" type="submit">Guardar Pedido</button>
-                    
                     <p class="msj-error escondido" id="msj-error3"></p>
                 </form>
             </div>
