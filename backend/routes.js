@@ -25,6 +25,10 @@ router.get("/obtenerPedidos", authentication.obtenerPedidos);
 router.get("/obtenerCantidadPedidos", authentication.obtenerCantidadPedidos);
 router.put("/actualizarEstadoEntrega/:id", authentication.actualizarEstadoEntrega);
 router.delete("/eliminarPedido/:id", authentication.eliminarPedido);
-
+router.get("/obtenerDatosGraficos", authentication.obtenerDatosGraficos);
+router.get("/obtenerDatosTorta", authentication.obtenerDatosTorta);
+router.get("/obtenerRecordatorios", authentication.obtenerRecordatorios);
+router.get("/obtenerTarjetasPdf", authentication.obtenerTarjetasPdf);
+router.get("/obtenerDatosMesPasado", authentication.obtenerDatosMesPasado);
 
 export default router;

@@ -24,19 +24,19 @@ openModalBtns.forEach(button => {
         forms.forEach(form => form.style.display = "none");
         document.getElementById(formId).style.display = "block";
 
-        const productoSeleccionado = this.getAttribute("data-producto");
-        const productos = {
-            "ALFAJORES": "1",
-            "GALLETAS MARINAS S/S": "2",
-            "GALLETAS MARINAS C/S": "3"
-        };
-        const valorNumerico = productos[productoSeleccionado];
+        // const productoSeleccionado = this.getAttribute("data-producto");
+        // const productos = {
+        //     "ALFAJORES": "1",
+        //     "GALLETAS MARINAS S/S": "2",
+        //     "GALLETAS MARINAS C/S": "3"
+        // };
+        // const valorNumerico = productos[productoSeleccionado];
 
-        switch(formId){
-            case "form1": selectProducto1.value = valorNumerico;
-            case "form2": selectProducto2.value = valorNumerico;
-            // case "form3": selectProducto3.value = valorNumerico;
-        }
+        // switch(formId){
+        //     case "form1": selectProducto1.value = valorNumerico;
+        //     case "form2": selectProducto2.value = valorNumerico;
+        //     case "form3": selectProducto3.value = valorNumerico;
+        // }
 
         modal.style.display = "flex";
     });
@@ -56,43 +56,103 @@ window.addEventListener("click", function (e) {
 
 //* ==================== Formulario Producción ====================
 
-document.getElementById("formProduccion").addEventListener("submit", async (e) => {
+document.addEventListener("DOMContentLoaded", () => {
+    const btnAgregar = document.getElementById("btnAgregarProducto");
+    if (btnAgregar) {
+        btnAgregar.addEventListener("click", agregarProducto);
+    }
+
+    function agregarProducto() {
+        const container = document.getElementById('productosProd');
+        if (!container) return;
+
+        const index = container.children.length;
+
+        const div = document.createElement('div');
+        div.className = 'producto-fila';
+
+        div.innerHTML = `
+            <select class="producto-item" name="producto_nombre_${index}" required>
+                <option value="">Selecciona un producto</option>
+                <option value="1">ALFAJORES</option>
+                <option value="2">GALLETAS MARINAS S/S</option>
+                <option value="3">GALLETAS MARINAS C/S</option>
+            </select>
+            <input class="producto-item" type="number" name="producto_cantidad" placeholder="Cantidad" min="1" required>
+            <input class="producto-item" type="date" name="producto_vencimiento" id="vencimiento">
+            <button class="btn-eliminarPedido" type="button" onclick="this.parentElement.remove()">ELIMINAR</button>
+        `;
+        container.appendChild(div);
+    }
+});
+
+document.getElementById('formProduccion').addEventListener('submit', async function (e) {
     e.preventDefault();
 
-    const fecha = document.getElementById("fecha").value.trim();
-    const producto = document.getElementById("producto1").value.trim();
-    const receta = document.getElementById("receta").value.trim();
-    const cantidad = document.getElementById("cantidad").value.trim();
-    const lote = document.getElementById("lote").value.trim();
-    const vencimiento = document.getElementById("vencimiento").value.trim();
-    const idProducto = parseInt(producto, 10);
+    const datos = {
+        fecha: document.getElementById("fecha").value.trim(),
+        receta: document.getElementById("receta").value.trim(),
+        lote: document.getElementById("lote").value.trim(),
+    };
 
-    const msjError = document.getElementById("msj-error1")
+    const productos = [];
+    const msjError = document.getElementById("msj-error1");
     msjError.classList.add("escondido");
+    msjError.textContent = "";
+
+    const filas = document.querySelectorAll(".producto-fila");
+
+    filas.forEach((fila) => {
+        const select = fila.querySelector("select");
+        const inputCantidad = fila.querySelector("input[name='producto_cantidad']");
+        const inputVencimiento = fila.querySelector("input[name='producto_vencimiento']");
+
+        if (!select || !inputCantidad || !inputVencimiento) return;
+
+        const idProducto = select.value;
+        const cantidad = inputCantidad.value;
+        const vencimiento = inputVencimiento.value;
+
+        if (idProducto && cantidad > 0 && vencimiento) {
+            productos.push({ idProducto: parseInt(idProducto), cantidad: parseInt(cantidad), vencimiento });
+        }
+    });
+
+    if (productos.length === 0) {
+        msjError.textContent = "Debe agregar al menos un producto.";
+        msjError.classList.remove("escondido");
+        return;
+    }
 
     try {
         const res = await fetch("http://localhost:4000/api/guardarProduccion", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ fecha, idProducto, receta, cantidad, lote, vencimiento })
+            body: JSON.stringify({ datos, productos }),
         });
 
         if (res.ok) {
             document.getElementById("formProduccion").reset();
+            document.getElementById("productosProd").innerHTML = ""; // limpiar filas
+
             await cargarStock();
             await cargarCantPedidos();
-            const filtroFecha = document.getElementById("filtro-prod").value || "todas";
-            const filtroProducto = document.getElementById("filtro-prod2").value || "todos";
-            await cargarProduccion(filtroFecha, filtroProducto);
+            await cargarProduccion(
+                document.getElementById("filtro-prod").value || "todas",
+                document.getElementById("filtro-prod2").value || "todos"
+            );
         } else {
             const errorData = await res.json();
             msjError.textContent = errorData.message;
             msjError.classList.remove("escondido");
         }
     } catch (error) {
-        console.error("Error al guardar producción:", error);
+        console.error("Error al guardar la producción:", error);
+        msjError.textContent = "Error de conexión con el servidor.";
+        msjError.classList.remove("escondido");
     }
 });
+
 
 //* ==================== Formulario Ventas ====================
 
@@ -120,9 +180,10 @@ document.getElementById("formVentas").addEventListener("submit", async (e) => {
             document.getElementById("formVentas").reset();
             await cargarStock();
             await cargarCantPedidos();
-            const filtroFecha = document.getElementById("filtro-venta").value || "todas";
-            const filtroProducto = document.getElementById("filtro-venta2").value || "todos";
-            await cargarVentas(filtroFecha, filtroProducto);
+            await cargarVentas(
+                document.getElementById("filtro-prod").value || "todas",
+                document.getElementById("filtro-prod2").value || "todos"
+            );
         } else {
             const errorData = await res.json();
             msjError2.textContent = errorData.message;
@@ -138,7 +199,7 @@ document.getElementById("formVentas").addEventListener("submit", async (e) => {
 
 document.addEventListener("DOMContentLoaded", () => {
     // 1. Conectamos el botón después de que el DOM esté listo
-    const btnAgregar = document.getElementById("btnAgregarProducto");
+    const btnAgregar = document.getElementById("btnAgregarProducto1");
     if (btnAgregar) {
         btnAgregar.addEventListener("click", agregarProducto);
     }
@@ -156,16 +217,15 @@ document.addEventListener("DOMContentLoaded", () => {
         div.className = 'producto-fila';
 
         div.innerHTML = `
-        <select class="producto-item" name="producto_nombre_${index}" required>
-            <option value="">Selecciona un producto</option>
-            <option value="1">ALFAJORES</option>
-            <option value="2">GALLETAS MARINAS S/S</option>
-            <option value="3">GALLETAS MARINAS C/S</option>
-        </select>
-        <input class="producto-item" type="number" name="producto_cantidad" placeholder="Cantidad" min="1" required>
-        <input class="producto-item" type="number" name="producto_precio" placeholder="Precio unitario" min="1" required>
-        <button class="btn-eliminarPedido" type="button" onclick="this.parentElement.remove()">ELIMINAR</i></button>
-        
+            <select class="producto-item" name="producto_nombre_${index}" required>
+                <option value="">Selecciona un producto</option>
+                <option value="1">ALFAJORES</option>
+                <option value="2">GALLETAS MARINAS S/S</option>
+                <option value="3">GALLETAS MARINAS C/S</option>
+            </select>
+            <input class="producto-item" type="number" name="producto_cantidad" placeholder="Cantidad" min="1" required>
+            <input class="producto-item" type="number" name="producto_precio" placeholder="Precio unitario" min="1" required>
+            <button class="btn-eliminarPedido" type="button" onclick="this.parentElement.remove()">ELIMINAR</i></button>
         `;
 
         container.appendChild(div);
@@ -207,9 +267,10 @@ document.getElementById('formPedidos').addEventListener('submit', async function
             document.getElementById("productosPedido").innerHTML = "";
             document.getElementById("formPedidos").reset();
             cargarCantPedidos();
-            const filtroFecha = document.getElementById("filtro-venta").value || "todas";
-            const filtroProducto = document.getElementById("filtro-venta2").value || "todos";
-            cargarPedidos(filtroFecha, filtroProducto);
+            await cargarPedidos(
+                document.getElementById("filtro-prod").value || "todas",
+                document.getElementById("filtro-prod2").value || "todos"
+            );
         } else {
             const errorData = await res.json();
             msjError.textContent = errorData.message;
@@ -271,7 +332,7 @@ async function cargarCantPedidos() {
     }
 }
 
-//* ==================== Stock ====================
+//* ==================== Cargar Stock ====================
 
 async function cargarStock() {
     try {
@@ -321,6 +382,56 @@ async function cargarStock() {
     }
 }
 
+// const stockLimits = {
+//     "ALFAJORES": { bajo: 20, medio: 40 },
+//     "GALLETAS MARINAS S/S": { bajo: 10, medio: 20 },
+//     "GALLETAS MARINAS C/S": { bajo: 10, medio: 20 }
+// };
+
+// async function cargarStockGeneral(apiUrl, stockLimits, selector = ".stock") {
+//     try {
+//         const res = await fetch(apiUrl);
+//         const items = await res.json();
+//         const itemsMap = new Map(items.map(i => [i.nombre, i.stock]));
+
+//         const stockDivs = document.querySelectorAll(selector);
+//         stockDivs.forEach(div => {
+//             const nombre = div.getAttribute("data-producto");
+//             const value = div.querySelector(".stock-value");
+//             const change = div.querySelector(".stock-change");
+//             const mensaje = div.parentElement.querySelector(".msj-stock");
+
+//             if (itemsMap.has(nombre)) {
+//                 const actual = itemsMap.get(nombre);
+//                 const anterior = parseFloat(value.textContent) || 0;
+//                 value.textContent = actual;
+
+//                 if (actual > anterior) {
+//                     change.textContent = "↑"; change.style.color = "green"; change.classList.add("show");
+//                 } else if (actual < anterior) {
+//                     change.textContent = "↓"; change.style.color = "red"; change.classList.add("show");
+//                 }
+
+//                 if (stockLimits[nombre]) {
+//                     const { text, color } = getStockMessage(actual, stockLimits[nombre]);
+//                     mensaje.textContent = text;
+//                     mensaje.style.color = color;
+//                 }
+//             } else {
+//                 value.textContent = "0";
+//                 change.textContent = "";
+//                 change.classList.remove("show");
+//                 mensaje.textContent = "Sin stock";
+//                 mensaje.style.color = "red";
+//             }
+//         });
+//     } catch (error) {
+//         console.log(error);
+//     }
+// }
+
+// cargarStockGeneral("http://localhost:4000/api/obtenerProductos", stockLimits);
+
 //* ==================== Tabla Producción ====================
 
 async function cargarProduccion(filtroFecha = "todas", filtroProducto = "todos") {
@@ -330,9 +441,21 @@ async function cargarProduccion(filtroFecha = "todas", filtroProducto = "todos")
     if (!body) return;
 
     body.innerHTML = "";
+
+    let ultimoId = null;
+    let usarColor1 = true;
+
     data.forEach(prod => {
+        // Si el pedido cambió, alternamos color
+        if (prod.id_produccion !== ultimoId) {
+            usarColor1 = !usarColor1;
+            ultimoId = prod.id_produccion;
+        }
+
         const row = document.createElement("tr");
         row.className = "fila-prod";
+        row.classList.add(usarColor1 ? "fila-color1" : "fila-color2");
+
         row.innerHTML = `
             <td>${prod.id_produccion}</td>
             <td>${new Date(prod.fecha).toLocaleDateString()}</td>

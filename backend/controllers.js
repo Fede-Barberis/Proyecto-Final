@@ -2,13 +2,15 @@
 import bcrypts from "bcryptjs";
 import jsonWebToken from "jsonwebtoken";
 import dotenv from "dotenv";
-import { getUsersRegister, addUserRegister, addProduction, addSale, getProductos, getVentas, getTarjetas, getProduccion, getMateriaPrima, addMateriaPrima, getMp, actualizarPago, eliminarCompraYActualizarStock, eliminarProduccionYActualizarStock, eliminarVentaYActualizarStock, addPedido, guardarDetallePedido, getPedidos, getCantidadPedidos, actualizarEntrega, eliminarPedidos } from "./models.js";
+import { 
+    getUsersRegister, addUserRegister, addProduction, addSale, getProductos, getVentas, getTarjetas, getProduccion, getMateriaPrima, addMateriaPrima, getMp, actualizarPago, eliminarCompraYActualizarStock, eliminarProduccionYActualizarStock, eliminarVentaYActualizarStock, addPedido, guardarDetallePedido, getPedidos, getCantidadPedidos, actualizarEntrega, eliminarPedidos, getGraficos, getGraficoTorta, getRecordatorios, getTarjetasPdf, getDatosMesPasado 
+} from "./models.js";
 
 dotenv.config() // permite acceder a las variables de entorno}
 
 //! ===================================================================================================================================================
 
-//*                                 -------- MANEJA EL REGISTRO DE USUARIO Y LA AUTENTICACION --------                                             *//
+//*                                         -------- MANEJO DE USUARIO --------                                                                *//
 
 async function login(req, res) {
     const { email, password } = req.body;
@@ -104,30 +106,31 @@ export const guardarDatos = async (req, res) => {
 
 export const guardarProduccion = async (req, res) => {
     try{
-        const {fecha, idProducto, receta, cantidad, lote, vencimiento} = req.body
+        const {datos, productos} = req.body
 
-        if(!fecha || !idProducto || !receta || !cantidad || !vencimiento){
-            return res.status(400).json({ status: "Error", message: "Error, campos incompletos"})
+        const {fecha, receta, lote} = datos
+
+        if (!fecha || !receta || !Array.isArray(productos) || productos.length === 0) {
+            return res.status(400).json({ status: "Error", message: "Error, campos incompletos" });
         }
 
-        if (isNaN(idProducto)) {
-            return res.status(400).json({ status: "Error", message: "ID de producto inválido" });
-        }
-
-        if(cantidad < 0){
-            return res.status(400).json({ status:"Error", message: "La cantidad debe ser mayor a 0"})
-        }
-
-        if(lote.length < 4 || lote.length > 8){
+        if (lote.length < 4 || lote.length > 8) {
             return res.status(400).json({ status: "Error", message: "El lote debe tener entre 4 y 8 caracteres" });
         }
 
-        if (vencimiento <= fecha) {
-            return res.status(400).json({ status: "Error", message: "La fecha de vencimiento no puede ser menor o igual a la fecha de producción" });
+        for (const p of productos) {
+            if (!p.idProducto || isNaN(p.idProducto) || p.cantidad <= 0 || !p.vencimiento) {
+                return res.status(400).json({ status: "Error", message: "Datos de producto inválidos" });
+            }
+
+            if (p.vencimiento <= fecha) {
+                return res.status(400).json({ status: "Error", message: "La fecha de vencimiento no puede ser menor o igual a la fecha de producción" });
+            }
         }
 
-        await addProduction(fecha, idProducto, receta, cantidad, lote, vencimiento)
-        res.status(200).json({ status: "OK", message: "Datos guadados correctamente"})
+        // Llamar al modelo para registrar cada producto
+        await addProduction(datos, productos);
+        res.status(200).json({ status: "OK", message: "Producción registrada correctamente" });
     }
     catch(error){
         res.status(400).json({ status: "Error", message: error.message })
@@ -182,8 +185,7 @@ export const eliminarProduccion = async (req, res) => {
 
 //! ==================================================================================================================================================
 
-//*                                         -------- MANEJA LAS VENTAS --------                                                                     *//
-
+//*                                        -------- MANEJAR LAS VENTAS --------                                                                     *//
 
 export const guardarVenta = async (req, res) => {
     try {
@@ -211,8 +213,6 @@ export const guardarVenta = async (req, res) => {
         res.status(400).json({ status: "Erorr", message: "Error al guardar los datos"})
     }
 }
-
-
 
 //? **********   **********   **********   **********   **********   **********   **********   **********   **********   **********   **********    ?//
 
@@ -251,8 +251,7 @@ export const eliminarVenta = async (req, res) => {
 
 //! ==================================================================================================================================================
 
-//*                                         -------- MANEJA LA MATERIA PRIMA --------                                                               *//
-
+//*                                        -------- MANEJAR LA MATERIA PRIMA --------                                                               *//
 
 export const guardarMateriaPrima = async (req, res) => {
     try{
@@ -361,7 +360,7 @@ export const guardarPedido = async (req, res) => {
         }
 
         if(productos.length === 0){
-            return res.status(400).json({ status: "Error", message: "No se han seleccionado productos" });
+            return res.status(400).json({ status: "Error", message: "Debe agregar al menos un producto." });
         }
 
         if(productos.precio < 0){
@@ -372,13 +371,11 @@ export const guardarPedido = async (req, res) => {
         const pedidoId = await addPedido(fechaEntrega, personaPedido, productos);
         await guardarDetallePedido(pedidoId, productos);
     
-        // ✔️ Éxito
         return res.status(201).json({ status: "Success", message: "Pedido guardado correctamente", pedidoId});
     }
     catch(error){
         // Captura cualquier error inesperado (ej: error en DB)
         console.error("ERROR REAL:", error); 
-
         res.status(500).json({ status: "Error", message: "Error al guardar el pedido" });
     }
 }
@@ -391,7 +388,7 @@ export const obtenerPedidos = async (req, res) => {
         const pedidos = await getPedidos(filtroFecha, filtroProducto)
         res.json(pedidos)
     } catch (error) {
-        res.status(400).json({ status: "Error", message: "Error al obtener pedidos" });
+        res.status(500).json({ status: "Error", message: "Error al obtener pedidos" });
     }
 };
 
@@ -402,11 +399,11 @@ export const obtenerCantidadPedidos = async (req, res) => {
         const pedidos = await getCantidadPedidos();
         res.json(pedidos)
     } catch (error) {
-        res.status(400).json({ status: "Error", message: "Error al obtener la cantidad de pedidos" });
+        res.status(500).json({ status: "Error", message: "Error al obtener la cantidad de pedidos" });
     }
 };
 
-
+//? **********   **********   **********   **********   **********   **********   **********   **********   **********   **********   **********    ?//
 
 export const eliminarPedido = async (req, res) => {
     try {
@@ -420,38 +417,13 @@ export const eliminarPedido = async (req, res) => {
         return res.status(200).json({ mensaje: "Pedido eliminado y stock actualizado" });
     } catch (error) {
         console.error("Error en eliminarPedidoController:", error);
-        return res.status(400).json({ error: "Error del servidor" });
+        return res.status(500).json({ error: "Error del servidor" });
     }
 };
 
-
 //! ==================================================================================================================================================
 
-//*                                            -------- EXTRAS --------                                                                           *//  
-
-export const verificarStock = async (idProducto, cantidad) => {
-    try {
-        // Obtener el producto específico por ID
-        const productos = await getProductos();
-        console.log("Productos obtenidos de la BD:", productos);
-        const producto = productos.find(prod => prod.id_producto === idProducto); 
-
-        if (!producto) {
-            return { valido: false, mensaje: "Producto no encontrado" };
-        }
-
-        // Verificar stock
-        if (cantidad > producto.stock) {
-            return { valido: false, mensaje: "Stock insuficiente para realizar esta venta" };
-        }
-
-        return { valido: true, producto };
-    } catch (error) {
-        res.status(400).json({ status: "Error", message: "Error al verificar el stock" });
-    }
-}
-
-//! ==================================================================================================================================================
+//*                                        -------- OBTENER TARJETAS --------                                                                     *//
 
 export const obtenerTarjetas = async (req, res) => {
     try {
@@ -462,12 +434,38 @@ export const obtenerTarjetas = async (req, res) => {
         res.json(datosTarjetas)
     }
     catch(error){
-        res.status(400).json({ status: "Error", message: "Error al obtener los datos de las tarjetas" });
+        res.status(500).json({ status: "Error", message: "Error al obtener los datos de las tarjetas" });
+    }
+}
+
+export const obtenerTarjetasPdf = async (req, res) => {
+    try {
+        const datosTarjetas = await getTarjetasPdf()
+        if (!datosTarjetas) {
+            return res.status(404).json({ error: "No se encontraron datos" });
+        }
+        res.json(datosTarjetas)
+    }
+    catch(error){
+        res.status(500).json({ status: "Error", message: "Error al obtener los datos de las tarjetas" });
     }
 }
 
 
+export const obtenerDatosMesPasado = async (req, res) => {
+    try {
+        const datosMesPasado = await getDatosMesPasado();
+        res.json(datosMesPasado);
+    } catch (error) {
+        console.error("Error al obtener los datos del mes pasado:", error);
+        res.status(500).json({ error: "Error al obtener los datos del mes pasado" });
+    }
+};
+
+
 //! ===================================================================================================================================================
+
+//*                                        -------- ACTUALIZAR DE ESTADO --------                                                            *//
 
 export const actualizarEstadoPago = async (req, res) => {
     try {
@@ -484,9 +482,11 @@ export const actualizarEstadoPago = async (req, res) => {
 
     } catch (error) {
         console.error("Error en actualizarEstadoPago:", error);
-        return res.status(400).json({ error: "Error al actualizar el estado de pago" });
+        return res.status(500).json({ error: "Error al actualizar el estado de pago" });
     }
 }
+
+//? **********   **********   **********   **********   **********   **********   **********   **********   **********   **********   **********    ?//
 
 export const actualizarEstadoEntrega = async (req, res) => {
     try {
@@ -508,6 +508,90 @@ export const actualizarEstadoEntrega = async (req, res) => {
 }
 
 //! ===================================================================================================================================================
+
+//*                                         -------- INFORMACION GRAFICOS --------                                                                 *//
+
+export const obtenerDatosGraficos = async (req, res) => {
+    try{
+        const {ventas, produccion} = await getGraficos()
+
+        const ventasPorMes = Array(12).fill(0);
+        const produccionPorMes = Array(12).fill(0);
+
+        ventas.forEach(v => {
+            ventasPorMes[v.mes - 1] = v.cantidad_ventas;
+        });
+
+        produccion.forEach(p => {
+            produccionPorMes[p.mes - 1] = p.cantidad_produccion;
+        });
+
+        res.json({ ventas: ventasPorMes, produccion: produccionPorMes });
+    }
+    catch(error){
+        console.error("Error al obtener los datos de los graficos:", error);
+        res.status(400).json({ status: "Error", message: "Error al obtener los datos de los graficos" });
+    }
+}
+
+//? ===================================================================================================================================================
+
+export const obtenerDatosTorta = async (req, res) => {
+    try {
+        const datos = await getGraficoTorta();
+        
+        const labels = datos.map(d => d.producto);
+        const value = datos.map(d => d.cantidad);
+
+        res.json({ labels, value });
+    } catch (error) {
+        console.error(error);
+        res.status(400).json({ message: "Error al obtener datos de productos" });
+    }
+}
+
+//! ===================================================================================================================================================
+
+//*                                               -------- RECORDATORIOS --------                                                              *//
+
+export const obtenerRecordatorios = async (req, res) => {
+    try {
+        const alertas = await getRecordatorios();
+        res.json(alertas);
+    } catch (error) {
+        console.error("Error al obtener alertas:", error);
+        res.status(500).json({ message: "Error al obtener alertas" });
+    }
+};
+
+//! ==================================================================================================================================================
+
+//*                                            -------- INFORMACION ADICIONAL --------                                                           *//  
+
+export const verificarStock = async (idProducto, cantidad) => {
+    try {
+        // Obtener el producto específico por ID
+        const productos = await getProductos();
+        console.log("Productos obtenidos de la BD:", productos);
+        const producto = productos.find(prod => prod.id_producto === idProducto); 
+
+        if (!producto) {
+            return { valido: false, mensaje: "Producto no encontrado" };
+        }
+
+        // Verificar stock
+        if (cantidad > producto.stock) {
+            return { valido: false, mensaje: "Stock insuficiente para realizar esta venta" };
+        }
+
+        return { valido: true, producto };
+    } catch (error) {
+        res.status(500).json({ status: "Error", message: "Error al verificar el stock" });
+    }
+}
+
+//! ===================================================================================================================================================
+
 
 export const methods = {
     login,
@@ -532,4 +616,9 @@ export const methods = {
     obtenerCantidadPedidos,
     actualizarEstadoEntrega,
     eliminarPedido,
+    obtenerDatosGraficos,
+    obtenerDatosTorta,
+    obtenerRecordatorios,
+    obtenerTarjetasPdf,
+    obtenerDatosMesPasado,
 }

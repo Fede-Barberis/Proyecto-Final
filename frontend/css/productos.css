@@ -12,12 +12,28 @@
     --pastel-verde: #bae4bc;
     --pastel-lavanda: #EDE7F6;
     --pastel-blanco: #FFF0F5;
+
+    --color-primary: #7380ec;
+    --color-danger: #ff0015;
+    --color-success: #41f1b6;
+    --color-warning: #ffbb55;
+    --color-white: #fff;
+    --color-info-dark: #7d8da1;
+    --color-info-light: #dce1eb;
+    --color-dark: #363949;
+    --color-light: rgba(132, 139, 200, 0.30);
+    --color-primary-variant: #111e88;
+    --color-dark-variant: #677483;
+    --color-background: #f6f6f9;
 }
+
+/*********************************************************************/
+
 
 .main {
     display: flex;
     flex-direction: column;
-    width: 90%;
+    width: 95%;
     height: 100%;
     margin: 0 auto;
 }
@@ -46,7 +62,8 @@
     white-space: nowrap;
 }
 
-
+/*********************************************************************/
+/*! SECCION DE TARJETAS */
 
 .main-section {
     display: grid;
@@ -55,6 +72,9 @@
     width: 100%;
     height: auto;
     margin-bottom: 40px;
+    /* box-shadow: 0 4px 10px var(--color-light); */
+    border-radius: 30px;
+    padding: 25px 0;
 }
 
 .card:first-child {
@@ -74,11 +94,9 @@
     flex-direction: column;
     width: 300px;
     height: auto;
-    background: #ffffff;
-    border: none;
-    box-shadow: 5px 5px 15px 3px rgba(12, 0, 91, 0.3);
-    border-radius: 10px;
-    padding: 20px;
+    background-color: var(--color-fondo);
+    box-shadow: 0 8px 25px 0 var(--color-light);
+    border-radius: 20px;
     gap: 10px;
     font-family: 'Lexend';
     backface-visibility: hidden;
@@ -88,17 +106,14 @@
 
     &:hover {
         transform: scale(1.05, 1.05);
+        box-shadow: 0 15px 35px 0 var(--color-light);
     }
 }
-
-
 
 .card-img {
     width: 100%;
     height: 175px;
     overflow: hidden;
-    border: 1px solid #777;
-    border-radius: 10px;
 }
 
 .img {
@@ -106,22 +121,23 @@
     height: 100%;
     object-fit: cover;
     object-position: top;
-    border-radius: 10px;
 }
 
 .card-content {
     display: flex;
     flex-direction: column;
     height: auto;
+    padding: 5px 15px;
 }
 
 .card-content h3 {
     text-transform: uppercase;
     margin: 10px 0 15px 0;
-    font-size: 20px;
+    font-size: 24px;
     font-weight: 600;
     text-align: left;
-    color: #000;
+    color: var(--color-dark);
+    letter-spacing: 0.6px;
 }
 
 .stock-reserva {
@@ -145,7 +161,7 @@
     font-size: 22px;
     position: relative;
     font-weight: 600;
-    color: #000;
+    color: var(--color-dark);
 }
 
 /* Flechas de cambio de stock */
@@ -162,7 +178,7 @@
     }
 }
 
-/* Mensajes de stock */
+/*! Mensajes de stock */
 .msj-stock {
     font-size: 18px;
     font-weight: 500;
@@ -171,10 +187,11 @@
 }
 
 .card-divider {
-    width: 100%;
-    border: 1px solid #777;
+    width: 90%;
+    border: 1px solid var(--color-dark-variant);
     border-radius: 50px;
-    margin-bottom: 5px
+    margin-bottom: 5px;
+    margin: 0 auto;
 }
 
 .card-footer {
@@ -182,14 +199,15 @@
     flex-direction: row;
     justify-content: space-between;
     align-items: center;
+    padding: 0px 15px;
 }
 
 .card-btn {
     width: 125px;
     height: 35px;
-    color: #fff;
-    border: 2px solid #555;
-    border-radius: 5px;
+    color: var(--color-white);
+    border: 2px solid var(--color-info-dark);
+    border-radius: 10px;
     transition: all 0.3s;
     text-transform: uppercase;
     font-weight: 600;
@@ -197,18 +215,18 @@
     cursor: pointer;
     z-index: 1;
     overflow: hidden;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 2px 5px var(--color-light);
     font-family: 'Lexend';
     letter-spacing: 0.8px;
 
     &:hover {
-        color: #000;
+        color: var(--color-dark);
         transition: color 0.3s ease-in-out;
     }
     
     &::after {
         content: "";
-        background: white;
+        background: var(--color-white);
         position: absolute;
         z-index: -1;
         left: -20%;
@@ -236,16 +254,17 @@
 
 .pedidos {
     background-color: var(--pastel-verde);
-    width: 100%;
+    width: 90%;
+    margin: 0 auto;
+    margin-bottom: 15px;
 }
 
-/*======================================================*/
+/*********************************************************************/
+/*! MODAL */
 
-/* MODAL */
 .modal {
     position: fixed;
     display: none;
-    position: fixed;
     top: 0;
     left: 0;
     width: 100%;
@@ -262,17 +281,15 @@
     }
 }
 
-
-
 .modal-content {
     width: 350px;
     height: auto;
     max-height: 90vh;
-    background: white;
+    background-color: var(--color-white);
     padding: 20px;
     text-align: center;
     position: relative;
-    border-radius: 10px;
+    border-radius: 20px;
     box-sizing: content-box;
 }
 
@@ -297,7 +314,7 @@
     height: 50px;
     text-align: center;
     text-transform: uppercase;
-    border-bottom: 1px solid #777;
+    border-bottom: 1px solid var(--color-dark-variant);
 }
 
 #formProduccion, #formVentas, #formPedidos {
@@ -313,10 +330,10 @@
     width: 100%;
     height: 40px;
     background-color: transparent;
-    border: 1px solid #777;
+    border: 1px solid var(--color-dark-variant);
     border-radius: 5px;
     padding: 0 10px;
-    box-shadow: 1px 2px 3px 1px rgba(0, 0, 0, 0.2);
+    box-shadow: 0px 3px 15px var(--color-light);
     outline: none;
 
     & option {
@@ -331,8 +348,8 @@
     text-transform: uppercase;
     letter-spacing: 2.5px;
     font-weight: 500;
-    color: #000;
-    background-color: #eee;
+    color: var(--color-white);
+    background-color: var(--color-primary);
     border: none;
     border-radius: 45px;
     box-shadow: 0px 8px 15px rgba(0, 0, 0, 0.2);
@@ -341,9 +358,9 @@
     outline: none;
 
     &:hover {
-        background-color: #6489ff;
-        box-shadow: 0px 15px 20px rgba(46, 101, 229, 0.4);
-        color: #fff;
+        background-color: var(--color-primary-variant);
+        box-shadow: 0px 5px 15px var(--color-info-dark);
+        color: var(--color-white);
         transform: translateY(-7px);
     }
     
@@ -352,10 +369,10 @@
     }
 }
 
-/* ==================================================================== */
+/*********************************************************************/
 
-#productosPedido {
-    max-height: 275px;
+#productosPedido, #productosProd {
+    max-height: 170px;
     overflow-y: auto;
     border-radius: 8px;
     display: block;
@@ -363,6 +380,7 @@
 
 .producto-fila {
     padding: 10px 0;
+    overflow-y: auto;
 }
 
 .producto-item {
@@ -386,17 +404,18 @@
     background-color: var(--pastel-verde);
     color: #fff;
     cursor: pointer;
-    box-shadow: 2px 4px 8px rgba(0, 0, 0, 0.2);
+    box-shadow: 2px 4px 8px var(--color-light);
     font-family: 'Lexend';
     text-transform: uppercase;
     font-size: 14px;
-    transition: all 0.3s ease 0s;
+    transition: all 0.3s ease-in-out;
 
     &:hover {
         transform: translateY(-2px);
-        background-color: rgb(91, 255, 91);
-        width: 70%;
+        background-color: var(--color-success);
+        width: 75%;
         border-radius: 50px;
+        transition: all 0.3s ease-in-out;
     }
 }
 
@@ -436,13 +455,12 @@ input.producto-item {
     border: 1px solid #484848;
 }
 
-
-/* ======================================================*/
+/*********************************************************************/
 
 .flecha {
     width: 100%;
     height: 40px;
-    margin-bottom: 40px;
+    margin-bottom: 50px;
 }
 
 #btn-abajo {
@@ -475,8 +493,8 @@ input.producto-item {
     }
 }
 
-/* ======================================================*/
-
+/*********************************************************************/
+/*! SECCION DE TABLAS */
 
 .main-section2 {
     display: flex;
@@ -484,7 +502,11 @@ input.producto-item {
     width: 100%;
     height: auto;
     max-height: 700px;
-    margin: 0 auto;
+    margin: 20px 0px;
+    overflow-y: auto;
+    border-radius: 20px;
+    padding: 0px 20px;
+    box-shadow: 0 4px 15px var(--color-light);
 }
 
 .filtro-container {
@@ -493,8 +515,11 @@ input.producto-item {
     justify-content: left;
     align-items: center;
     width: 100%;
-    padding: 10px 0 0 5px;
+    box-shadow: 0 4px 10px var(--color-light);
+    padding: 5px 10px;
+    border-radius: 10px;
     font-family: 'Lexend';
+    background-color: var(--color-fondo);
 }
 
 .label {
@@ -503,6 +528,7 @@ input.producto-item {
     border-bottom: 3px solid var(--color-principal);
     padding: 5px 5px 0 0;
     font-weight: 600;
+    white-space: nowrap;
 }
 
 .label-produccion {
@@ -520,8 +546,8 @@ input.producto-item {
 .filtro, .filtrarBtn {
     height: 30px;
     margin: 5px 20px;
-    padding: 5px 5px;
-    border-radius: 5px;
+    padding: 5px;
+    border-radius: 10px;
     letter-spacing: 1.25px;
     border: none;
     box-shadow: 5px 4px 8px rgba(0, 0, 0, 0.2);
@@ -548,8 +574,8 @@ input.producto-item {
 }
 
 .filtro option {
-    background-color: #eee;
-    color: #000;
+    background-color: var(--color-neutro);
+    color: var(--color-dark);
 }
 
 .filtrarBtn {
@@ -571,17 +597,20 @@ input.producto-item {
 /*********************************************************************/
 
 .table-container {
-    width: 98%;
+    width: 100%;
     height: auto;
     max-height: 700px;
     justify-items: center;
-    margin: 10px 2px 50px 2px;
+    margin: 30px 0px;
     overflow-y: auto;
-    border-radius: 8px;
-    box-shadow: 3px 3px 10px 3px rgba(0, 0, 0, 0.3); 
+    border-radius: 10px 10px 0 0;
+    /* box-shadow: 0px 3px 15px var(--color-light);  */
 
     &::-webkit-scrollbar {
-        display: none;
+        /* display: none; */
+        background-color: var(--color-info-light);
+        width: 10px;
+        border-radius: 0 10px 10px 0;
     }
 }
 
@@ -618,7 +647,7 @@ th {
 td {
     text-align: left;
     padding: 10px 15px;
-    border-bottom: 1px solid rgba(220, 220, 255, 1); 
+    border-bottom: 1px solid var(--color-light); 
 }
 
 .head-produccion {
@@ -643,17 +672,17 @@ td {
     transition: 0.3s;
 }
 
+.fila-pedidos:hover {
+    background-color: #bae4bcf1;;
+    transition: 0.3s;
+}
+
 .fila-color1 {
     background-color: #f4f4f4;
 }
 
 .fila-color2 {
     background-color: #ffffff;
-}
-
-.fila-pedidos:hover {
-    background-color: #bae4bcf1;;
-    transition: 0.3s;
 }
 
 .btn-eliminar {
@@ -669,7 +698,7 @@ td {
     cursor: pointer;
     position: relative;
     transition-duration: .3s;
-    box-shadow: 2px 4px 8px rgba(0, 0, 0, 0.2);
+    box-shadow: 2px 4px 8px var(--color-light);
 
     & i {
         
@@ -680,7 +709,7 @@ td {
         width: 90%;
         transform: scale(1.1, 1.1);
         transition-duration: .3s;
-        background-color: rgb(255, 0, 0);
+        background-color: var(--color-danger);
     }
 }
 
@@ -731,5 +760,6 @@ td {
     font-size: 17px;
 }
 
-/* ======================================================*/
+/*********************************************************************/
+
 

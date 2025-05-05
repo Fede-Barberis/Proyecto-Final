@@ -41,14 +41,14 @@ export const getProductos = async () => {
 
 //? **********   **********   **********   **********   **********   **********   **********   **********   **********   **********   **********    ?//
 
-export const addProduction = async (fecha, idProducto, receta, cantidad, lote, vencimiento) => {
-    try{
+export const addProduction = async (datos, productos) => {
+    try {
         // 1. Obtener los ingredientes de la receta
-        const [ingredientes] = await pool.query("SELECT id_materiaPrima, cantidad_necesaria FROM receta_materiaPrima WHERE id_receta = ?", [receta]);
-        
-        console.log(ingredientes);
+        const [ingredientes] = await pool.query(
+            "SELECT id_materiaPrima, cantidad_necesaria FROM receta_materiaPrima WHERE id_receta = ?",
+            [datos.receta]
+        );
 
-        // 2. Verificar si hay stock suficiente para cada ingrediente
         for (const ing of ingredientes) {
             const cantidadNecesaria = parseFloat(ing.cantidad_necesaria);
 
@@ -56,42 +56,69 @@ export const addProduction = async (fecha, idProducto, receta, cantidad, lote, v
                 "SELECT stock FROM materia_prima WHERE id_materiaPrima = ?", [ing.id_materiaPrima]
             );
 
-            if (!stockResult.length) {
-                throw new Error(`No se encontró stock para la materia prima ID ${ing.id_materiaPrima}`);
-            }
-
+            if (!stockResult.length) throw new Error(`No se encontró stock para la materia prima ID ${ing.id_materiaPrima}`);
+        
             const stockActual = parseFloat(stockResult[0].stock)
 
-            if (stockActual < cantidadNecesaria) {
-                throw new Error(`Stock insuficiente de materia prima`);
+            if (stockActual < cantidadNecesaria) throw new Error(`Stock insuficiente de materia prima`);
+        }
+
+        // 3. Verificar si hay alfajores para descontar dulce de leche
+        const alfajores = productos.find(p => parseInt(p.idProducto) === 1);
+        if (alfajores) {
+            const gramosPorDocena = 260;
+            const cantidadDulceDeLeche = (alfajores.cantidad * gramosPorDocena) / 1000;
+
+            const [dulceDeLecheRes] = await pool.query(
+                "SELECT stock FROM materia_prima WHERE nombre = 'DULCE DE LECHE'"
+            );
+
+            const stockDulce = parseFloat(dulceDeLecheRes[0]?.stock || 0);
+
+            if (stockDulce < cantidadDulceDeLeche) {
+                throw new Error(`Stock insuficiente de dulce de leche. Necesita ${cantidadDulceDeLeche}, hay ${stockDulce}`);
             }
+
+            // Descontar dulce de leche
+            await pool.query(
+                "UPDATE materia_prima SET stock = stock - ? WHERE nombre = 'DULCE DE LECHE'",
+                [cantidadDulceDeLeche]
+            );
         }
-    
-        const gramosPorDocena = 260
-        const cantidadDulceDeLeche = cantidad * gramosPorDocena / 1000 // Convertir a kg
-        
-        const [dulceDeLeche] = await pool.query("SELECT * FROM materia_prima WHERE nombre = ?", ['DULCE DE LECHE']);
-        const dulce = parseFloat(dulceDeLeche[0].stock);
-        
-        if(!dulce || dulce < cantidadDulceDeLeche) {
-            throw new Error(`Stock insuficiente de dulce de leche. Necesita ${cantidadDulceDeLeche}, hay ${dulce.stock}`);
+
+        // 4. Insertar en tabla produccion (una sola vez)
+        const [produccionRes] = await pool.query(
+            "INSERT INTO produccion (fecha, receta, lote) VALUES (?, ?, ?)",
+            [datos.fecha, datos.receta, datos.lote]
+        );
+
+        const idProduccion = produccionRes.insertId;
+
+        // 5. Insertar detalle de produccion (todos los productos)
+        for (const prod of productos) {
+            await pool.query(
+                "INSERT INTO detalle_produccion (id_produccion, id_producto, cantidad, fch_vencimiento) VALUES (?, ?, ?, ?)",
+                [idProduccion, prod.idProducto, prod.cantidad, prod.vencimiento]
+            );
+
+            await pool.query(
+                "UPDATE productos SET stock = stock + ? WHERE id_producto = ?",
+                [prod.cantidad, prod.idProducto]
+            );
         }
-        
-        if(idProducto === 1){
-        await pool.query("UPDATE materia_prima SET stock = stock - ? WHERE nombre = 'DULCE DE LECHE' ", [cantidadDulceDeLeche]);
+
+        // 6. Descontar ingredientes (una sola vez)
+        for (const ing of ingredientes) {
+            await pool.query(
+                "UPDATE materia_prima SET stock = stock - ? WHERE id_materiaPrima = ?",
+                [ing.cantidad_necesaria, ing.id_materiaPrima]
+            );
         }
-        
-        const [result] = await pool.query("INSERT INTO produccion (fecha, id_producto, receta, cantidad, lote, fch_vencimiento) VALUES (?, ?, ?, ?, ?, ?)", [fecha, idProducto, receta, cantidad, lote, vencimiento])
-        
-        for(const ing of ingredientes){
-            await pool.query("UPDATE materia_prima SET stock = stock - ? WHERE id_materiaPrima = ?", [ing.cantidad_necesaria, ing.id_materiaPrima]);
-        }
-        
-        console.log("Produccion cargada");
-    }
-    catch(error){
-        console.log("Error al cargar la producción:", error);
-        throw error; // Lanza el error para que pueda ser manejado por el llamador
+
+        console.log("Producción cargada correctamente");
+    } catch (error) {
+        console.error("Error al cargar la producción:", error);
+        throw error;
     }
 }
 
@@ -100,17 +127,19 @@ export const addProduction = async (fecha, idProducto, receta, cantidad, lote, v
 export const getProduccion = async (filtroFecha, filtroProducto) => {
     try {
         let query = `
-                SELECT 
-                    pr.id_produccion, 
-                    pr.fecha, 
-                    p.nombre AS producto, 
-                    r.cantidad AS receta, 
-                    pr.cantidad, 
-                    pr.lote, 
-                    pr.fch_vencimiento 
-                FROM produccion pr 
-                JOIN productos p ON pr.id_producto = p.id_producto
-                JOIN receta r ON pr.receta = r.id_receta `
+            SELECT 
+                pr.id_produccion,
+                pr.fecha,
+                p.nombre AS producto,
+                r.cantidad AS receta,
+                dp.cantidad,
+                pr.lote,
+                dp.fch_vencimiento
+            FROM produccion pr
+            JOIN detalle_produccion dp ON pr.id_produccion = dp.id_produccion
+            JOIN productos p ON dp.id_producto = p.id_producto
+            JOIN receta r ON pr.receta = r.id_receta
+        `
 
         let conditions = [];
         let params = [];
@@ -144,37 +173,73 @@ export const getProduccion = async (filtroFecha, filtroProducto) => {
 
 export const eliminarProduccionYActualizarStock = async (id) => {
     try{
-        const [producciones] = await pool.query("SELECT id_produccion, id_producto, cantidad, receta FROM produccion WHERE id_produccion = ?", [id]);
+        const [detalleProduccion] = await pool.query(`
+            SELECT
+                pr.id_produccion,
+                dp.id_producto, 
+                dp.cantidad, 
+                pr.receta 
+            FROM detalle_produccion dp 
+            JOIN produccion pr ON pr.id_produccion = dp.id_produccion
+            WHERE pr.id_produccion = ?`
+        , [id]);
         
-        if(!producciones.length) {
-            throw new Error("Producción no encontrada");
-        }
+        if(!detalleProduccion.length) throw new Error("Producción no encontrada");
 
-        const produccion = producciones[0];
-        const { cantidad, receta } = produccion;
+        const receta = detalleProduccion[0].receta;
+        // const { cantidad, receta } = produccion;
 
         // 2. Buscar ingredientes de la receta
-        const [ingredientes] = await pool.query("SELECT id_materiaPrima, cantidad_necesaria FROM receta_materiaPrima WHERE id_receta = ?", [receta] );
+        const [ingredientes] = await pool.query(`
+            SELECT 
+                id_materiaPrima, 
+                cantidad_necesaria 
+            FROM receta_materiaPrima 
+            WHERE id_receta = ?
+        `, [receta] );
 
         // 3. Devolver ingredientes al stock (receta fija)
         for (const ing of ingredientes) {
-            await pool.query( "UPDATE materia_prima SET stock = stock + ? WHERE id_materiaPrima = ?", [ing.cantidad_necesaria, ing.id_materiaPrima]);
+            await pool.query(`
+                UPDATE materia_prima 
+                SET stock = stock + ? 
+                WHERE id_materiaPrima = ?
+            `, [ing.cantidad_necesaria, ing.id_materiaPrima]);
         }
         
+        // 4. Devolver dulce de leche si hay alfajores
         const gramosPorDocena = 260
-        const cantidadDulceDeLeche = (cantidad * gramosPorDocena) / 1000 // Convertir a kg
-        
-        if(produccion.id_producto === 1){
-            await pool.query("UPDATE materia_prima SET stock = stock + ? WHERE nombre = 'DULCE DE LECHE' ", [cantidadDulceDeLeche]);
+        for (const prod of detalleProduccion) {
+            if (prod.id_producto === 1) { // Alfajores
+                const cantidadDulceDeLeche = (prod.cantidad * gramosPorDocena) / 1000;
+                await pool.query(`
+                    UPDATE materia_prima 
+                    SET stock = stock + ? 
+                    WHERE nombre = 'DULCE DE LECHE'
+                `, [cantidadDulceDeLeche]);
+            }
+    
+            // 5. Restar la cantidad al stock total del producto
+            await pool.query(`
+                UPDATE productos 
+                SET stock = stock - ? 
+                WHERE id_producto = ?
+            `, [prod.cantidad, prod.id_producto]);
         }
 
-        // 5. Restar la cantidad al stock total del producto
-        await pool.query("UPDATE productos SET stock = stock - ? WHERE id_producto = ?", [producciones[0].cantidad, producciones[0].id_producto])
+        // 6. Eliminar el detalle de la produccion
+        await pool.query(`
+            DELETE FROM detalle_produccion 
+            WHERE id_produccion = ?
+        `, [id]);
 
-        // 6. Eliminar la produccion
-        await pool.query("DELETE FROM produccion WHERE id_produccion = ?", [id]);
+        // 7. eliminar producción
+        await pool.query(`
+            DELETE FROM produccion 
+            WHERE id_produccion = ?
+        `, [id]);
+
         console.log({ "mensaje": "Produccion eliminada correctamente y stock actualizado", "id": id});
-
         return true;
     }
     catch(error){
@@ -191,6 +256,12 @@ export const addSale = async (fecha, idProducto, cantidad, precio, persona) => {
     try{
         const [result] = await pool.query("INSERT INTO ventas (fecha, id_producto, cantidad, precio, persona) VALUES (?, ?, ?, ?, ?)", [fecha, idProducto, cantidad, precio, persona])
         console.log("Venta realizada");
+
+        await pool.query(`
+            UPDATE productos 
+            SET stock = stock - ? 
+            WHERE id_producto = ?
+        `, [cantidad, idProducto])
     }
     catch(error){
         console.log(error);
@@ -211,7 +282,7 @@ export const getVentas = async (filtroFecha, filtroProducto) => {
         let params = [];
 
         if (filtroFecha === "hoy") {
-            conditions.push("DATE(v.fecha_entrega) = CURDATE()");
+            conditions.push("DATE(v.fecha) = CURDATE()");
         } else if (!isNaN(filtroFecha) && filtroFecha >= 1 && filtroFecha <= 12) {
             conditions.push("MONTH(v.fecha) = ?");
             params.push(filtroFecha);
@@ -240,7 +311,14 @@ export const getVentas = async (filtroFecha, filtroProducto) => {
 
 export const eliminarVentaYActualizarStock = async (id) => {
     try{
-        const [rows] = await pool.query("SELECT id_venta, id_producto, cantidad FROM ventas WHERE id_venta = ?", [id]);
+        const [rows] = await pool.query(`
+            SELECT 
+                id_venta, 
+                id_producto, 
+                cantidad 
+            FROM ventas 
+            WHERE id_venta = ?
+        `, [id]);
         
         if(rows.length === 0) {
             console.log("No se encontró la venta con el ID proporcionado.");
@@ -248,7 +326,11 @@ export const eliminarVentaYActualizarStock = async (id) => {
         }
 
         // 2. Sumar la cantidad al stock total del producto
-        await pool.query("UPDATE productos SET stock = stock + ? WHERE id_producto = ?", [rows[0].cantidad, rows[0].id_producto])
+        await pool.query(`
+            UPDATE productos 
+            SET stock = stock + ? 
+            WHERE id_producto = ?
+        `, [rows[0].cantidad, rows[0].id_producto])
 
         // 3. Eliminar la produccion
         await pool.query("DELETE FROM ventas WHERE id_venta = ?", [id]);
@@ -268,8 +350,14 @@ export const eliminarVentaYActualizarStock = async (id) => {
 
 export const addMateriaPrima = async (fecha, idProducto, cantidad, unidad, lote, vencimiento, precio, isPagado) => {
     try{
-        const [result] = await pool.query("INSERT INTO comprar_mp (fecha, id_materiaPrima, cantidad, unidad, lote, fch_vencimiento, precio, isPagado) VALUES (?, ?, ?, ?, ?, ?, ?, ?)", [fecha, idProducto, cantidad, unidad, lote, vencimiento, precio, isPagado])
+        await pool.query("INSERT INTO comprar_mp (fecha, id_materiaPrima, cantidad, unidad, lote, fch_vencimiento, precio, isPagado) VALUES (?, ?, ?, ?, ?, ?, ?, ?)", [fecha, idProducto, cantidad, unidad, lote, vencimiento, precio, isPagado])
         console.log("Compra materia prima cargada");
+
+        await pool.query(`
+            UPDATE materia_prima
+            SET stock = stock + ?
+            WHERE id_materiaPrima = ?;
+        `,[cantidad, idProducto])
     }
     catch(error){
         console.log(error);
@@ -292,7 +380,7 @@ export const getMp = async () => {
 export const getMateriaPrima = async (filtroFecha, filtroProducto) => {
     try {
         let query = `
-                SELECT cmp.id_compra, cmp.fecha, mp.nombre AS producto, cmp.cantidad, cmp.lote, cmp.precio, cmp.isPagado 
+                SELECT cmp.id_compra, cmp.fecha, mp.nombre AS producto, cmp.cantidad, cmp.fch_vencimiento, cmp.precio, cmp.isPagado 
                 FROM comprar_mp cmp 
                 JOIN materia_prima mp 
                 ON cmp.id_materiaPrima = mp.id_materiaPrima `
@@ -447,12 +535,34 @@ export const getCantidadPedidos = async () => {
             WHERE dp.estado = 'pendiente'
             GROUP BY pr.nombre`
         );
-        
-        console.log("pedidos devueltos");
         return result
     }
     catch(error){
         console.log(error);
+    }
+}
+
+//? **********   **********   **********   **********   **********   **********   **********   **********   **********   **********   **********    ?//
+
+export const eliminarPedidos = async (id) => {
+    try{
+        const [rows] = await pool.query("SELECT id_pedido, cantidad FROM detalle_pedido WHERE id_pedido = ?", [id]);
+        
+        if(rows.length === 0) {
+            console.log("No se encontró el pedido con el ID proporcionado.");
+            return;
+        }
+        
+        // 2. Restar la cantidad al stock total
+        await pool.query("DELETE FROM detalle_pedido WHERE id_pedido = ?", [id]);
+        await pool.query("DELETE FROM pedidos WHERE id_pedido = ?", [id]);
+        console.log({ "mensaje": "Pedido eliminada correctamente y stock actualizado", "id": id});
+
+        return true;
+    }
+    catch(error){
+        console.log("Error al eliminar la compra y actualizar el stock:", error);
+        return false;
     }
 }
 
@@ -465,10 +575,28 @@ export const getTarjetas = async () => {
     try {
         const [result] = await pool.query(`
             SELECT 
-                (SELECT COUNT(*) FROM ventas WHERE DATE(fecha) = CURDATE()) AS ventasHoy,
-                (SELECT SUM(precio * cantidad) FROM ventas WHERE DATE(fecha) = CURDATE()) AS ingresosHoy,
+                (SELECT COUNT(*) FROM ventas WHERE MONTH(fecha) = MONTH(CURDATE()) AND YEAR(fecha) = YEAR(CURDATE())) AS ventasMes,
+                (SELECT SUM(precio * cantidad) FROM ventas WHERE MONTH(fecha) = MONTH(CURDATE()) AND YEAR(fecha) = YEAR(CURDATE())) AS ingresosMes,
                 (SELECT COUNT(*) FROM ventas) AS totalVentas,
                 (SELECT SUM(precio * cantidad) FROM ventas) AS ingresosTotales
+        `);
+        return result[0]
+    } catch (error) {
+        console.log(error);
+    }
+}
+
+export const getTarjetasPdf = async () => {
+    try {
+        const [result] = await pool.query(`
+            SELECT 
+                (SELECT COUNT(*) FROM ventas WHERE MONTH(fecha) = MONTH(CURDATE()) AND YEAR(fecha) = YEAR(CURDATE())) AS ventasMes,
+                (SELECT SUM(precio * cantidad) FROM ventas WHERE MONTH(fecha) = MONTH(CURDATE()) AND YEAR(fecha) = YEAR(CURDATE())) AS ingresosMes,
+                (SELECT COUNT(*) FROM ventas) AS totalVentas,
+                (SELECT SUM(precio * cantidad) FROM ventas) AS ingresosTotales,
+                (SELECT SUM(cantidad) FROM produccion WHERE id_producto = 1) AS stockAlfajores,
+                (SELECT SUM(cantidad) FROM produccion WHERE id_producto = 2) AS stockGalletasSS,
+                (SELECT SUM(cantidad) FROM produccion WHERE id_producto = 3) AS stockGalletasCS
         `);
         return result[0]
     } catch (error) {
@@ -503,24 +631,181 @@ export const actualizarEntrega = async (id, estado) => {
 }
 
 
-export const eliminarPedidos = async (id) => {
-    try{
-        const [rows] = await pool.query("SELECT id_pedido, cantidad FROM detalle_pedido WHERE id_pedido = ?", [id]);
-        
-        if(rows.length === 0) {
-            console.log("No se encontró el pedido con el ID proporcionado.");
-            return;
-        }
-        
-        // 2. Restar la cantidad al stock total
-        await pool.query("DELETE FROM detalle_pedido WHERE id_pedido = ?", [id]);
-        await pool.query("DELETE FROM pedidos WHERE id_pedido = ?", [id]);
-        console.log({ "mensaje": "Pedido eliminada correctamente y stock actualizado", "id": id});
+//! ==================================================================================================================================================
 
-        return true;
+//*                                          ------------ GRAFICOS --------------                                                                  *//
+
+export const getGraficos = async () => {
+    try{
+        const [ventas] = await pool.query(`
+            SELECT MONTH(fecha) AS mes, COUNT(*) AS cantidad_ventas
+            FROM ventas
+            GROUP BY MONTH(fecha)
+        `);
+        const [produccion] = await pool.query(`
+            SELECT MONTH(fecha) AS mes, COUNT(*) AS cantidad_produccion
+            FROM produccion
+            GROUP BY MONTH(fecha)
+        `);
+
+        return {ventas, produccion}
     }
     catch(error){
-        console.log("Error al eliminar la compra y actualizar el stock:", error);
-        return false;
+        console.log(error);
+        throw error; // Lanza el error para que pueda ser manejado por el llamador
     }
 }
+
+export const getGraficoTorta = async () => {
+    try{
+        const [productos] = await pool.query(`
+        SELECT 
+            p.nombre AS producto, 
+            SUM(dp.cantidad) AS cantidad
+        FROM detalle_produccion dp
+        JOIN produccion pr ON dp.id_produccion = pr.id_produccion
+        JOIN productos p ON dp.id_producto = p.id_producto
+        WHERE MONTH(pr.fecha) = MONTH(CURDATE()) AND YEAR(pr.fecha) = YEAR(CURDATE())
+        GROUP BY p.nombre;
+        `);
+        return productos;
+    }
+    catch(error){
+        console.log(error);
+        throw error; // Lanza el error para que pueda ser manejado por el llamador
+    }
+}
+
+//! ==================================================================================================================================================
+
+//*                                          ------------ RECORDATORIOS --------------                                                            *//
+
+export const getRecordatorios = async () => {
+    try{
+        const recordatorios = []; 
+        
+        const [productos] = await pool.query(`
+            SELECT nombre AS producto, stock
+            FROM productos
+        `);
+
+        const [mp] = await pool.query(`
+            SELECT nombre AS materiaPrima, stock
+            FROM materia_prima
+        `);
+
+        const [cmp] = await pool.query(`
+            SELECT cmp.id_compra AS id, cmp.isPagado, cmp.fch_vencimiento, mp.nombre
+            FROM comprar_mp cmp
+            JOIN materia_prima mp ON cmp.id_materiaPrima = mp.id_materiaPrima
+        `);
+
+        const [pedidos] = await pool.query(`
+            SELECT p.id_pedido, pr.nombre AS pedido, SUM(dp.cantidad) AS cantidad, p.fecha_entrega AS fechaEntrega
+            FROM pedidos p
+            JOIN detalle_pedido dp ON p.id_pedido = dp.id_pedido
+            JOIN productos pr ON pr.id_producto = dp.id_producto
+            GROUP BY p.id_pedido, pr.nombre, p.fecha_entrega
+        `);
+
+        const productosMap = new Map(productos.map(item => [item.producto, item.stock]));
+        const materiaPrimaMap = new Map(mp.map(item => [item.materiaPrima, item.stock]));
+        const comprarMateriaPrimaMap = new Map(cmp.map(item => [item.id, item.isPagado]));
+        const vencimientoMpMap = new Map(cmp.map(item => [item.id, item.fch_vencimiento,]));
+        const pedidosMap = new Map(pedidos.map(item => [item.pedido, item.cantidad]));
+        const entregaPedidosMap = new Map(pedidos.map(item => [item.id_pedido, item.fechaEntrega]));
+
+        const stockLimitesProductos = {
+            "ALFAJORES": { bajo: 20 },
+            "GALLETAS MARINAS S/S": { bajo: 10 },
+            "GALLETAS MARINAS C/S": { bajo: 10 }
+        };
+
+        const stockLimitesMp = {
+            "HARINA": { bajo: 22.750 },
+            "HUEVOS": { bajo: 1.180 },
+            "GRASA": { bajo: 4.550 },
+            "DULCE DE LECHE": { bajo: 10 },
+            "SAL": { bajo: 5 },
+            "AZUCAR": { bajo: 10 },
+        };
+
+        for (const [producto, stock] of productosMap) {
+            const limite = stockLimitesProductos[producto];
+            if (limite && stock < limite.bajo) {
+                recordatorios.push(`${producto} con poco stock (${stock} unidades).`);
+            } 
+        }
+
+        for (const [materiaPrima, stock] of materiaPrimaMap) {
+            const limite = stockLimitesMp[materiaPrima];
+            if (limite && stock < limite.bajo) {
+                recordatorios.push(`${materiaPrima} con poco stock (${stock} unidades).`);
+            } 
+        }
+
+        for (const [id, isPagado] of comprarMateriaPrimaMap) {
+            if (isPagado === 0) {
+                recordatorios.push(`La compra con el ID: ${id}, aun NO ha sido PAGADA.`);
+            } 
+        }
+
+        for (const [id, fch_vencimiento] of vencimientoMpMap) {
+            const fechaActual = new Date();
+            const diferenciaMs = new Date(fch_vencimiento) - fechaActual
+            const diferenciaDias = Math.ceil(diferenciaMs / (1000 * 60 * 60 * 24)); // Convertir a días
+
+            if(diferenciaDias >= 0 && diferenciaDias <= 5) {
+                recordatorios.push(`La compra con el ID: ${id}, VENCE en (${diferenciaDias} días).`);
+            }
+            else if (diferenciaDias < 0) {
+                recordatorios.push(`La compra con el ID: ${id}, ha VENCIDO.`);
+            }
+        }
+
+        for (const [pedido, cantidad] of pedidosMap) {
+            const stockActual = productosMap.get(pedido) || 0;
+            
+            if (stockActual !== undefined && cantidad > stockActual) {
+                recordatorios.push(`Stock de ${pedido} insuficiente para completar los pedidos (${cantidad}).`);
+            } 
+        }
+
+        for (const [id_pedido, fechaEntrega] of entregaPedidosMap) {
+            const fechaActual = new Date();
+            const diferenciaMs = new Date(fechaEntrega) - fechaActual
+            const diferenciaDias = Math.ceil(diferenciaMs / (1000 * 60 * 60 * 24)); // Convertir a días
+
+            if(diferenciaDias >= 0 && diferenciaDias <= 5) {
+                recordatorios.push(`El pedido con el ID: ${id_pedido}, se ENTREGA en (${diferenciaDias} días).`);
+            }
+            else if (diferenciaDias < 0) {
+                recordatorios.push(`El pedido con el ID: ${id_pedido}, NO fue ENTREGADO. Restraso de (${diferenciaDias} días)`);
+            } 
+        }
+
+        return recordatorios.length > 0 ? recordatorios : ["No hay recordatorios"];
+    }
+    catch(error){
+        console.log("Error al obtener los recordatorios:", error);
+        throw error; // Lanza el error para que pueda ser manejado por el llamador
+    }
+}
+
+export const getDatosMesPasado = async () => {
+    try {
+        const [result] = await pool.query(`
+            SELECT 
+                (SELECT COUNT(*) FROM ventas 
+                WHERE MONTH(fecha) = IF(MONTH(CURDATE()) = 1, 12, MONTH(CURDATE()) - 1) 
+                AND YEAR(fecha) = IF(MONTH(CURDATE()) = 1, YEAR(CURDATE()) - 1, YEAR(CURDATE()))) AS ventasMesPasado,
+                (SELECT SUM(precio * cantidad) FROM ventas 
+                WHERE MONTH(fecha) = IF(MONTH(CURDATE()) = 1, 12, MONTH(CURDATE()) - 1) 
+                AND YEAR(fecha) = IF(MONTH(CURDATE()) = 1, YEAR(CURDATE()) - 1, YEAR(CURDATE()))) AS ingresosMesPasado
+        `);
+        return result[0];
+    } catch (error) {
+        console.error("Error al obtener los datos del mes pasado:", error);
+        throw error;
+    }
+};

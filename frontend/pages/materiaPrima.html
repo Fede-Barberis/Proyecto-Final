@@ -19,18 +19,19 @@
 
     <aside class="sidebar">
         <nav class="sidebar-menu">
-            <a href="/frontend/pages/admin.html" class="sidebar-text"><i class="bi bi-house"></i>Inicio</a>
+            <a href="/frontend/pages/admin.html" class="sidebar-text"><i class="icono-barra bi bi-house"></i>Inicio</a>
             <h4>Tienda</h4>
-            <a href="/frontend/pages/productos.html" class="sidebar-text"><i class="bi bi-ui-checks-grid"></i></i>Productos</a>
-            <a href="#" class="sidebar-text active"><i class="bi bi-clipboard-data"></i>Materia Prima</a>
-            <a href="/frontend/pages/pedidos.html" class="sidebar-text"><i class="bi bi-bell"></i>Pedidos</a>
+            <a href="/frontend/pages/productos.html" class="sidebar-text"><i class="icono-barra bi bi-ui-checks-grid"></i>Productos</a>
+            <a href="#" class="sidebar-text active"><i class="icono-barra bi bi-clipboard-data"></i>Materia Prima</a>
             <h4>Analizis</h4>
-            <a href="#" class="sidebar-text"><i class="bi bi-graph-up"></i>Performance</a>
-            <a href="#" class="sidebar-text"><i class="bi bi-person"></i>Personal</a>
+            <a href="#" class="sidebar-text"><i class="icono-barra bi bi-graph-up"></i>Performance</a>
+            <a href="#" class="sidebar-text"><i class="icono-barra bi bi-person"></i>Personal</a>
         </nav>
         <div class="sidebar-footer">
-            <a href="#" class="sidebar-text"><i class="bi bi-gear"></i>Settings</a>
-            <button id="cerrarSesion"><a href="#" class="sidebar-text"><i class="bi bi-box-arrow-right"></i>Logout</a></button>
+            <a href="#" class="sidebar-text"><i class="icono-barra bi bi-gear"></i>Settings</a>
+            <button id="cerrarSesion" class="sidebar-text btn-logout">
+                <i class="icono-barra bi bi-box-arrow-right"></i>Logout
+            </button>
         </div>
     </aside>
 
@@ -39,7 +40,6 @@
             <h4 class="text-header">Materia Prima disponible</h4>
         </div>
         <section class="main-section">
-
             <div class="card">
                 <div class="card-img">
                     <img src="/frontend/img/harina.jpeg" class="img" alt="Bolsa de harina">
@@ -208,11 +208,10 @@
                             <th>Fecha</th>
                             <th>Producto</th>
                             <th>Cantidad</th>
-                            <th>Lote</th>
+                            <th>Venc.</th>
                             <th>Precio</th>
                             <th>Importe total</th>
-                            <th>Pagado</th>
-                            <th>Accion</th>
+                            <th>Estado</th>
                             <th>Eliminar</th>
                         </tr>
                     </thead>

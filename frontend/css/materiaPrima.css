@@ -1,18 +1,36 @@
 :root {
-    --color-principal: #6489ff;
-    --color-secundario: #ffb347;
+    --color-principal: #87a3ff;
+    --color-secundario: #ffc16b;
     --color-acento: #ffcc5c;
     --color-neutro: #f7f7f7;
     --color-contraste: #ff6f61;
     --color-fondo: #ffffff;
     --color-texto: #333333;
-}
 
+    --pastel-rosa: #F8BBD0;
+    --pastel-celeste: #c5edff;
+    --pastel-verde: #bae4bc;
+    --pastel-lavanda: #EDE7F6;
+    --pastel-blanco: #FFF0F5;
+
+    --color-primary: #7380ec;
+    --color-danger: #ff0015;
+    --color-success: #41f1b6;
+    --color-warning: #ffbb55;
+    --color-white: #fff;
+    --color-info-dark: #7d8da1;
+    --color-info-light: #dce1eb;
+    --color-dark: #363949;
+    --color-light: rgba(132, 139, 200, 0.30);
+    --color-primary-variant: #111e88;
+    --color-dark-variant: #677483;
+    --color-background: #f6f6f9;
+}
 
 .main {
     display: flex;
     flex-direction: column;
-    width: 98%;
+    width: 95%;
     height: 100%;
     margin: 0 auto;
 }
@@ -45,7 +63,7 @@
     display: grid;
     grid-template-columns: repeat(3, 1fr); 
     grid-template-rows: repeat(2, 1fr);
-    justify-items: left; 
+    justify-content: left; 
     align-items: center;
     width: 100%;
     height: 100%;
@@ -62,7 +80,8 @@
     height: 225px;
     background: #ffffff;
     border: none;
-    box-shadow: 5px 5px 15px 3px rgba(0, 0, 0, 0.3);
+    /* box-shadow: 5px 5px 15px 3px rgba(0, 0, 0, 0.3); */
+    box-shadow: 0px 5px 15px 5px var(--color-light);
     border-radius: 10px;
     overflow: hidden;
     font-family: 'Lexend';
@@ -70,8 +89,19 @@
     margin: 10px 0;
 }
 
+.card:nth-child(2),
+.card:nth-child(5) {
+    justify-self: center; 
+}
+
+.card:nth-child(3),
+.card:nth-child(6) {
+    justify-self: end; 
+}
+
 .card:hover {
     transform: scale(1.05, 1.05);
+    box-shadow: 0px 8px 20px 5px var(--color-light);
 }
 
 
@@ -192,10 +222,10 @@
 /*======================================================*/
 
 /* MODAL */
+
 .modal {
     position: fixed;
     display: none;
-    position: fixed;
     top: 0;
     left: 0;
     width: 100%;
@@ -205,17 +235,17 @@
     justify-content: center;
     align-items: center;
     z-index: 1000;
-}
 
-.modal.active {
-    visibility: visible;
-    opacity: 1;
+    &.active {
+        visibility: visible;
+        opacity: 1;
+    }
 }
 
 .modal-content {
     width: 350px;
     height: auto;
-    background: white;
+    background-color: var(--color-white);
     padding: 20px;
     text-align: center;
     position: relative;
@@ -243,7 +273,7 @@
     height: 50px;
     text-align: center;
     text-transform: uppercase;
-    border-bottom: 1px solid #777;
+    border-bottom: 1px solid var(--color-dark-variant);
 }
 
 #formMateriaPrima {
@@ -258,14 +288,14 @@
 .form-input {
     width: 100%;
     height: 40px;
-    border: 1px solid #777;
+    border: 1px solid var(--color-dark-variant);
     border-radius: 5px;
     padding: 0 10px;
-    box-shadow: 1px 2px 3px 1px rgba(0, 0, 0, 0.2);
-}
+    box-shadow: 0px 3px 15px var(--color-light);
 
-.form-input option {
-    background-color: #eee;
+    & option {
+        background-color: var(--color-neutro);
+    }
 }
 
 .input-group {
@@ -286,10 +316,11 @@
     align-items: center;
     width: 100%;
     height: 40px;
-    border: 1px solid #777;
+    border: 1px solid var(--color-dark-variant);
     border-radius: 5px;
     padding: 0 10px;
-    box-shadow: 1px 2px 3px 1px rgba(0, 0, 0, 0.2);
+    box-shadow: 0px 3px 15px var(--color-light);
+
 }
 
 #isPagado{
@@ -315,29 +346,29 @@
     text-transform: uppercase;
     letter-spacing: 2.5px;
     font-weight: 500;
-    color: #000;
-    background-color: #eee;
+    color: var(--color-white);
+    background-color: var(--color-primary);
     border: none;
     border-radius: 45px;
     box-shadow: 0px 8px 15px rgba(0, 0, 0, 0.2);
     transition: all 0.3s ease 0s;
     cursor: pointer;
     outline: none;
-}
 
-.form-btn:hover {
-    background-color: #6489ff;
-    box-shadow: 0px 15px 20px rgba(46, 101, 229, 0.4);
-    color: #fff;
-    transform: translateY(-7px);
-}
+    &:hover {
+        background-color: var(--color-primary-variant);
+        box-shadow: 0px 5px 15px var(--color-info-dark);
+        color: var(--color-white);
+        transform: translateY(-7px);
+    }
 
-.form-btn:active {
-    transform: translateY(-1px);
+    &:active {
+        transform: translateY(-1px);
+    }
 }
 
 .msj-error {
-    color: rgb(214, 26, 26);
+    color: var(--color-danger);
     font-family: "Lexend";
 }
 
@@ -352,8 +383,13 @@
     display: flex;
     flex-direction: column;
     width: 100%;
-    height: 500px;
+    height: auto;
+    max-height: 705px;
     margin: 0 auto;
+    margin-bottom: 50px;
+    border-radius: 20px;
+    padding: 0px 20px;
+    box-shadow: 0 4px 15px var(--color-light);
 }
 
 .filtro-container {
@@ -362,7 +398,9 @@
     justify-content: left;
     align-items: center;
     width: 100%;
-    padding: 10px 0 0 5px;
+    box-shadow: 0 4px 10px var(--color-light);
+    padding: 5px 10px;
+    border-radius: 10px;
     font-family: 'Lexend';
 }
 
@@ -377,14 +415,11 @@
 
 
 .filtro, .filtrarBtn {
-    width: auto;
     height: 30px;
     margin: 5px 20px;
-    padding: 5px 5px;
-    border-radius: 5px;
+    padding: 5px;
+    border-radius: 10px;
     letter-spacing: 1.25px;
-    color: #fff;
-    background-color: var(--color-principal);
     border: none;
     box-shadow: 5px 4px 8px rgba(0, 0, 0, 0.2);
     transition: all 0.3s ease 0s;
@@ -392,44 +427,48 @@
     outline: none;
     text-transform: uppercase;
     font-weight: bold;
+    background-color: var(--color-principal);
 }
 
 .filtro option {
-    background-color: #eee;
-    color: #000;
+    background-color: var(--color-neutro);
+    color: var(--color-dark);
 }
 
 .filtrarBtn {
     margin-left: auto;
     padding: 5px 15px;
-}
 
-.filtrarBtn:hover {
-    background-color: var(--color-texto);
-    box-shadow: 5px 4px 8px rgba(0, 0, 0, 0.4);
-    color: var(--color-neutro);
-    transform: translateY(-1px);
-}
+    &:hover {
+        background-color: var(--color-texto);
+        box-shadow: 5px 4px 8px rgba(0, 0, 0, 0.4);
+        color: var(--color-neutro);
+        transform: translateY(-1px);
+    }
 
-.filtrarBtn:active {
-    transform: translateY(-1px);
+    &:active {
+        transform: translateY(-1px);
+    }
 }
 
 /*********************************************************************/
 
 .table-container {
-    width: 98%;
+    width: 100%;
     height: auto;
     max-height: 700px;
     justify-items: center;
-    margin: 10px 2px 50px 2px;
+    margin: 30px 0px;
     overflow-y: auto;
-    border-radius: 8px;
-    box-shadow: 3px 3px 10px 3px rgba(0, 0, 0, 0.3); 
-}
+    border-radius: 10px 10px 0 0;
+    /* box-shadow: 0px 3px 15px var(--color-light);  */
 
-.table-container::-webkit-scrollbar {
-    display: none;
+    &::-webkit-scrollbar {
+        /* display: none; */
+        background-color: var(--color-info-light);
+        width: 10px;
+        border-radius: 0 10px 10px 0;
+    }
 }
 
 .table {
@@ -439,13 +478,22 @@
     border-collapse: collapse; /* Une los bordes de las celdas */
     border-spacing: 0; /* Evita separación entre celdas */
     font-family: 'Lexend';
+
+    & tbody:hover tr {
+        filter: blur(0.8px); /* Aplica blur a todas las filas */
+        transition: filter 0.3s ease;
+    }
+    
+    & tbody tr:hover {
+        filter: none; /* Quita blur solo a la fila sobre la que se pasa el mouse */
+    }
 }
 
 .head-table {
     position: sticky; /* Hace que el encabezado sea "pegajoso" */
     top: 0; /* Fija el encabezado en la parte superior */
     z-index: 2;
-    background-color: #a5baff;
+    background-color: var(--color-principal);
 }
 
 th {
@@ -457,11 +505,11 @@ th {
 td {
     text-align: left;
     padding: 10px 15px;
-    border-bottom: 1px solid rgba(220, 220, 255, 1); 
+    border-bottom: 1px solid var(--color-light); 
 }
 
 .table tbody:hover tr {
-    filter: blur(1.5px); /* Aplica blur a todas las filas */
+    filter: blur(0.8px); /* Aplica blur a todas las filas */
     transition: filter 0.3s ease;
 }
 
@@ -474,8 +522,8 @@ td {
     transition: 0.3s;;
 }
 
-.btn-eliminar, .btn-pagado, .btn-despagar {
-    width: 60%;
+.btn-eliminar {
+    width: 100%;
     height: 30px;
     border: none;
     border-radius: 50px;
@@ -488,51 +536,69 @@ td {
     position: relative;
     transition-duration: .3s;
     box-shadow: 2px 4px 8px rgba(0, 0, 0, 0.2);
-    margin: auto;
-}
 
-.btn-eliminar:hover {
-    width: 90%;
-    transform: scale(1.1, 1.1);
-    transition-duration: .3s;
-    background-color: rgb(255, 0, 0);
+    & i {
+        
+        font-size: 17px;
+    }
+
+    &:hover {
+        transform: scale(1.1, 1.1);
+        transition-duration: .3s;
+        background-color: rgb(255, 0, 0);
+    }
 }
 
 .btn-pagado, .btn-despagar {
-    width: 80%;
+    width: 100%;
+    height: 30px;
+    border: none;
+    border-radius: 50px;
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    position: relative;
+    transition-duration: .3s;
+    box-shadow: 2px 4px 8px rgba(0, 0, 0, 0.2);
+    font-family: 'Lexend';
+}
+
+.btn-pagado, .btn-despagar {
+    /* width: 80%; */
     background-color: rgba(0, 227, 0, 0.6);
     color: #ffffff;
     font-family: 'Lexend';
 }
 
-.btn-pagado:hover, .btn-despagar:hover  {
-    width: 100%;
-    transform: scale(1.05, 1.05);
-    transition-duration: .3s;
-    background-color: rgba(0, 255, 0, 1);
+.btn-pagado {
+    background-color: rgba(0, 227, 0, 0.6);
+
+    &:hover {
+        /* width: 100%; */
+        transform: scale(1.1, 1.1);
+        transition-duration: .3s;
+        background-color: rgb(72, 255, 0);
+    }
+
+    & i {
+        font-size: 17px;
+    }
 }
 
 .btn-despagar {
     background-color: rgba(255, 157, 0, 0.583);
-}
 
-.btn-despagar:hover {
-    background-color: rgb(255, 157, 0);  
-}
-
-@media (max-width: 768px) {
-    
-    .main {
-        padding: 10px;
+    &:hover {
+        width: 100%;
+        transform: scale(1.1, 1.1);
+        transition-duration: .3s;
+        background-color: rgb(255, 157, 0);
     }
 
-    .table-container {
-        max-height: 300px;
-    }
-
-    .modal-content {
-        width: 90%;
+    & i {
+        font-size: 17px;
     }
 }
-
 

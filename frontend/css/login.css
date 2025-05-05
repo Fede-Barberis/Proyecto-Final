@@ -1,3 +1,28 @@
+:root {
+    --color-principal: #6489ff;
+    --color-secundario: #ffb347;
+    --color-acento: #ffcc5c;
+    --color-neutro: #f3f3ff;
+    --color-contraste: #ff1500;
+    --color-fondo: #ffffff;
+    --color-texto: #333333;
+
+    --color-primary: #7380ec;
+    --color-danger: #ff7782;
+    --color-success: #41f1b6;
+    --color-success-variant: #1dd17a;
+    --color-warning: #ffbb55;
+    --color-white: #fff;
+    --color-info-dark: #7d8da1c1;
+    --color-info-light: #dce1eb;
+    --color-dark: #363949;
+    --color-light: rgba(132, 139, 200, 0.18);
+    --color-primary-variant: #111e88;
+    --color-dark-variant: #677483;
+    --color-background: #f6f6f9;
+    --color-alert: #fff8dc;
+    --color-alert-variant: #ff5b5bbe;
+}
 
 * {
     margin: 0;
@@ -12,17 +37,16 @@ body {
     align-items: center;
     flex-direction: column;
     height: 100vh;
-    /* background: linear-gradient(to right, #e2e2e2, #c9d6ff);     */
-    background-image: url(/frontend/img/tengyart-e76uliBnmsg-unsplash.jpg);
+    background: linear-gradient(90deg, var(--color-primary) 0%, var(--color-primary-variant) 100%);  
+    /* background-image: url(/frontend/img/huevo.webp); */
     background-size: cover;
     background-position: center;
 }
 
 .container {
-    background-color: #fff;
+    background-color: var(--color-fondo);
     border-radius: 150px;
-    /* box-shadow: 0 5px 15px rgb(0, 0, 0, 0.35); */
-    box-shadow: 0 0 100px rgba(0, 68, 255, 0.632);
+    box-shadow: 0 5px 100px var(--color-dark);
     position: relative;
     overflow: hidden;
     width: 768px;
@@ -31,8 +55,8 @@ body {
 }
 
 .container button {
-    background-color: #6489ff;
-    color: #333;
+    background-color: var(--color-primary);
+    color: var(--color-white);
     padding: 10px 45px;
     border: 1px solid transparent;
     border-radius: 20px;
@@ -45,11 +69,11 @@ body {
 
 .container button.hidden {
     background-color: transparent;
-    border-color: #fff;
+    border-color: var(--color-white);
 }
 
 .container form {
-    background-color: #fff;
+    background-color: var(--color-white);
     display: flex;
     justify-content: center;
     align-items: center;
@@ -65,12 +89,13 @@ form h1 {
 
 .container input {
     width: 100%;
-    background: rgb(245, 240, 240);
+    background: var(--color-white);
     border: none;
     margin: 8px 0;
     padding: 10px 15px;
     border-radius: 20px;
-    box-shadow: #cff0ff 0px 10px 10px -5px;
+    /* box-shadow: #cff0ff 0px 10px 10px -5px; */
+    box-shadow: 0 1px 15px var(--color-info-light);
     border-inline: 2px solid transparent;
     outline: none;
 }
@@ -141,7 +166,6 @@ form h1 {
 
 .toogle {
     height: 100%;
-    background: linear-gradient(to right, #b2e7ff, #6489ff);
     color: #fff;
     position: relative;
     left: -100%;
@@ -171,7 +195,7 @@ form h1 {
 
 .toogle-left {
     transform: translateX(-200%);
-    background: linear-gradient(to right, #b2e7ff, #6489ff);
+    background: linear-gradient(90deg, var(--color-primary) 0%, var(--color-primary-variant) 100%);
 }
 
 .container.active .toogle-left {
@@ -181,7 +205,7 @@ form h1 {
 .toogle-right {
     right: 0;
     transform: translateX(0);
-    background: linear-gradient(to right, #b2e7ff, #6489ff);
+    background: linear-gradient(90deg, var(--color-primary-variant) 0%, var(--color-primary) 100%);
 }
 
 .container.active .toogle-right {

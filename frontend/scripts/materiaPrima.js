@@ -1,21 +1,21 @@
-//* Variables globales
+//*                                              ----- VARIABLES GLOBALES -----                                                                    *//
 
 const modal = document.getElementById("modal");
 const closeModalBtn = document.querySelector(".close");
 const openModalBtns = document.querySelectorAll(".open-modal");
 const form = document.getElementById("form-mp")
-const selectProducto = document.getElementById("producto"); // Select del formulario de producción
+const selectProducto = document.getElementById("producto");
 
-//* ============================ MODAL ============================
+//! ===================================================================================================================================================
 
-//! Evento para abrir el modal y mostrar el formulario correspondiente
+//*                                                  ----- MODAL -----                                                                             *//
+
+// Abrir modal
 openModalBtns.forEach(button => {
     button.addEventListener("click", function () {
         const formId = this.getAttribute("data-form"); // Obtener qué formulario mostrar
         form.style.display = "none"; // Ocultar todos los formularios
         document.getElementById(formId).style.display = "block"; // Mostrar el formulario seleccionado
-
-        const productoSeleccionado = this.getAttribute("data-producto"); // Obtiene el producto del botón
 
         const productos = {
             "HARINA": "1",
@@ -25,6 +25,8 @@ openModalBtns.forEach(button => {
             "SAL": "5",
             "AZUCAR": "6"
         };
+
+        const productoSeleccionado = this.getAttribute("data-producto"); // Obtiene el producto del botón
         const valorNumerico = productos[productoSeleccionado]
 
         // Actualizar el select según el formulario
@@ -36,48 +38,37 @@ openModalBtns.forEach(button => {
     });
 });
 
-//! Evento para cerrar el modal
-closeModalBtn.addEventListener("click", function () {
+// Cerrar modal
+closeModalBtn.addEventListener("click", cerrarModal);
+window.addEventListener("click", (e) => {
+    if (e.target === modal) cerrarModal();
+});
+
+function cerrarModal() {
     modal.style.display = "none";
-
-    const msjError = document.getElementById("msj-error");
-    msjError.classList.add("escondido");
-
-});
-
-//! Cerrar modal si se hace clic fuera del contenido
-window.addEventListener("click", function (e) {
-    if (e.target === modal) {
-        modal.style.display = "none";
-
-        const msjError = document.getElementById("msj-error");
-        msjError.classList.add("escondido");
-    }
-});
+    document.getElementById("msj-error").classList.add("escondido");
+}
 
 //! ===================================================================================================================================================
 
-//* ======================= FORMULARIO MP =========================
+//*                                 ----------- FORMULARIO DE COMPRA DE MATERIA PRIMA --------------                                               *//
 
-//! evento para guardar los datos del formulario de materia prima
 document.getElementById("formMateriaPrima").addEventListener("submit", async (e) => {
     e.preventDefault()
 
-    const fecha = document.getElementById("fecha").value.trim();
-    const producto = document.getElementById("producto").value.trim();
-    const cantidad = document.getElementById("cantidad").value.trim();
-    const unidad = document.getElementById("unidad").value.trim();
-    const lote = document.getElementById("lote").value.trim();
-    const vencimiento = document.getElementById("vencimiento").value.trim();
-    const precio = document.getElementById("precio").value.trim();
-    const isPagado = document.getElementById("pago").checked;
-
-    const idProducto = parseInt(producto, 10);
-    console.log("Datos enviados: ", fecha, idProducto, cantidad, unidad, lote, vencimiento, precio, isPagado);
+    
+        const fecha = document.getElementById("fecha").value.trim();
+        const idProducto = parseInt(document.getElementById("producto").value.trim(), 10);
+        const cantidad = document.getElementById("cantidad").value.trim();
+        const unidad = document.getElementById("unidad").value.trim();
+        const lote = document.getElementById("lote").value.trim();
+        const vencimiento = document.getElementById("vencimiento").value.trim();
+        const precio = document.getElementById("precio").value.trim();
+        const isPagado = document.getElementById("pago").checked;
+    
 
     const msjError = document.getElementById("msj-error")
     msjError.classList.add("escondido")
-
 
     try{
         const res = await fetch("http://localhost:4000/api/guardarMateriaPrima", {
@@ -85,20 +76,16 @@ document.getElementById("formMateriaPrima").addEventListener("submit", async (e)
             headers: {
                 "Content-Type": "application/json"
             },
-            body: JSON.stringify({ fecha, idProducto, cantidad, unidad, lote, vencimiento, precio, isPagado })
+            body: JSON.stringify(fecha, idProducto, cantidad, unidad, lote, vencimiento, precio, isPagado)
         })
 
         if(res.ok){
             document.getElementById("formMateriaPrima").reset();
+            await cargarMateriaPrima(
+                document.getElementById("filtro-1").value || "todas",
+                document.getElementById("filtro-2").value || "todos"
+            );
             await cargarStockMP();
-            msjError.classList.add("escondido")
-
-            //Actualizar la tabla de producción con los filtros actuales
-            const filtroFecha = document.getElementById("filtro-1").value || "todas";
-            const filtroProducto = document.getElementById("filtro-2").value || "todos";
-            await cargarMateriaPrima(filtroFecha, filtroProducto);
-
-            msjError.classList.add("escondido");
         }
         else{
             // Manejar errores del servidor
@@ -114,7 +101,7 @@ document.getElementById("formMateriaPrima").addEventListener("submit", async (e)
 
 //! ===================================================================================================================================================
 
-//* ========================= CARGAR STOCK =========================
+//*                                         ---------- CARGAR STOCK -----------                                                                    *//
 
 function getStockMessage(stock, limits) {
     if (stock === 0) return { text: "Sin stock", color: "red" };
@@ -125,68 +112,68 @@ function getStockMessage(stock, limits) {
 
 async function cargarStockMP() {
     try {
+        console.log("Ejecutando cargarStockMP");
         const res = await fetch("http://localhost:4000/api/obtenerMateriaPrima")
         const materiaPrima = await res.json()
-
-        const materiaPrimaMap = new Map();
-        materiaPrima.forEach(mp => { materiaPrimaMap.set(mp.nombre, mp.stock);});
-        console.log("Datos de stock de materia prima:", materiaPrimaMap);
+        const materiaPrimaMap = new Map(materiaPrima.map(mp => [mp.nombre, mp.stock]));
 
         // Recorrer todas las tarjetas de productos en el frontend
-        document.querySelectorAll(".stock").forEach(stockDiv => {
-            const productoNombre = stockDiv.getAttribute("data-producto");
-            const stockValue = stockDiv.querySelector(".stock-value");
-            const stockChange = stockDiv.querySelector(".stock-change");
-            const stockMessage = stockDiv.parentElement.querySelector(".msj-stock");
+        const stockDivs = document.querySelectorAll(".stock");
 
-            // Verificar si el producto existe en los datos de la API
+        stockDivs.forEach(div => {
+            const productoNombre = div.getAttribute("data-producto");
+            const value = div.querySelector(".stock-value");
+            const change = div.querySelector(".stock-change");
+            const message = div.parentElement.querySelector(".msj-stock");
+
+            // Obtener valor anterior de localStorage
+            const anterior = parseFloat(localStorage.getItem(`stock-anterior-${productoNombre}`)) || 0;
+            
             if (materiaPrimaMap.has(productoNombre)) {
-                const stockActual = materiaPrimaMap.get(productoNombre);
-                const stockAnterior = parseInt(stockValue.textContent, 10) || 0;
-
-                // Actualizar el stock
-                stockValue.textContent = stockActual;
-
+                const actual = materiaPrimaMap.get(productoNombre);
+                
+                // Guardar actual como nuevo "anterior" para la próxima ejecución
+                localStorage.setItem(`stock-anterior-${productoNombre}`, actual);
+                
+                console.log(`Producto: ${productoNombre} - Actual: ${actual} - Anterior: ${anterior}`);
+                value.textContent = actual;
+        
                 // Mostrar flecha según el cambio en el stock
-                if (stockActual > stockAnterior) {
-                    stockChange.textContent = "↑";
-                    stockChange.style.color = "green";
+                if (actual > anterior) {
+                    change.textContent = "↑";
+                    change.style.color = "green";
                 } 
-                else if (stockActual < stockAnterior) {
-                    stockChange.textContent = "↓";
-                    stockChange.style.color = "red";
-                } 
-                // else {
-                //     if (!stockChange.textContent) {
-                //         stockChange.textContent = ""; // Mantener el estado actual
-                //     }
-                // }
+                else if (actual < anterior) {
+                    change.textContent = "↓";
+                    change.style.color = "red";
+                }
 
-                stockChange.classList.add("show");
+                change.classList.add("show");
+                
 
                 // Cambiar el mensaje según la cantidad de stock
                 const stockLimits = {
-                    "HARINA": { bajo: 25, medio: 250 },
-                    "HUEVOS": { bajo: 5, medio: 10 },
-                    "GRASA": { bajo: 10, medio: 20 },
+                    "HARINA": { bajo: 22.750, medio: 100 },
+                    "HUEVOS": { bajo: 1.180, medio: 10 },
+                    "GRASA": { bajo: 4.550, medio: 20 },
                     "DULCE DE LECHE": { bajo: 10, medio: 20 },
                     "SAL": { bajo: 5, medio: 10 },
                     "AZUCAR": { bajo: 10, medio: 20 },
                 };
                 
                 if (stockLimits[productoNombre]) {
-                    const { text, color } = getStockMessage(stockActual, stockLimits[productoNombre]);
-                    stockMessage.textContent = text;
-                    stockMessage.style.color = color;
+                    const { text, color } = getStockMessage(actual, stockLimits[productoNombre]);
+                    message.textContent = text;
+                    message.style.color = color;
                 }
             } 
             else {
                 // Si el producto no existe en la API, establecer stock en 0
-                stockValue.textContent = "0";
-                stockChange.textContent = "";
-                stockChange.classList.remove("show");
-                stockMessage.textContent = "Sin stock";
-                stockMessage.style.color = "red";
+                value.textContent = "0";
+                change.textContent = "";
+                change.classList.remove("show");
+                message.textContent = "Sin stock";
+                message.style.color = "red";
             }
         });
     }
@@ -197,7 +184,7 @@ async function cargarStockMP() {
 
 //! ===================================================================================================================================================
 
-//* ==================== TABLA DE COMPRAS MP =====================
+//*                                    ---------- TABLA COMPRAS MATERIA PRIMA -------------                                                        *//
 
 async function cargarMateriaPrima(filtroFecha = "todas", filtroProducto = "todos") {
     try {
@@ -205,89 +192,69 @@ async function cargarMateriaPrima(filtroFecha = "todas", filtroProducto = "todos
         const materiaPrima = await res.json();
 
         const bodyTable = document.querySelector(".body-table");
+        if (!bodyTable) return;
+        
+        bodyTable.innerHTML = "";
 
-        if (bodyTable) {
-            bodyTable.innerHTML = "";
+        materiaPrima.forEach(mp => {
+            const fila = document.createElement(`tr`);
+            fila.className = "fila-compra";
+            fila.innerHTML = `
+                <td>${mp.id_compra}</td>
+                <td>${new Date(mp.fecha).toLocaleDateString()}</td>
+                <td>${mp.producto}</td>
+                <td>${mp.cantidad}</td>
+                <td>${new Date(mp.fch_vencimiento).toLocaleDateString()}</td>
+                <td>$${mp.precio}</td>
+                <td>$${(mp.precio * mp.cantidad)}</td>
+                <td>
+                    <button class="btn-estado ${mp.isPagado ? 'btn-pagado' : 'btn-despagar'}" data-id="${mp.id_compra}">
+                        ${mp.isPagado ? '<i class="bi bi-currency-dollar"></i>' : '<i class="bi bi-hourglass-split"></i>'}
+                    </button>
+                </td>
+                <td>
+                    <button class="btn-eliminar" data-id="${mp.id_compra}"><i class="bi bi-trash3"></i></button>
+                </td>
+            `;
+            bodyTable.appendChild(fila);
 
-            materiaPrima.forEach(mp => {
-                const fila = document.createElement(`tr`);
-                fila.className = "fila-compra";
-                fila.innerHTML = `
-                    <td>${mp.id_compra}</td>
-                    <td>${new Date(mp.fecha).toLocaleDateString()}</td>
-                    <td>${mp.producto}</td>
-                    <td>${mp.cantidad}</td>
-                    <td>${mp.lote}</td>
-                    <td>$${mp.precio}</td>
-                    <td>$${(mp.precio * mp.cantidad)}</td>
-                    <td>${mp.isPagado ? "Sí" : "No"}</td>
-                    <td>
-                        <button class="${mp.isPagado ? 'btn-despagar' : 'btn-pagado'}" data-id="${mp.id_compra}">
-                            ${mp.isPagado ? '↩' : '$'}
-                        </button>
-                    </td>
-                    <td>
-                        <button class="btn-eliminar" data-id="${mp.id_compra}">X</button>
-                    </td>
-                `;
-                bodyTable.appendChild(fila);
+            fila.querySelector(".btn-estado")?.addEventListener("click", async function () {
+                const id = this.getAttribute("data-id");
+                const nuevoEstado = mp.isPagado ? false : true;
 
-                const btn = fila.querySelector(mp.isPagado ? ".btn-despagar" : ".btn-pagado");
-                
-                btn.addEventListener("click", async function () {
-                    const id = this.getAttribute("data-id");
-                    const nuevoEstado = mp.isPagado ? false : true;
+                try {
+                    const res = await fetch(`http://localhost:4000/api/actualizarEstadoPago/${id}`, {
+                        method: "PUT",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({ isPagado: nuevoEstado })
+                    });
 
-                    try {
-                        const res = await fetch(`http://localhost:4000/api/actualizarEstadoPago/${id}`, {
-                            method: "PUT",
-                            headers: { "Content-Type": "application/json" },
-                            body: JSON.stringify({ isPagado: nuevoEstado })
-                        });
-
-                        if (!res.ok) throw new Error("Error al actualizar el estado de pago");
-
-                        const data = await res.json();
-                        console.log(data.message);
-
-                        // Actualizar visualmente la tabla al instante
-                        const celdaPago = this.parentElement.previousElementSibling;
-                        celdaPago.textContent = nuevoEstado ? "Sí" : "No";
-
-                        // Recargar tabla para que se vea bien el cambio y aparezcan los botones correctos
-                        const filtroFecha = document.getElementById("filtro-1").value;
-                        const filtroProducto = document.getElementById("filtro-2").value;
-                        await cargarMateriaPrima(filtroFecha, filtroProducto);
-
-                    } catch (error) {
-                        console.error(error);
-                    }
-                });
-
-                const btnEliminar = fila.querySelector(".btn-eliminar")
-                
-                btnEliminar.addEventListener("click", async function () {
-                    const id = this.getAttribute("data-id");
-
-                    try{
-                        const res = await fetch(`http://localhost:4000/api/eliminarCompra/${id}`, {
-                            method: "DELETE",
-                        })
-
-                        if(!res.ok) throw new Error("Error al eliminar la compra");
-
-                        const data = await res.json();
-                        console.log(data.mensaje);
-
-                        await cargarMateriaPrima(document.getElementById("filtro-1").value, document.getElementById("filtro-2").value);
-                        await cargarStockMP();
-                    }
-                    catch(error){
-                        console.log(error);
-                    }
-                })
+                    if (!res.ok) throw new Error("Error al actualizar estado de pago");
+                    await cargarMateriaPrima(filtroFecha, filtroProducto);
+                } catch (error) {
+                    console.error(error);
+                }
             });
-        }
+
+            fila.querySelector(".btn-eliminar")?.addEventListener("click", async function () {
+                const id = this.getAttribute("data-id");
+
+                try {
+                    const res = await fetch(`http://localhost:4000/api/eliminarCompra/${id}`, {
+                        method: "DELETE"
+                    });
+
+                    if (!res.ok) throw new Error("Error al eliminar compra");
+                    await cargarMateriaPrima(
+                        document.getElementById("filtro-1").value,
+                        document.getElementById("filtro-2").value
+                    );
+                    await cargarStockMP();
+                } catch (error) {
+                    console.error(error);
+                }
+            });
+        });
     } catch (error) {
         console.error("Error al cargar la materia prima:", error);
     }
@@ -295,7 +262,7 @@ async function cargarMateriaPrima(filtroFecha = "todas", filtroProducto = "todos
 
 //!=======================================================================================================================================
 
-//* ========================== INICIO ============================
+//*                                     --------------- INICIALIZACION ----------------                                                        *//
 
 document.addEventListener("DOMContentLoaded", () => {
     document.getElementById("filtrarBtn").addEventListener("click", async () => {

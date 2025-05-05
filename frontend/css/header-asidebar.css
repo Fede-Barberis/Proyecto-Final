@@ -1,5 +1,20 @@
 @import url('https://fonts.googleapis.com/css2?family=Lexend:wght@100..900&display=swap');
 
+:root {
+    --color-primary: #7380ec;
+    --color-danger: #ff7782;
+    --color-success: #41f1b6;
+    --color-warning: #ffbb55;
+    --color-white: #fff;
+    --color-info-dark: #7d8da1;
+    --color-info-light: #dce1eb;
+    --color-dark: #363949;
+    --color-light: rgba(132, 139, 200, 0.18);
+    --color-primary-variant: #111e88;
+    --color-dark-variant: #677483;
+    --color-background: #f6f6f9;
+}
+
 
 * {
     margin: 0;
@@ -13,6 +28,9 @@ body {
     grid-template-rows: 60px auto; /* Header fijo y el resto del contenido flexible */
     min-height: 100vh;
     font-family: 'Inter', Arial, sans-serif;
+    overflow-x: hidden;
+    background-color: var(--color-background);
+    color: var(--color-dark);
 }
 
 /*********************************************************************/
@@ -27,10 +45,9 @@ body {
     justify-content: space-between;
     align-items: center;
     padding: 10px 20px;
-    /* background: linear-gradient(135deg, #2c2c2c, #333333, #FFD700, #ffa600f1); */
-    background-color: #2c2c2c;
-    color: #fff;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    background-color: var(--color-dark);
+    color: var(--color-white);
+    box-shadow: 0 2px 4px var(--color-light);
 }
 
 /* Logo y título */
@@ -60,78 +77,69 @@ body {
 
 /* Menú de navegación */
 .sidebar {
-    width: 225px;
-    min-height: calc(100vh - 60px);
-    /* background-color: #2c2c2c; */
-    padding: 20px;
     display: flex;
     flex-direction: column; 
+    justify-content: flex-start;
+    width: 225px;
+    min-height: calc(100vh - 60px);
+    padding: 20px;
     grid-row: 2 / 3; /* Mantiene la posición debajo del header */
     position: relative;
-    overflow-y: auto;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 4px 8px var(--color-light);
 }
 
 .sidebar-menu {
     flex-grow: 1;
+    display: flex;
+    flex-direction: column;
 }
 
 .sidebar-menu h4 {
-    color: #ffc400;
+    color: var(--color-warning);
     margin: 25px 0 5px 8px;
-    font-size: 14px;
+    font-size: 15px;
     padding: 5px 0px;
     font-family: 'Lexend';
     text-transform: uppercase;
     font-weight: bold;
     letter-spacing: .6px;
+    margin-top: 30px;
 }
 
 .sidebar-text {
     display: flex;
     align-items: center;
     text-decoration: none;
-    color: #000;
+    color: var(--color-dark-variant);
     padding: 10px;
-    margin-bottom: 5px;
+    margin-bottom: 10px;
     border-radius: 20px;
     font-size: 15px;
     font-family: 'Lexend';
+    border: none;
     transition: background-color 0.3s ease;
-
-    & i {
-        padding-right: 15px;
-    }
 }
 
-.sidebar-text.active,
-.sidebar-text:hover {
-    background-color: rgba(0, 0, 0, 0.8);
-    color: #fff;
-    font-weight: bold;
-    text-transform: uppercase;
+.btn-logout{
+    background-color: transparent;
 }
 
-
+.icono-barra {
+    padding-right: 15px;
+    font-size: 20px;
+}
 
 .sidebar-footer {
     display: flex;
     flex-direction: column;  
     margin-top: auto; 
-    position: fixed;
-    bottom: 0;
 }
 
-#cerrarSesion {
-    border: none;
-    background-color: transparent;
-}
-
-
-@media (max-width: 768px) {
-    .sidebar {
-        width: 100%;
-        height: auto;
-        position: static;
-    }
+.sidebar-text.active,
+.sidebar-text:hover {
+    background: linear-gradient(90deg, var(--color-primary-variant) 0%, var(--color-primary) 100%);
+    /* background: linear-gradient(90deg, var(--color-dark) 0%, var(--color-dark-variant) 100%); */
+    color: var(--color-white);
+    font-weight: 600;
+    text-transform: uppercase;
 }

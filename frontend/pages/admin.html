@@ -8,12 +8,15 @@
     <link rel="stylesheet" href="/frontend/css/admin.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css">
     <script src="/frontend/scripts/admin.js" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.4.0/jspdf.umd.min.js" ></script>
 </head>
 <body>
     <header class="header">
         <div class="left-header">
             <img src="/frontend/img/500 MILLAS _Logo-6.jpg" alt="Logo" class="logo">
-            <span>500Milas</span>
+            <span>500Millas</span>
         </div>
     </header>
 
@@ -24,14 +27,15 @@
             <h4>Tienda</h4>
             <a href="/frontend/pages/productos.html" class="sidebar-text"><i class="icono-barra bi bi-ui-checks-grid"></i></i>Productos</a>
             <a href="/frontend/pages/materiaPrima.html" class="sidebar-text"><i class="icono-barra bi bi-clipboard-data"></i>Materia Prima</a>
-            <a href="#" class="sidebar-text"><i class="icono-barra bi bi-bell"></i>Pedidos</a>
             <h4>Analizis</h4>
             <a href="#" class="sidebar-text"><i class="icono-barra bi bi-graph-up"></i>Performance</a>
             <a href="#" class="sidebar-text"><i class="icono-barra bi bi-person"></i>Personal</a>
         </nav>
         <div class="sidebar-footer">
-            <a href="#" class="sidebar-text"><i class="bi bi-gear"></i>Settings</a>
-            <button id="cerrarSesion"><a href="#" class="sidebar-text"><i class="bi bi-box-arrow-right"></i>Logout</a></button>
+            <a href="#" class="sidebar-text"><i class="icono-barra bi bi-gear"></i>Settings</a>
+            <button id="cerrarSesion" class="sidebar-text btn-logout">
+                <i class="icono-barra bi bi-box-arrow-right"></i>Logout
+            </button>
         </div>
     </aside>
     
@@ -39,34 +43,88 @@
         <p class="main-text"><span>Hey Pablo</span>- esto es lo que esta sucediendo con tu negocio hoy </p>
         <div class="card-conteiner">
             <div class="card">
-                <h3>Ventas de hoy</h3>
-                <p id="ventasHoy"></p>
+                <div class="card-content">
+                    <div class="card-name">Ventas del Mes</div>
+                    <div class="number" id="ventasMes"></div>
+                </div>
+                <div class="icon-box">
+                    <i class="bi bi-cart"></i>
+                </div>
+                <div class="percentage-circle" id="ventasMesPorcentaje"></div>
             </div>
             <div class="card">
-                <h3>Ingresos de hoy</h3>
-                <p id="ingresosHoy"></p>
+                <div class="card-content">
+                    <div class="card-name">Ingresos del Mes</div>
+                    <div class="number" id="ingresosMes"></div>
+                </div>
+                <div class="percentage-circle" id="ingresosMesPorcentaje"></div>
             </div>
             <div class="card">
-                <h3>Ventas totales</h3>
-                <p id="ventasTotales"></p>
+                <div class="card-content">
+                    <div class="card-name">Ventas Totales</div>
+                    <div class="number" id="ventasTotales"></div>
+                </div>
+                <div class="icon-box">
+                    <i class="bi bi-clipboard-data"></i>
+                </div>
             </div>
             <div class="card">
-                <h3>Ingresos totales</h3>
-                <p id="ingresosTotales"></p>
+                <div class="card-content">
+                    <div class="card-name">Ingresos Totales</div>
+                    <div class="number" id="ingresosTotales"></div>
+                </div>
             </div>
         </div>
 
-        
-                <div class="card-main">
-                    <button class="main-btn"><a href="/frontend/pages/productos.html">Agregar Ventas</a></button>
-                    <button class="main-btn"><a href="/frontend/pages/productos.html">Agregar Produccion</a></button>
-                    <button class="main-btn"><a href="/frontend/pages/materiaPrima.html">Agregar Materia Prima</a></button>
-                </div>
-        <!-- <footer class="main-footer">
-            <div class="footer">
-                <h3>footer</h3>
+        <section class="section-charts">
+            <div class="chart">
+                <h2>Ventas y Producciones (últimos 12 meses)</h2>
+                <canvas id="graficaVentas"></canvas>
+            </div>        
+            <div class="chart">
+                <h2>Productos Dsiponibles</h2>
+                <canvas id="graficaProduccion"></canvas>
             </div>
-        </footer> -->
+        </section>
+
+        <section class="section-pendientes-resumen">
+            <div class="pendientes">
+                <div class="section-header">
+                    <span><i class="bi bi-exclamation-triangle-fill"></i></span>
+                    <h4 class="text-header">Recordatorios</h4>
+                </div>
+                <div class="section-content">
+                    <div id="lista-alertas" class="alert-list">
+                        <!-- Acá se insertan las alertas -->
+                    </div>
+                </div>
+            </div>
+
+            <div class="container2">
+                <div class="resumen">
+                    <div class="resumen-header">
+                        <span><i class="bi bi-filetype-pdf"></i></i></span>
+                        <h4 class="text-header">Resumen del mes</h4>
+                    </div>
+                    <div class="resumen-content">
+                        <button id="btn-descargar-pdf" class="btn-imprimir"><i class="bi bi-file-earmark-arrow-down" title="Descargar"></i></button>
+                    </div>
+                </div>
+
+                <div class="estadoPedidos">
+                    <div class="pedidos-header">
+                        <span><i class="bi bi-ui-checks-grid"></i></i></span>
+                        <h4 class="text-header">Estado Pedidos</h4>
+                    </div>
+                    <div class="pedidos-content">
+                        <div id="estadoPedidos">
+                            <!--Se cargan automaticamente desde js-->
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+        </section>
     </main>
 </body>
 </html>
