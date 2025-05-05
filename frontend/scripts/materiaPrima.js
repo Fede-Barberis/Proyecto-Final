@@ -55,8 +55,6 @@ function cerrarModal() {
 
 document.getElementById("formMateriaPrima").addEventListener("submit", async (e) => {
     e.preventDefault()
-
-    
         const fecha = document.getElementById("fecha").value.trim();
         const idProducto = parseInt(document.getElementById("producto").value.trim(), 10);
         const cantidad = document.getElementById("cantidad").value.trim();
@@ -76,7 +74,7 @@ document.getElementById("formMateriaPrima").addEventListener("submit", async (e)
             headers: {
                 "Content-Type": "application/json"
             },
-            body: JSON.stringify(fecha, idProducto, cantidad, unidad, lote, vencimiento, precio, isPagado)
+            body: JSON.stringify({fecha, idProducto, cantidad, unidad, lote, vencimiento, precio, isPagado})
         })
 
         if(res.ok){

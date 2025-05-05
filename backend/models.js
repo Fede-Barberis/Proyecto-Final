@@ -701,7 +701,7 @@ export const getRecordatorios = async () => {
         `);
 
         const [pedidos] = await pool.query(`
-            SELECT p.id_pedido, pr.nombre AS pedido, SUM(dp.cantidad) AS cantidad, p.fecha_entrega AS fechaEntrega
+            SELECT p.id_pedido, pr.nombre AS pedido, SUM(dp.cantidad) AS cantidad, p.fecha_entrega AS fechaEntrega, dp.estado
             FROM pedidos p
             JOIN detalle_pedido dp ON p.id_pedido = dp.id_pedido
             JOIN productos pr ON pr.id_producto = dp.id_producto
@@ -714,6 +714,7 @@ export const getRecordatorios = async () => {
         const vencimientoMpMap = new Map(cmp.map(item => [item.id, item.fch_vencimiento,]));
         const pedidosMap = new Map(pedidos.map(item => [item.pedido, item.cantidad]));
         const entregaPedidosMap = new Map(pedidos.map(item => [item.id_pedido, item.fechaEntrega]));
+        const estadoPedidosMap = new Map(pedidos.map(item => [item.id_pedido, item.estado]));
 
         const stockLimitesProductos = {
             "ALFAJORES": { bajo: 20 },
@@ -746,7 +747,7 @@ export const getRecordatorios = async () => {
 
         for (const [id, isPagado] of comprarMateriaPrimaMap) {
             if (isPagado === 0) {
-                recordatorios.push(`La compra con el ID: ${id}, aun NO ha sido PAGADA.`);
+                recordatorios.push(`La compra de materia prima con el ID: ${id}, aun NO ha sido PAGADA.`);
             } 
         }
 
@@ -756,10 +757,10 @@ export const getRecordatorios = async () => {
             const diferenciaDias = Math.ceil(diferenciaMs / (1000 * 60 * 60 * 24)); // Convertir a días
 
             if(diferenciaDias >= 0 && diferenciaDias <= 5) {
-                recordatorios.push(`La compra con el ID: ${id}, VENCE en (${diferenciaDias} días).`);
+                recordatorios.push(`La compra de materia prima con el ID: ${id}, VENCE en (${diferenciaDias} días).`);
             }
             else if (diferenciaDias < 0) {
-                recordatorios.push(`La compra con el ID: ${id}, ha VENCIDO.`);
+                recordatorios.push(`La compra de materia prima con el ID: ${id}, ha VENCIDO.`);
             }
         }
 
@@ -772,18 +773,27 @@ export const getRecordatorios = async () => {
         }
 
         for (const [id_pedido, fechaEntrega] of entregaPedidosMap) {
-            const fechaActual = new Date();
-            const diferenciaMs = new Date(fechaEntrega) - fechaActual
-            const diferenciaDias = Math.ceil(diferenciaMs / (1000 * 60 * 60 * 24)); // Convertir a días
-
-            if(diferenciaDias >= 0 && diferenciaDias <= 5) {
-                recordatorios.push(`El pedido con el ID: ${id_pedido}, se ENTREGA en (${diferenciaDias} días).`);
+            // Obtener el estado correspondiente del pedido actual
+            const estado = estadoPedidosMap.get(id_pedido);
+        
+            // Solo continuar si el estado es 0 (no entregado)
+            if (estado === 0) {
+                const fechaActual = new Date();
+                const fechaEntregaDate = new Date(fechaEntrega);
+        
+                // Calcular diferencia en milisegundos y luego en días
+                const diferenciaMs = fechaEntregaDate - fechaActual;
+                const diferenciaDias = Math.ceil(diferenciaMs / (1000 * 60 * 60 * 24)); // Convertir a días
+        
+                if (diferenciaDias >= 0 && diferenciaDias <= 5) {
+                    recordatorios.push(`El pedido con el ID: ${id_pedido}, se ENTREGA en (${diferenciaDias} días).`);
+                } else if (diferenciaDias < 0) {
+                    recordatorios.push(`El pedido con el ID: ${id_pedido}, NO fue ENTREGADO. Retraso de (${Math.abs(diferenciaDias)} días).`);
+                }
             }
-            else if (diferenciaDias < 0) {
-                recordatorios.push(`El pedido con el ID: ${id_pedido}, NO fue ENTREGADO. Restraso de (${diferenciaDias} días)`);
-            } 
+            // Si el estado es 1 (entregado), no se muestra mensaje
         }
-
+        
         return recordatorios.length > 0 ? recordatorios : ["No hay recordatorios"];
     }
     catch(error){
