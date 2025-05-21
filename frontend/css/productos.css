@@ -52,14 +52,18 @@
     }
 }
 
-.text-header {
+.text-header, .text-header2 {
     text-align: left;
     margin: 20px 0;
-    font-size: 26px;
+    font-size: 36px;
     font-family: 'Lexend';
     text-transform: uppercase;
     padding-bottom: 15px;
     white-space: nowrap;
+}
+
+.text-header2{
+    font-size: 30px;
 }
 
 /*********************************************************************/
@@ -458,20 +462,19 @@ input.producto-item {
 /*********************************************************************/
 
 .flecha {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
     width: 100%;
-    height: 40px;
+    height: 60px;
+    gap: 150px;
     margin-bottom: 50px;
 }
 
-#btn-abajo {
+#btn-abajo1, #btn-abajo2, #btn-abajo3 {
     width: 50px;
     height: 50px;
     border: none;
     border-radius: 50%;
-    background-color: rgb(27, 27, 27, 0.3);
-    display: flex;
-    align-items: center;
-    justify-content: center;
     cursor: pointer;
     position: relative;
     transition-duration: .3s;
@@ -487,10 +490,21 @@ input.producto-item {
         width: 100px;
         border-radius: 50px;
         transition-duration: .3s;
-        background-color: var(--color-contraste);
         align-items: center;
         justify-content: center;
     }
+}
+
+#btn-abajo1 {
+    background-color: var(--color-principal);
+}
+
+#btn-abajo2 {
+    background-color: var(--color-secundario);
+}
+
+#btn-abajo3 {
+    background-color: var(--pastel-verde);
 }
 
 /*********************************************************************/

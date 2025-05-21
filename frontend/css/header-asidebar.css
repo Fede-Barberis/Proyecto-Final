@@ -24,7 +24,7 @@
 
 body {
     display: grid;
-    grid-template-columns: 250px 1fr; /* Sidebar fijo y contenido flexible */
+    grid-template-columns: 225px 1fr; /* Sidebar fijo y contenido flexible */
     grid-template-rows: 60px auto; /* Header fijo y el resto del contenido flexible */
     min-height: 100vh;
     font-family: 'Inter', Arial, sans-serif;

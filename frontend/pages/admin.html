@@ -27,9 +27,7 @@
             <h4>Tienda</h4>
             <a href="/frontend/pages/productos.html" class="sidebar-text"><i class="icono-barra bi bi-ui-checks-grid"></i></i>Productos</a>
             <a href="/frontend/pages/materiaPrima.html" class="sidebar-text"><i class="icono-barra bi bi-clipboard-data"></i>Materia Prima</a>
-            <h4>Analizis</h4>
-            <a href="#" class="sidebar-text"><i class="icono-barra bi bi-graph-up"></i>Performance</a>
-            <a href="#" class="sidebar-text"><i class="icono-barra bi bi-person"></i>Personal</a>
+            <a href="/frontend/pages/personal.html" class="sidebar-text"><i class="icono-barra bi bi-person"></i>Personal</a>
         </nav>
         <div class="sidebar-footer">
             <a href="#" class="sidebar-text"><i class="icono-barra bi bi-gear"></i>Settings</a>
@@ -40,7 +38,7 @@
     </aside>
     
     <main class="main">
-        <p class="main-text"><span>Hey Pablo</span>- esto es lo que esta sucediendo con tu negocio hoy </p>
+        <p class="main-text"><span id="nombre-user"></span> - esto es lo que esta sucediendo con tu negocio. </p>
         <div class="card-conteiner">
             <div class="card">
                 <div class="card-content">
@@ -82,7 +80,7 @@
                 <canvas id="graficaVentas"></canvas>
             </div>        
             <div class="chart">
-                <h2>Productos Dsiponibles</h2>
+                <h2>Produccion del mes</h2>
                 <canvas id="graficaProduccion"></canvas>
             </div>
         </section>
@@ -117,8 +115,16 @@
                         <h4 class="text-header">Estado Pedidos</h4>
                     </div>
                     <div class="pedidos-content">
-                        <div id="estadoPedidos">
-                            <!--Se cargan automaticamente desde js-->
+                        <div class="circulo1">
+                            <div class="estado-pedido" id="totalPedidos">9</div>
+                        </div>
+
+                        <div class="circulo2">
+                            <div class="estado-pedido" id="pedidosEntregados">3</div>
+                        </div>
+
+                        <div class="circulo3">
+                            <div class="estado-pedido" id="pedidosPendientes">6</div>
                         </div>
                     </div>
                 </div>

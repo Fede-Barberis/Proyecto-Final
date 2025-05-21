@@ -1,0 +1,396 @@
+:root {
+    --color-principal: #87a3ff;
+    --color-secundario: #ffce47c0;
+    --color-acento: #ffcc5c;
+    --color-neutro: #f7f7f7;
+    --color-contraste: #ff6f61;
+    --color-fondo: #ffffff;
+    --color-texto: #333333;
+
+    --pastel-rosa: #F8BBD0;
+    --pastel-celeste: #c5edff;
+    --pastel-verde: #bae4bc;
+    --pastel-lavanda: #EDE7F6;
+    --pastel-blanco: #FFF0F5;
+
+    --color-primary: #7380ec;
+    --color-danger: #ff0015;
+    --color-success: #41f1b6;
+    --color-warning: #ffbb55;
+    --color-white: #fff;
+    --color-info-dark: #7d8da1;
+    --color-info-light: #dce1eb;
+    --color-dark: #363949;
+    --color-light: rgba(132, 139, 200, 0.30);
+    --color-primary-variant: #111e88;
+    --color-dark-variant: #677483;
+    --color-background: #f6f6f9;
+}
+
+/*********************************************************************/
+
+.main {
+    display: flex;
+    flex-direction: column;
+    width: 95%;
+    height: 100%;
+    margin: 0 auto;
+}
+
+.text-main {
+    font-size: 36px;
+    font-family: 'Lexend';
+    font-weight: bold;
+    margin-top: 10px;
+}
+
+.section-tarjetas {
+    width: 100%;
+    height: 300px;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    margin: 25px 0;
+}
+
+.card-empleado {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 275px;
+    height: 100%;
+    border-radius: 26px;
+    box-shadow: 0 8px 25px var(--color-light);
+    transition: all 0.5s;
+
+    &:hover {
+        transform: scale(1.05, 1.05);
+        box-shadow: 0 15px 35px 0 var(--color-light);
+    }
+}
+
+.card-empleado:first-child {
+    .card-tittle {
+        display: flex;
+        justify-content: center;
+        width: 100%;
+        height: 20%;
+        padding: 15px 0;
+
+        & i { 
+            font-size: 44px;
+        }
+    }
+}
+
+.card-empleado:last-child {
+    min-width: 550px;
+    padding: 0 10px;
+}
+
+.form-empleado {
+    width: 80%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.card-content {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-evenly;
+    width: 100%;
+    height: 100%;
+    padding: 10px 0;
+
+    & .total {
+        font-size: 40px;
+        font-family: 'Lexend';
+        font-weight: bold;
+    }
+}
+
+.form-input {
+    width: 100%;
+    height: 35px;
+    margin: 8px 0;
+    padding: 10px ;
+    border: none;
+    border-radius: 12px;
+    box-shadow: 0 5px 15px var(--color-light);
+    font-family: 'Lexend';
+}
+
+.card-btn {
+    width: 100%;
+    min-height: 35px;
+    color: var(--color-white);
+    background-color: var(--color-principal);
+    border: 2px solid var(--color-dark-variant);
+    border-radius: 16px;
+    transition: all 0.3s;
+    text-transform: uppercase;
+    font-weight: 600;
+    position: relative;
+    cursor: pointer;
+    z-index: 1;
+    overflow: hidden;
+    box-shadow: 0 2px 5px var(--color-light);
+    font-family: 'Lexend';
+    letter-spacing: 0.8px;
+
+    &:hover {
+        color: var(--color-white);
+        transition: color 0.3s ease-in-out;
+    }
+    
+    &::after {
+        content: "";
+        background: var(--color-dark);
+        position: absolute;
+        z-index: -1;
+        left: -20%;
+        right: -20%;
+        top: 0;
+        bottom: 0;
+        transform: skewX(-45deg) scale(0, 1);
+        transition: all 0.5s;
+    }
+
+    &:hover:after {
+        transform: skewX(-45deg) scale(1, 1);
+        -webkit-transition: all 0.5s;
+        transition: all 0.5s;
+    }
+}
+
+/*! Mensaje de error */
+.msj-error {
+    padding: 2px 0;
+    text-align: center;
+    color: var(--color-danger);
+    font-weight: 500;
+    font-family: 'Lexend';
+    transition: all 0.3s ease 0s;
+}
+
+.graficaEmpleados {
+    width: 100%;
+    height: 100%;
+    padding: 10px 5PX;
+}
+
+/* *********************************************************** */
+
+.section-tabla{ 
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    max-height: 500px;
+    border-radius: 16px;
+    box-shadow: 0 8px 25px var(--color-light);
+}
+
+.table-container {
+    width: 100%;
+    height: 100%;
+    justify-items: center;
+    overflow-y: auto;
+    border-radius: 16px ;
+
+    &::-webkit-scrollbar {
+        /* display: none; */
+        background-color: var(--color-info-light);
+        width: 10px;
+        border-radius: 0 10px 10px 0;
+    }
+}
+
+.table {
+    width: 100%;
+    max-width: 100%;
+    height: 100%;
+    table-layout: auto;
+    border-collapse: collapse; /* Une los bordes de las celdas */
+    border-spacing: 0; /* Evita separación entre celdas */
+    font-family: 'Lexend';
+    overflow-y: auto;
+}
+
+.head-empleados{
+    background-color: var(--color-acento);
+    position: sticky; /* Hace que el encabezado sea "pegajoso" */
+    top: 0; /* Fija el encabezado en la parte superior */
+    z-index: 2;
+}
+
+th {
+    padding: 15px 15px;
+    text-align: center;
+    text-transform: uppercase;
+}
+
+td {
+    text-align: center;
+    padding: 10px 15px;
+    border-bottom: 1px solid var(--color-light); 
+    font-size: 18px;
+}
+
+.fila-empleado:hover {
+    background-color: var(--color-secundario);
+    transition: 0.3s;
+}
+
+.btn-detalle, .btn-eliminar{
+    width: 50%;
+    height: 30px;
+    color: var(--color-neutro);
+    border: 1px solid var(--color-dark);
+    border-radius: 16px;
+    padding: 0 10px;
+    box-shadow: 0px 5px 10px var(--color-light);
+    font-family: 'Lexend';
+    text-transform: uppercase;
+    font-weight: 500;
+    transition: all 0.3s ease 0s;
+    cursor: pointer;
+    outline: none;
+}
+
+.btn-detalle {
+    background-color: var(--color-principal);
+    &:hover {
+        background-color: var(--color-primary-variant);
+        width: 60%;
+    }
+}
+
+.btn-eliminar{
+    background-color: var(--color-contraste);
+    &:hover {
+        background-color:var(--color-danger);
+        width: 60%;
+    }
+}
+
+
+.btn-eliminar-detalle {
+    width: 90%;
+    height: 30px;
+    background-color: var(--color-contraste);
+    color: var(--color-neutro);
+    border: 1px solid var(--color-dark);
+    border-radius: 5px;
+    padding: 0 10px;
+    box-shadow: 0px 5px 10px var(--color-light);
+    font-family: 'Lexend';
+    text-transform: uppercase;
+    font-weight: 500;
+    transition: all 0.3s ease 0s;
+    cursor: pointer;
+    outline: none;
+
+    &:hover {
+        background-color:var(--color-danger);
+        width: 100%;
+    }
+}
+
+
+
+/*********************************************************************/
+/*! MODAL */
+
+.modal {
+    position: fixed;
+    display: none;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(5px);
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+
+    &.active {
+        visibility: visible;
+        opacity: 1;
+    }
+}
+
+.modal-content {
+    width: 70%;
+    height: auto;
+    max-height: 600px;
+    max-height: 90vh;
+    background-color: var(--color-white);
+    padding: 20px;
+    text-align: center;
+    position: relative;
+    border-radius: 16px;
+    box-sizing: content-box;
+}
+
+.close {
+    position: absolute;
+    top: 20px;
+    right: 30px;
+    cursor: pointer;
+    font-size: 20px;
+}
+
+.modal-content h2 {
+    width: 100%;
+    height: 50px;
+    text-align: center;
+    border-bottom: 1px solid var(--color-dark-variant);
+    margin-bottom: 20px;
+    font-family: 'Lexend';
+}
+
+.head-detalleEmpleados {
+    background-color: var(--color-acento);
+}
+
+.body-detalle-empleado td {
+    height: 60px;
+    text-align: center;
+    padding: 10px 15px;
+    border-bottom: 1px solid var(--color-light); 
+}
+
+.fila-detalle:hover {
+    background-color: var(--color-secundario) ;
+}
+
+.fila-color1 {
+    background-color: #f4f4f4;
+}
+
+.fila-color2 {
+    background-color: #ffffff;
+}
+
+
+/*********************************************************************/
+
+
+@media (min-width: 1920px) {
+    .card-empleado {
+        display: flex;
+        flex-direction: column;
+        width: 350px;
+        height: 275px;
+        margin: 30px 0;
+        border-radius: 26px;
+        box-shadow: 0 8px 25px var(--color-light);
+    }
+
+    .section-tarjetas {
+        margin-bottom: 50px;
+    }
+}

@@ -3,7 +3,7 @@ import bcrypts from "bcryptjs";
 import jsonWebToken from "jsonwebtoken";
 import dotenv from "dotenv";
 import { 
-    getUsersRegister, addUserRegister, addProduction, addSale, getProductos, getVentas, getTarjetas, getProduccion, getMateriaPrima, addMateriaPrima, getMp, actualizarPago, eliminarCompraYActualizarStock, eliminarProduccionYActualizarStock, eliminarVentaYActualizarStock, addPedido, guardarDetallePedido, getPedidos, getCantidadPedidos, actualizarEntrega, eliminarPedidos, getGraficos, getGraficoTorta, getRecordatorios, getTarjetasPdf, getDatosMesPasado 
+    getUsersRegister, addUserRegister, addProduction, addSale, getProductos, getVentas, getTarjetas, getProduccion, getMateriaPrima, addMateriaPrima, getMp, actualizarPago, eliminarCompraYActualizarStock, eliminarProduccionYActualizarStock, eliminarVentaYActualizarStock, addPedido, guardarDetallePedido, getPedidos, getCantidadPedidos, actualizarEntrega, eliminarPedidos, getGraficos, getGraficoTorta, getRecordatorios, getTarjetasPdf, getDatosMesPasado, getNombreUser, getEmpleados, getDetalleEmpleados, getGraficoEmpleados, eliminarEmpleados, eliminarDetalleEmpleados, addEmpleados, addDetalle
 } from "./models.js";
 
 dotenv.config() // permite acceder a las variables de entorno}
@@ -96,6 +96,17 @@ export const guardarDatos = async (req, res) => {
         res.status(200).json({ status: "OK", message: "Datos guardados correctamente" });
     } catch (error) {
         res.status(400).json({ status: "Error", message: "Error al guardar datos" });
+    }
+};
+
+//? **********   **********   **********   **********   **********   **********   **********   **********   **********   **********   **********    ?//
+
+export const obtenerNombreUsuario = async (req, res) => {
+    try {
+        const user = await getNombreUser();
+        res.json({ user: user?.usuario || null });
+    } catch (error) {
+        res.status(400).json({ status: "Error", message: "Error al obtener nombre de usuario" });
     }
 };
 
@@ -550,6 +561,140 @@ export const obtenerDatosTorta = async (req, res) => {
     }
 }
 
+//? ===================================================================================================================================================
+
+export const obtenerGraficoEmpleados = async (req, res) => {
+    try {
+        const datos = await getGraficoEmpleados();
+        
+        const labels = datos.map(d => d.nombre);
+        const value = datos.map(d => d.cantHoras);
+
+        res.json({ nombres:labels, horas: value });
+    } catch (error) {
+        console.error(error);
+        res.status(400).json({ message: "Error al obtener datos de empleados" });
+    }
+}
+
+//? ===================================================================================================================================================
+
+export const obtenerEmpleados = async (req, res) => {
+    try {
+        const datos = await getEmpleados();
+        res.json(datos)
+    } catch (error) {
+        console.error(error);
+        res.status(400).json({ message: "Error al obtener datos de empleados" });
+    }
+}
+
+//? ===================================================================================================================================================
+
+export const agregarEmpleado = async (req, res) => {
+    try{
+        const { empleado } = req.body;
+
+        if(!empleado.nombre || !empleado.apellido){
+            return res.status(400).json({ status: "Error", message: "Error, campos incompletos" });
+        }
+
+
+        await addEmpleados(empleado);
+        res.status(200).json({ status: "OK", message: "Empleado registrado correctamente" });
+    }
+    catch(error){
+        res.status(400).json({ status: "Error", message: "Error al guardar empleado" });
+    }
+}
+
+//? ===================================================================================================================================================
+
+export const agregarDetalle = async (req, res) => {
+    try{
+        const { detalle } = req.body;
+        const { id_empleado, valor, horas, fecha } = detalle;
+
+        if(!id_empleado || !valor || !horas || !fecha){
+            return res.status(400).json({ status: "Error", message: "Error, campos incompletos" });
+        }
+
+        if(valor < 0){
+            return res.status(400).json({ status: "Error", message: "El valor no puede ser negativo" });
+        }
+
+        if(horas < 0){
+            return res.status(400).json({ status: "Error", message: "Las horas no pueden ser negativas" });
+        }
+
+        console.log("Valores recibidos:", detalle);
+
+        await addDetalle({
+            id_empleado,
+            precioHora: valor,
+            cantHoras: horas,
+            fechaCobro: fecha
+        });
+
+        res.status(200).json({ status: "OK", message: "Detalle agregado correctamente" });
+    }
+    catch(error){
+        res.status(400).json({ status: "Error", message: "Error al guardar detalle" });
+    }
+}
+
+//? ===================================================================================================================================================
+export const obtenerDetallesEmpleados = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const datos = await getDetalleEmpleados(id);
+        res.json(datos)
+    } catch (error) {
+        console.error(error);
+        res.status(400).json({ message: "Error al obtener datos de empleados" });
+    }
+}
+
+//? **********   **********   **********   **********   **********   **********   **********   **********   **********   **********   **********    ?//
+
+export const eliminarEmpleado = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const exito = await eliminarEmpleados(id);
+
+        if (!exito) {
+            return res.status(404).json({ error: "No se pudo eliminar al empleado" });
+        }
+
+        return res.status(200).json({ mensaje: "Empleado eliminado" });
+    } catch (error) {
+        console.error("Error en eliminarEmpleadoController:", error);
+        return res.status(500).json({ error: "Error del servidor" });
+    }
+};
+
+//? **********   **********   **********   **********   **********   **********   **********   **********   **********   **********   **********    ?//
+
+export const eliminarDetalleEmpleado = async (req, res) => {
+    try {
+        const { id } = req.params;
+        if (!id) {
+            return res.status(400).json({ error: "ID no proporcionado" });
+        }
+
+        const exito = await eliminarDetalleEmpleados(id);
+
+        if (!exito) {
+            return res.status(404).json({ error: "No se pudo eliminar el detalle del empleado" });
+        }
+
+        return res.status(200).json({ mensaje: "Detalle del empleado eliminado" });
+    } catch (error) {
+        console.error("Error en eliminarDetalleEmpleadoController:", error);
+        return res.status(500).json({ error: "Error del servidor" });
+    }
+};
+
 //! ===================================================================================================================================================
 
 //*                                               -------- RECORDATORIOS --------                                                              *//
@@ -597,6 +742,7 @@ export const methods = {
     login,
     register,
     guardarDatos,
+    obtenerNombreUsuario,
     guardarProduccion,
     obtenerProductos,
     obtenerProduccion,
@@ -618,6 +764,13 @@ export const methods = {
     eliminarPedido,
     obtenerDatosGraficos,
     obtenerDatosTorta,
+    obtenerGraficoEmpleados,
+    obtenerEmpleados,
+    agregarEmpleado,
+    agregarDetalle,
+    obtenerDetallesEmpleados,
+    eliminarEmpleado,
+    eliminarDetalleEmpleado,
     obtenerRecordatorios,
     obtenerTarjetasPdf,
     obtenerDatosMesPasado,

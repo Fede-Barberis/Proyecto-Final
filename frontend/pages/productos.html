@@ -25,9 +25,7 @@
             <h4>Tienda</h4>
             <a href="/frontend/pages/productos.html" class="sidebar-text active"><i class="icono-barra bi bi-ui-checks-grid"></i></i>Productos</a>
             <a href="/frontend/pages/materiaPrima.html" class="sidebar-text"><i class="icono-barra bi bi-clipboard-data"></i>Materia Prima</a>
-            <h4>Analizis</h4>
-            <a href="#" class="sidebar-text"><i class="icono-barra bi bi-graph-up"></i>Performance</a>
-            <a href="#" class="sidebar-text"><i class="icono-barra bi bi-person"></i>Personal</a>
+            <a href="/frontend/pages/personal.html" class="sidebar-text"><i class="icono-barra bi bi-person"></i>Personal</a>
         </nav>
         <div class="sidebar-footer">
             <a href="#" class="sidebar-text"><i class="icono-barra bi bi-gear"></i>Settings</a>
@@ -39,10 +37,10 @@
 
     <main class="main">
         <div class="text-container">
-            <h4 class="text-header">Productos disponibles</h4>
+            <h1 class="text-header">Productos disponibles</h1>
         </div>
+
         <section class="main-section">
-            
             <div class="card">
                 <div class="card-img">
                     <img src="/frontend/img/500 MILLAS _Logo-2.jpg" class="img" alt="alfajor">
@@ -149,13 +147,14 @@
         </section>
 
         <div class="flecha">
-            <button id="btn-abajo"><i class="bi bi-arrow-down icono"></i></button>
+            <button id="btn-abajo1"><i class="bi bi-arrow-down icono"></i></button>
+            <button id="btn-abajo2"><i class="bi bi-arrow-down icono"></i></button>
+            <button id="btn-abajo3"><i class="bi bi-arrow-down icono"></i></button>
         </div>
 
-
-        <section class="main-section2" id="section2">
+        <section class="main-section2" id="section-produccion">
             <div class="text-container ">
-                <h4 class="text-header">HISTORIAL PRODUCCION</h4>
+                <h4 class="text-header2">HISTORIAL PRODUCCION</h4>
             </div>
             <div class="filtro-container">
                 <label class="label label-produccion" for="filtro">FILTRAR POR:</label>
@@ -184,7 +183,7 @@
                 <button class="filtrarBtn filtrarBtn-produccion" id="filtrarBtn">Filtrar</button>
             </div>
             <div class="table-container">
-                <table class="table">
+                <table class="table table-produccion">
                     <thead class="head-table head-produccion">
                         <tr class="tr-prod ">
                             <th>Id</th>
@@ -204,9 +203,9 @@
             </div>
         </section>
 
-        <section class="main-section2">
+        <section class="main-section2" id="section-venta">
             <div class="text-container ">
-                <h4 class="text-header">HISTORIAL VENTAS</h4>
+                <h4 class="text-header2">HISTORIAL VENTAS</h4>
             </div>
             <div class="filtro-container">
                 <label class="label label-venta" for="filtro">FILTRAR POR:</label>
@@ -255,9 +254,9 @@
             </div>
         </section>
 
-        <section class="main-section2">
+        <section class="main-section2" id="section-pedidos">
             <div class="text-container ">
-                <h4 class="text-header">PEDIDOS ACTIVOS</h4>
+                <h4 class="text-header2">PEDIDOS ACTIVOS</h4>
             </div>
             <div class="filtro-container">
                 <label class="label label-pedidos" for="filtro">FILTRAR POR:</label>
@@ -319,12 +318,6 @@
                     
                     <input class="form-input" type="date" name="fecha" id="fecha">
                     
-                    <!-- <select class="form-input" name="producto1" id="producto1">
-                        <option value="1">ALFAJORES</option>
-                        <option value="2">GALLETAS MARINAS S/S</option>
-                        <option value="3">GALLETAS MARINAS C/S</option>
-                    </select> -->
-                    
                     <select class="form-input" name="receta" id="receta">
                         <option value="">Receta para:</option>
                         <option value="1">100</option>
@@ -336,9 +329,7 @@
                         <option value="7">180</option>
                     </select>
                     
-                    <!-- <input class="form-input" type="number" name="cantidad" id="cantidad" placeholder="Cantidad"> -->
                     <input class="form-input" type="text" name="lote" id="lote" placeholder="Lote">
-                    <!-- <input class="form-input" type="date" name="vencimiento" id="vencimiento"> -->
                     
                     <div id="productosProd">
                         <!-- Aquí se agregan los productos dinámicamente -->
@@ -346,8 +337,6 @@
                     <button id="btnAgregarProducto" class="agregar-producto" type="button">+ Agregar producto</button>
                     
                     <button class="form-btn" type="submit">Guardar</button>
-                    
-                    <p class="msj-error escondido" id="msj-error1"></p>
                 </form>
             </div>
 

@@ -589,14 +589,59 @@ export const getTarjetas = async () => {
 export const getTarjetasPdf = async () => {
     try {
         const [result] = await pool.query(`
-            SELECT 
-                (SELECT COUNT(*) FROM ventas WHERE MONTH(fecha) = MONTH(CURDATE()) AND YEAR(fecha) = YEAR(CURDATE())) AS ventasMes,
-                (SELECT SUM(precio * cantidad) FROM ventas WHERE MONTH(fecha) = MONTH(CURDATE()) AND YEAR(fecha) = YEAR(CURDATE())) AS ingresosMes,
-                (SELECT COUNT(*) FROM ventas) AS totalVentas,
-                (SELECT SUM(precio * cantidad) FROM ventas) AS ingresosTotales,
-                (SELECT SUM(cantidad) FROM produccion WHERE id_producto = 1) AS stockAlfajores,
-                (SELECT SUM(cantidad) FROM produccion WHERE id_producto = 2) AS stockGalletasSS,
-                (SELECT SUM(cantidad) FROM produccion WHERE id_producto = 3) AS stockGalletasCS
+            WITH
+            ventas_mes AS (
+                SELECT 
+                    COUNT(*) AS ventasMes,
+                    SUM(precio * cantidad) AS ingresosMes
+                FROM ventas
+                WHERE MONTH(fecha) = MONTH(CURDATE()) AND YEAR(fecha) = YEAR(CURDATE())
+            ),
+            ventas_totales AS (
+                SELECT 
+                    COUNT(*) AS totalVentas,
+                    SUM(precio * cantidad) AS ingresosTotales
+                FROM ventas
+            ),
+            stock_mes AS (
+                SELECT 
+                    dp.id_producto,
+                    SUM(dp.cantidad) AS cantidad
+                FROM detalle_produccion dp
+                JOIN produccion p ON dp.id_produccion = p.id_produccion
+                WHERE MONTH(p.fecha) = MONTH(CURDATE()) AND YEAR(p.fecha) = YEAR(CURDATE())
+                GROUP BY dp.id_producto
+            ),
+            ventas_productos AS (
+                SELECT 
+                    id_producto,
+                    SUM(cantidad) AS cantidad
+                FROM ventas
+                WHERE MONTH(fecha) = MONTH(CURDATE()) AND YEAR(fecha) = YEAR(CURDATE())
+                GROUP BY id_producto
+            )
+            SELECT
+                vm.ventasMes,
+                vm.ingresosMes,
+                vt.totalVentas,
+                vt.ingresosTotales,
+
+                COALESCE(sm1.cantidad, 0) AS stockAlfajores,
+                COALESCE(sm2.cantidad, 0) AS stockGalletasSS,
+                COALESCE(sm3.cantidad, 0) AS stockGalletasCS,
+
+                COALESCE(vp1.cantidad, 0) AS ventaAlfajores,
+                COALESCE(vp2.cantidad, 0) AS ventaGalletasSS,
+                COALESCE(vp3.cantidad, 0) AS ventaGalletasCS
+
+            FROM ventas_mes vm
+            JOIN ventas_totales vt
+            LEFT JOIN stock_mes sm1 ON sm1.id_producto = 1
+            LEFT JOIN stock_mes sm2 ON sm2.id_producto = 2
+            LEFT JOIN stock_mes sm3 ON sm3.id_producto = 3
+            LEFT JOIN ventas_productos vp1 ON vp1.id_producto = 1
+            LEFT JOIN ventas_productos vp2 ON vp2.id_producto = 2
+            LEFT JOIN ventas_productos vp3 ON vp3.id_producto = 3
         `);
         return result[0]
     } catch (error) {
@@ -668,11 +713,38 @@ export const getGraficoTorta = async () => {
         WHERE MONTH(pr.fecha) = MONTH(CURDATE()) AND YEAR(pr.fecha) = YEAR(CURDATE())
         GROUP BY p.nombre;
         `);
+        
         return productos;
     }
     catch(error){
         console.log(error);
         throw error; // Lanza el error para que pueda ser manejado por el llamador
+    }
+}
+
+export const getGraficoEmpleados = async () => {
+    try{
+        const [result] = await pool.query (`
+            SELECT 
+                e.id_empleado, 
+                e.nombre, 
+                de.cantHoras 
+            FROM empleados e
+            JOIN (
+                SELECT de1.*
+                FROM detalle_empleados de1
+                JOIN (
+                    SELECT id_empleado, MAX(fechaCobro) AS ultimaFecha
+                    FROM detalle_empleados
+                    GROUP BY id_empleado
+                ) de2 ON de1.id_empleado = de2.id_empleado AND de1.fechaCobro = de2.ultimaFecha
+            ) de ON e.id_empleado = de.id_empleado 
+        `)
+        return result
+    }
+    catch(error){
+        console.log(error);
+        throw error;
     }
 }
 
@@ -701,20 +773,34 @@ export const getRecordatorios = async () => {
         `);
 
         const [pedidos] = await pool.query(`
-            SELECT p.id_pedido, pr.nombre AS pedido, SUM(dp.cantidad) AS cantidad, p.fecha_entrega AS fechaEntrega, dp.estado
+            SELECT p.id_pedido, p.fecha_entrega AS fechaEntrega
             FROM pedidos p
-            JOIN detalle_pedido dp ON p.id_pedido = dp.id_pedido
-            JOIN productos pr ON pr.id_producto = dp.id_producto
-            GROUP BY p.id_pedido, pr.nombre, p.fecha_entrega
         `);
 
+        const [detallePedidos] = await pool.query(`
+            SELECT dp.id_pedido, pr.nombre AS producto, SUM(dp.cantidad) AS cantidad, dp.estado
+            FROM detalle_pedido dp
+            JOIN productos pr ON dp.id_producto = pr.id_producto
+            WHERE dp.estado = 0
+            GROUP BY dp.id_pedido, pr.nombre
+        `);
+        
+
+        // Crear mapas para acceso rápido
         const productosMap = new Map(productos.map(item => [item.producto, item.stock]));
         const materiaPrimaMap = new Map(mp.map(item => [item.materiaPrima, item.stock]));
-        const comprarMateriaPrimaMap = new Map(cmp.map(item => [item.id, item.isPagado]));
-        const vencimientoMpMap = new Map(cmp.map(item => [item.id, item.fch_vencimiento,]));
-        const pedidosMap = new Map(pedidos.map(item => [item.pedido, item.cantidad]));
-        const entregaPedidosMap = new Map(pedidos.map(item => [item.id_pedido, item.fechaEntrega]));
-        const estadoPedidosMap = new Map(pedidos.map(item => [item.id_pedido, item.estado]));
+        
+        const pedidoProductosMap = new Map();
+        for (const detalle of detallePedidos) {
+            if (!pedidoProductosMap.has(detalle.id_pedido)) {
+                pedidoProductosMap.set(detalle.id_pedido, []);
+            }
+            pedidoProductosMap.get(detalle.id_pedido).push({
+                producto: detalle.producto,
+                cantidad: detalle.cantidad,
+                estado: detalle.estado
+            });
+        }
 
         const stockLimitesProductos = {
             "ALFAJORES": { bajo: 20 },
@@ -731,67 +817,64 @@ export const getRecordatorios = async () => {
             "AZUCAR": { bajo: 10 },
         };
 
-        for (const [producto, stock] of productosMap) {
-            const limite = stockLimitesProductos[producto];
-            if (limite && stock < limite.bajo) {
-                recordatorios.push(`${producto} con poco stock (${stock} unidades).`);
-            } 
+        // Validar stock bajo para productos y materia prima
+        const checkStockBajo = (mapa, limites, tipo) => {
+            for (const [nombre, stock] of mapa) {
+                const limite = limites[nombre];
+                if (limite && stock < limite.bajo) {
+                    recordatorios.push(`${nombre}(${tipo}) con poco stock (${stock} unidades).`);
+                } 
+            }
         }
+        checkStockBajo(productosMap, stockLimitesProductos, "producto");
+        checkStockBajo(materiaPrimaMap, stockLimitesMp, "materia prima");
 
-        for (const [materiaPrima, stock] of materiaPrimaMap) {
-            const limite = stockLimitesMp[materiaPrima];
-            if (limite && stock < limite.bajo) {
-                recordatorios.push(`${materiaPrima} con poco stock (${stock} unidades).`);
-            } 
-        }
-
-        for (const [id, isPagado] of comprarMateriaPrimaMap) {
-            if (isPagado === 0) {
-                recordatorios.push(`La compra de materia prima con el ID: ${id}, aun NO ha sido PAGADA.`);
-            } 
-        }
-
-        for (const [id, fch_vencimiento] of vencimientoMpMap) {
+        // Validar compras de materia prima (pago y vencimiento)
+        for(const compra of cmp){
+            if (compra.isPagado === 0) {
+                recordatorios.push(`La compra de materia prima con el ID: ${compra.id}, aun NO ha sido PAGADA.`);
+            }
+        
             const fechaActual = new Date();
-            const diferenciaMs = new Date(fch_vencimiento) - fechaActual
+            const diferenciaMs = new Date(compra.fch_vencimiento) - fechaActual
             const diferenciaDias = Math.ceil(diferenciaMs / (1000 * 60 * 60 * 24)); // Convertir a días
 
             if(diferenciaDias >= 0 && diferenciaDias <= 5) {
-                recordatorios.push(`La compra de materia prima con el ID: ${id}, VENCE en (${diferenciaDias} días).`);
+                recordatorios.push(`La compra de materia prima con el ID: ${compra.id}, VENCE en (${diferenciaDias} días).`);
             }
             else if (diferenciaDias < 0) {
-                recordatorios.push(`La compra de materia prima con el ID: ${id}, ha VENCIDO.`);
+                recordatorios.push(`La materia prima con el ID: ${compra.id}, ha VENCIDO.`);
             }
         }
+    
+        // Validar pedidos (stock y entrega)
+        for (const pedido of pedidos) {
+            const productosPedido = pedidoProductosMap.get(pedido.id_pedido) || [];
+    
+            // Verifica si todos los productos ya fueron entregados (estado === 1)
+            const todosEntregados = productosPedido.every(p => p.estado === 1);
+            if (todosEntregados) continue; // si todos fueron entregados, salteamos
 
-        for (const [pedido, cantidad] of pedidosMap) {
-            const stockActual = productosMap.get(pedido) || 0;
-            
-            if (stockActual !== undefined && cantidad > stockActual) {
-                recordatorios.push(`Stock de ${pedido} insuficiente para completar los pedidos (${cantidad}).`);
-            } 
-        }
+            const fechaActual = new Date();
+            const fechaEntregaDate = new Date(pedido.fechaEntrega);
+            const diferenciaMs = fechaEntregaDate - fechaActual;
+            const diferenciaDias = Math.ceil(diferenciaMs / (1000 * 60 * 60 * 24)); 
+    
+            if (diferenciaDias > 0) {
+                recordatorios.push(`El pedido con el ID: ${pedido.id_pedido}, se ENTREGA en (${diferenciaDias} días).`);
+            } else if (diferenciaDias < 0) {
+                recordatorios.push(`El pedido con el ID: ${pedido.id_pedido}, NO fue ENTREGADO. Retraso de (${Math.abs(diferenciaDias)} días).`);
+            } else {
+                recordatorios.push(`El pedido con el ID: ${pedido.id_pedido}, debe ENTREGARSE hoy.`);
+            }
 
-        for (const [id_pedido, fechaEntrega] of entregaPedidosMap) {
-            // Obtener el estado correspondiente del pedido actual
-            const estado = estadoPedidosMap.get(id_pedido);
-        
-            // Solo continuar si el estado es 0 (no entregado)
-            if (estado === 0) {
-                const fechaActual = new Date();
-                const fechaEntregaDate = new Date(fechaEntrega);
-        
-                // Calcular diferencia en milisegundos y luego en días
-                const diferenciaMs = fechaEntregaDate - fechaActual;
-                const diferenciaDias = Math.ceil(diferenciaMs / (1000 * 60 * 60 * 24)); // Convertir a días
-        
-                if (diferenciaDias >= 0 && diferenciaDias <= 5) {
-                    recordatorios.push(`El pedido con el ID: ${id_pedido}, se ENTREGA en (${diferenciaDias} días).`);
-                } else if (diferenciaDias < 0) {
-                    recordatorios.push(`El pedido con el ID: ${id_pedido}, NO fue ENTREGADO. Retraso de (${Math.abs(diferenciaDias)} días).`);
+            // Recordatorio por stock insuficiente
+            for (const item of productosPedido) {
+                const stockActual = productosMap.get(item.producto) || 0;
+                if (stockActual < item.cantidad) {
+                    recordatorios.push(`Stock de ${item.producto} insuficiente para completar el pedido ${pedido.id_pedido} (${item.cantidad}).`);
                 }
             }
-            // Si el estado es 1 (entregado), no se muestra mensaje
         }
         
         return recordatorios.length > 0 ? recordatorios : ["No hay recordatorios"];
@@ -819,3 +902,147 @@ export const getDatosMesPasado = async () => {
         throw error;
     }
 };
+
+//! ==================================================================================================================================================
+
+export const getNombreUser = async() => {
+    try{
+        const [result] = await pool.query(`
+            SELECT usuario
+            FROM usuario_registrado LIMIT 1
+        `)
+
+        return result[0];
+    }
+    catch(error){
+        console.log(error);
+    }
+}
+
+//! ==================================================================================================================================================
+
+export const getEmpleados = async () => {
+    try{
+        const [result] = await pool.query (`
+            SELECT id_empleado, nombre, apellido 
+            FROM empleados
+        `)
+        return result
+    }
+    catch(error){
+        console.log(error);
+        throw error;
+    }
+}
+
+//? **********   **********   **********   **********   **********   **********   **********   **********   **********   **********   **********    ?//
+
+export const addEmpleados = async (empleado) => {
+    try {
+        const [result] = await pool.query(`
+            INSERT INTO empleados (nombre, apellido) VALUES (?, ?)`, [empleado.nombre, empleado.apellido]
+        );
+
+        console.log("Empleado agregado correctamente:", result.insertId);
+        return result.insertId
+
+    } catch (error) {
+        console.error("Error en addEmpleado:", error);
+        throw error; // dejamos que el controller lo capture
+    }
+}
+
+//? **********   **********   **********   **********   **********   **********   **********   **********   **********   **********   **********    ?//
+
+export const eliminarEmpleados = async (id) => {
+    try{
+        const [rows] = await pool.query("SELECT id_empleado FROM empleados WHERE id_empleado = ?", [id]);
+        
+        if(rows.length === 0) {
+            console.log("No se encontró el empleado con el ID proporcionado.");
+            return;
+        }
+        
+        // 2. Restar tabla detalles y empleado
+        await pool.query("DELETE FROM detalle_empleados WHERE id_empleado = ?", [id]);
+        await pool.query("DELETE FROM empleados WHERE id_empleado = ?", [id]);
+        console.log({ "mensaje": "Empleado eliminado correctamente", id});
+
+        return true;
+    }
+    catch(error){
+        console.log("Error al eliminar al empleado:", error);
+        return false;
+    }
+}
+
+//? **********   **********   **********   **********   **********   **********   **********   **********   **********   **********   **********    ?//
+
+export const addDetalle = async (detalle) => {
+    try {
+        const [result] = await pool.query(`
+            INSERT INTO detalle_empleados (id_empleado, precioHora, cantHoras, fechaCobro) 
+            VALUES (?, ?, ?, ?)
+            `, [detalle.id_empleado, detalle.precioHora, detalle.cantHoras, detalle.fechaCobro]
+        );
+
+        console.log("Detalle agregado correctamente:", result.insertId);
+        return result.insertId
+
+    } catch (error) {
+        console.error("Error en addDetalle:", error);
+        throw error; // dejamos que el controller lo capture
+    }
+}
+
+//? **********   **********   **********   **********   **********   **********   **********   **********   **********   **********   **********    ?//
+
+export const eliminarDetalleEmpleados = async (id) => {
+    try{
+        const [rows] = await pool.query("SELECT * FROM detalle_empleados WHERE id_detalle = ?", [id]);
+        
+        if(rows.length === 0) {
+            console.log("No se encontró el detalle del empleado con el ID proporcionado.");
+            return false;
+        }
+        
+        // eliminar el detalle
+        await pool.query("DELETE FROM detalle_empleados WHERE id_detalle = ?", [id]);
+        console.log({ "mensaje": "Detalle eliminado correctamente", id});
+
+        return true;
+    }
+    catch(error){
+        console.log("Error al eliminar al empleado:", error);
+        return false;
+    }
+}
+
+//? **********   **********   **********   **********   **********   **********   **********   **********   **********   **********   **********    ?//
+
+export const getDetalleEmpleados = async (id) => {
+    try{
+        const [result] = await pool.query(`
+            SELECT 
+                ROW_NUMBER() OVER (PARTITION BY de.id_empleado ORDER BY de.id_empleado) AS nro_detalle,
+                de.id_detalle, 
+                de.id_empleado,
+                e.nombre, 
+                de.precioHora, 
+                de.cantHoras, 
+                de.fechaCobro
+            FROM detalle_empleados de
+            JOIN empleados e ON de.id_empleado = e.id_empleado
+            WHERE de.id_empleado = ?
+            ORDER BY nro_detalle DESC
+        `, [id]);
+        return result;
+    }
+    catch(error){
+        console.log(error);
+        throw error;
+    }
+}
+
+//? **********   **********   **********   **********   **********   **********   **********   **********   **********   **********   **********    ?//
+

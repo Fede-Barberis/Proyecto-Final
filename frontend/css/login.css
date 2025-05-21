@@ -37,8 +37,7 @@ body {
     align-items: center;
     flex-direction: column;
     height: 100vh;
-    background: linear-gradient(90deg, var(--color-primary) 0%, var(--color-primary-variant) 100%);  
-    /* background-image: url(/frontend/img/huevo.webp); */
+    background: linear-gradient(90deg, var(--color-dark) 0%, var(--color-dark-variant) 100%);  
     background-size: cover;
     background-position: center;
 }
@@ -46,7 +45,7 @@ body {
 .container {
     background-color: var(--color-fondo);
     border-radius: 150px;
-    box-shadow: 0 5px 100px var(--color-dark);
+    box-shadow: 0 5px 100px var(--color-light);
     position: relative;
     overflow: hidden;
     width: 768px;

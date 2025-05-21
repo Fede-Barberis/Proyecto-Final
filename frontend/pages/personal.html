@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Personal</title>
+    <link rel="stylesheet" href="/frontend/css/header-asidebar.css">
+    <link rel="stylesheet" href="/frontend/css/personal.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css">
+    <script src="/frontend/scripts/personal.js" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels"></script>    
+</head>
+<body>
+    <header class="header">
+        <div class="left-header">
+            <img src="/frontend/img/500 MILLAS _Logo-6.jpg" alt="Logo" class="logo">
+            <span>500Millas</span>
+        </div>
+    </header>
+
+    <aside class="sidebar">
+        <nav class="sidebar-menu">
+            <a href="/frontend/pages/admin.html" class="sidebar-text"><i class="icono-barra bi bi-house"></i>Inicio</a>
+            <h4>Tienda</h4>
+            <a href="/frontend/pages/productos.html" class="sidebar-text"><i class="icono-barra bi bi-ui-checks-grid"></i></i>Productos</a>
+            <a href="/frontend/pages/materiaPrima.html" class="sidebar-text"><i class="icono-barra bi bi-clipboard-data"></i>Materia Prima</a>
+            <a href="#" class="sidebar-text active"><i class="icono-barra bi bi-person"></i>Personal</a>
+        </nav>
+        <div class="sidebar-footer">
+            <a href="#" class="sidebar-text"><i class="icono-barra bi bi-gear"></i>Configuracion</a>
+            <button id="cerrarSesion" class="sidebar-text btn-logout">
+                <i class="icono-barra bi bi-box-arrow-right"></i>Cerrar Sesion
+            </button>
+        </div>
+    </aside>
+
+    <main class="main">
+        <div class="text-container">
+            <h4 class="text-main">GESTION PERSONAL</h4>
+        </div>
+
+        <section class="section-tarjetas">
+            <div class="card-empleado">
+                <div class="card-tittle">
+                    <i class="bi bi-person-fill-add"></i>
+                </div>
+                <form class="form-empleado" id="form-empleado">
+                    <div class="card-content">
+                        <input class="form-input" type="text" name="nombre-empleado" id="nombre-empleado" placeholder="Nombre">
+                        <input class="form-input" type="text" name="apellido-empleado" id="apellido-empleado" placeholder="Apellido">  
+                        <p class="msj-error escondido" id="msj-error1"></p>
+                        <button class="card-btn agregar open-modal" name="btn-addEmpleado" id="btn-addEmpleado">
+                            Agregar empleado
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            <div class="card-empleado">
+                <form class="form-empleado" id="form-horasEmpleado">
+                    <div class="card-content">
+                        <select class="form-input" name="" id="select-empleados"></select>
+                        <input class="form-input" type="text" name="valor-hora" id="valor-hora" placeholder="Valor por hora">    
+                        <input class="form-input" type="text" name="horas-trabajadas" id="horas-trabajadas" placeholder="Horas trabajadas">
+                        <input class="form-input" type="date" name="fecha-cobro" id="fecha-cobro">
+                        <p class="msj-error escondido" id="msj-error2"></p>
+                        <button class="card-btn agregar open-modal" name="btn-addHoras" id="btn-addHoras">
+                            Agregar horas
+                        </button>
+                    </div> 
+                </form>
+            </div>
+
+            <div class="card-empleado">
+                <canvas class="graficaEmpleados" id="graficaEmpleados" ></canvas>
+            </div>
+        </section>
+
+        <section class="section-tabla">
+            <div class="table-container">
+                <table class="table">
+                    <thead class="head-empleados">
+                        <tr class="tr-empleados">
+                            <th>Id</th>
+                            <th>Nombre</th>
+                            <th>Apellido</th>
+                            <th>Detalles</th>
+                            <th>Eliminar</th>
+                        </tr>
+                    </thead>
+                    <tbody class="body-table">
+                        <!-- Aquí se agregarán las filas de pedidos dinámicamente -->
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    </main>
+
+
+    <!-- Modal -->
+    <div class="modal" id="modal">
+        <div class="modal-content">
+            <span class="close">x</span>
+                <h2>DETALLES DEL EMPLEADO</h2>
+                <div class="table-container">
+                <table class="table">
+                    <thead class="head-detalleEmpleados">
+                        <tr>
+                            <th>Id</th>
+                            <th>Empleado</th>
+                            <th>Precio Hora</th>
+                            <th>Horas</th>
+                            <th>Sueldo</th>
+                            <th>Fecha Cobro</th>
+                            <th>Eliminar</th>
+                        </tr>
+                    </thead>
+                    <tbody class="body-detalle-empleado">
+                        <!-- Aquí se agregarán las filas de pedidos dinámicamente -->
+                    </tbody>
+                </table>
+            </div>
+                
+            </div>
+        </div>
+    </div>
+</body>
+</html>

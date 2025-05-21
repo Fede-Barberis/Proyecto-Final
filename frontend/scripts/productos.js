@@ -1,13 +1,13 @@
-//* ==================== Selección de elementos ====================
+//*                                              ----- VARIABLES GLOBALES -----                                                                  *//
 
 const modal = document.getElementById("modal");
 const closeModalBtn = document.querySelector(".close");
 const openModalBtns = document.querySelectorAll(".open-modal");
 const forms = document.querySelectorAll(".form-container");
-const selectProducto1 = document.getElementById("producto1");
-const selectProducto2 = document.getElementById("producto2");
 
-//* ==================== Funciones Auxiliares ====================
+//! =================================================================================================================================================
+
+//*                                              ----- FUNCIONES AUXILIARES -----                                                                *//
 
 function getStockMessage(stock, limits) {
     if (stock === 0) return { text: "Sin stock", color: "red" };
@@ -16,28 +16,15 @@ function getStockMessage(stock, limits) {
     return { text: "Stock alto", color: "green" };
 }
 
-//* ==================== Modal ====================
+//! =================================================================================================================================================
+
+//*                                                  ----- MODAL -----                                                                           *//
 
 openModalBtns.forEach(button => {
     button.addEventListener("click", function () {
         const formId = this.getAttribute("data-form");
         forms.forEach(form => form.style.display = "none");
         document.getElementById(formId).style.display = "block";
-
-        // const productoSeleccionado = this.getAttribute("data-producto");
-        // const productos = {
-        //     "ALFAJORES": "1",
-        //     "GALLETAS MARINAS S/S": "2",
-        //     "GALLETAS MARINAS C/S": "3"
-        // };
-        // const valorNumerico = productos[productoSeleccionado];
-
-        // switch(formId){
-        //     case "form1": selectProducto1.value = valorNumerico;
-        //     case "form2": selectProducto2.value = valorNumerico;
-        //     case "form3": selectProducto3.value = valorNumerico;
-        // }
-
         modal.style.display = "flex";
     });
 });
@@ -54,7 +41,10 @@ window.addEventListener("click", function (e) {
     }
 });
 
-//* ==================== Formulario Producción ====================
+//! =================================================================================================================================================
+
+//*                                            ----- FORMULARIO PRODUCCION-----                                                                  *//
+
 
 document.addEventListener("DOMContentLoaded", () => {
     const btnAgregar = document.getElementById("btnAgregarProducto");
@@ -86,6 +76,9 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 });
 
+//? **********   **********   **********   **********   **********   **********   **********   **********   **********   **********   **********    ?//
+
+//* ENVIAR FORMLARIO PRODUCCION
 document.getElementById('formProduccion').addEventListener('submit', async function (e) {
     e.preventDefault();
 
@@ -153,8 +146,9 @@ document.getElementById('formProduccion').addEventListener('submit', async funct
     }
 });
 
+//! =================================================================================================================================================
 
-//* ==================== Formulario Ventas ====================
+//*                                               ----- FORMULARIO VENTAS-----                                                                  *//
 
 document.getElementById("formVentas").addEventListener("submit", async (e) => {
     e.preventDefault();
@@ -194,8 +188,10 @@ document.getElementById("formVentas").addEventListener("submit", async (e) => {
     }
 });
 
+//! =================================================================================================================================================
 
-//* ==================== Formulario Pedidos ====================
+//*                                               ----- FORMULARIO PEDIDOS-----                                                                  *//
+
 
 document.addEventListener("DOMContentLoaded", () => {
     // 1. Conectamos el botón después de que el DOM esté listo
@@ -232,6 +228,10 @@ document.addEventListener("DOMContentLoaded", () => {
         console.log(`Producto agregado: producto_nombre_${index}`);
     }
 });
+
+//? **********   **********   **********   **********   **********   **********   **********   **********   **********   **********   **********    ?//
+
+//* ENVIAR FORMULARIO DE PEDIDOS
 
 document.getElementById('formPedidos').addEventListener('submit', async function (e) {
     e.preventDefault();
@@ -283,6 +283,7 @@ document.getElementById('formPedidos').addEventListener('submit', async function
     }
 });
 
+//? **********   **********   **********   **********   **********   **********   **********   **********   **********   **********   **********   ?//
 
 async function cargarCantPedidos() {
     try {
@@ -332,7 +333,10 @@ async function cargarCantPedidos() {
     }
 }
 
-//* ==================== Cargar Stock ====================
+//! =================================================================================================================================================
+
+//*                                                  ----- CARGAR STOCK-----                                                                    *//
+
 
 async function cargarStock() {
     try {
@@ -432,7 +436,10 @@ async function cargarStock() {
 
 // cargarStockGeneral("http://localhost:4000/api/obtenerProductos", stockLimits);
 
-//* ==================== Tabla Producción ====================
+//! =================================================================================================================================================
+
+//*                                              ----- TABLA PRODUCCION -----                                                                    *//
+
 
 async function cargarProduccion(filtroFecha = "todas", filtroProducto = "todos") {
     const res = await fetch(`http://localhost:4000/api/obtenerProduccion?filtroFecha=${filtroFecha}&filtroProducto=${filtroProducto}`);
@@ -486,7 +493,10 @@ async function cargarProduccion(filtroFecha = "todas", filtroProducto = "todos")
     });
 }
 
-//* ==================== Tabla Ventas ====================
+//! =================================================================================================================================================
+
+//*                                              ----- TABLA VENTAS -----                                                                         *//
+
 
 async function cargarVentas(filtroFecha = "todas", filtroProducto = "todos") {
     const res = await fetch(`http://localhost:4000/api/obtenerVentas?filtroFecha=${filtroFecha}&filtroProducto=${filtroProducto}`);
@@ -528,7 +538,10 @@ async function cargarVentas(filtroFecha = "todas", filtroProducto = "todos") {
     });
 }
 
-//* ==================== Tabla Pedidos ====================
+//! =================================================================================================================================================
+
+//*                                                 ----- TABLA PEDIDOS -----                                                                    *//
+
 
 async function cargarPedidos(filtroFecha = "todas", filtroProducto = "todos") {
     const res = await fetch(`http://localhost:4000/api/obtenerPedidos?filtroFecha=${filtroFecha}&filtroProducto=${filtroProducto}`);
@@ -614,7 +627,10 @@ async function cargarPedidos(filtroFecha = "todas", filtroProducto = "todos") {
     });
 }
 
-//* ==================== Inicio ====================
+//! =================================================================================================================================================
+
+//*                                                 ----- INICIO -----                                                                            *//
+
 
 document.addEventListener("DOMContentLoaded", () => {
     document.getElementById("filtrarBtn").addEventListener("click", async () => {
@@ -654,10 +670,21 @@ document.addEventListener("DOMContentLoaded", () => {
     
 });
 
-//* ==================== Scroll automático ====================
+//! =================================================================================================================================================
 
-document.getElementById("btn-abajo").addEventListener("click", () => {
-    document.getElementById("section2").scrollIntoView({ behavior: "smooth" });
+//*                                          ----- SCROLL AUTOMATICO -----                                                                        *//
+
+
+document.getElementById("btn-abajo1").addEventListener("click", () => {
+    document.getElementById("section-produccion").scrollIntoView({ behavior: "smooth" });
+});
+
+document.getElementById("btn-abajo2").addEventListener("click", () => {
+    document.getElementById("section-venta").scrollIntoView({ behavior: "smooth" });
+});
+
+document.getElementById("btn-abajo3").addEventListener("click", () => {
+    document.getElementById("section-pedidos").scrollIntoView({ behavior: "smooth" });
 });
 
 

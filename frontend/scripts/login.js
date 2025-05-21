@@ -10,8 +10,9 @@ loginbtn.addEventListener("click", () => {
     container.classList.remove("active")
 })
 
-//=============================================================================================================
+//! ==============================================================================================================================================
 
+//*                                                  ------ REGISTRARSE ------                                                                 *//
 
 document.getElementById("registrarse").addEventListener("submit", async (e) => {
     e.preventDefault();
@@ -36,7 +37,6 @@ document.getElementById("registrarse").addEventListener("submit", async (e) => {
             msjError.classList.add("escondido");
         }
         else {
-            // Manejar errores del servidor
             const errorData = await res.json();
             msjError.textContent = errorData.message;
             msjError.classList.remove("escondido");
@@ -47,7 +47,10 @@ document.getElementById("registrarse").addEventListener("submit", async (e) => {
     }
 });
 
-//=============================================================================================================
+//! ==============================================================================================================================================
+
+//*                                                ------ INICIAR SESION ------                                                                *//
+
 
 document.getElementById("iniciarSesion").addEventListener("submit", async (e) => {
     e.preventDefault()
@@ -78,7 +81,6 @@ document.getElementById("iniciarSesion").addEventListener("submit", async (e) =>
             }
         }
         else {
-            // Manejar errores del servidor
             const errorData = await res.json(); 
             msjError2.textContent = errorData.message;
             msjError2.classList.remove("escondido");
@@ -87,5 +89,4 @@ document.getElementById("iniciarSesion").addEventListener("submit", async (e) =>
     catch(error){
         console.error("Error al iniciar sesion:", error);
     }
-
 })

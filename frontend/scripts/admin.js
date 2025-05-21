@@ -12,7 +12,23 @@ document.addEventListener("DOMContentLoaded", () => {
 
     //! =============================================================================================================================================
     
-    //*                                              ------ TARJETAS ------                                                                       *//
+    async function cargarNombreUsuario() {
+        try {
+            const res = await fetch("http://localhost:4000/api/obtenerNombreUsuario")
+            const datos = await res.json()
+            console.log("Dato recibido:", datos);
+
+            const nombreUser = document.getElementById("nombre-user");
+            nombreUser.textContent = datos.user;
+        }
+        catch(error) {
+            console.error("Error al cargar el nombre de usuario:", error);
+        }
+    }
+
+    //! =============================================================================================================================================
+    
+    //*                                       ------ TARJETAS RESUMEN NEGOCIO------                                                              *//
 
     const ventasMes = document.getElementById("ventasMes")
     const ingresosMes = document.getElementById("ingresosMes")
@@ -37,34 +53,44 @@ document.addEventListener("DOMContentLoaded", () => {
 
     //! ==============================================================================================================================================
 
-    //*                                      ------ GRAFICA DE VENTAS Y PRODUCCION ------                                                         *//
+    //*                                      ------ GRAFICA DE VENTAS Y PRODUCCIONES ------                                                       *//
     
+    let graficoProdVentas = null;
+
     async function cargarGrafico(){
         try{
             const res = await fetch("http://localhost:4000/api/obtenerDatosGraficos")
-
-            if (!res.ok) {
-                throw new Error("Error al obtener datos");
-            }
-            
+            if (!res.ok) throw new Error("Error al obtener datos");
             const data = await res.json()
             
             const ctx = document.getElementById('graficaVentas').getContext('2d');
-            new Chart(ctx, {
+
+            // Si ya hay un gráfico, lo destruimos
+            if (graficoProdVentas) {
+                graficoProdVentas.destroy();
+            }
+
+            graficoProdVentas = new Chart(ctx, {
                 type: "line",
                 data: {
                     labels: ["Ene", "Feb", "Mar", "Abr", "May", "Jun", "Jul", "Ago", "Sep", "Oct", "Nov", "Dic"],
                     datasets: [{
                         label: "Cantidad Ventas",
                         data: data.ventas,
-                        backgroundColor: 'rgba(85, 85, 85, 1)',
+                        fill: true, // << Esto habilita el área debajo de la línea
+                        pointBorderColor: 'rgb(0, 0, 0)',
+                        pointBackgroundColor: 'rgb(255, 255, 255)',
+                        backgroundColor: 'rgba(11, 93, 0, 0.1)',
                         borderColor: 'rgb(41, 155, 99)',
                         borderWidth: 2,
                     },
                     {
                         label: "Cantidad Produccion",
                         data: data.produccion,
-                        backgroundColor: 'rgb(0, 225, 255)',
+                        fill: true, // << Esto habilita el área debajo de la línea
+                        pointBorderColor: 'rgb(0, 0, 0)',
+                        pointBackgroundColor: 'rgb(255, 255, 255)',
+                        backgroundColor: 'rgba(17, 0, 255, 0.1)',
                         borderColor: 'rgb(41, 52, 155)',
                         borderWidth: 2
                     }]
@@ -72,6 +98,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
                 options: {
                     responsive: true,
+                    plugins: {
+                        legend: { display: false }
+                    },
                     scales: {
                         y: {
                             beginAtZero: true
@@ -90,17 +119,22 @@ document.addEventListener("DOMContentLoaded", () => {
 
     //*                                      ------ GRAFICA DE TORTA ------                                                                     *//
 
+    let graficoTorta = null;
+
     async function cargarGraficoTorta() {
         try {
             const res = await fetch("http://localhost:4000/api/obtenerDatosTorta");
-            
             if (!res.ok) throw new Error("Error al obtener datos");
-        
             const data = await res.json();
 
             const ctx2 = document.getElementById('graficaProduccion').getContext('2d');
+
+            // Si ya hay un gráfico, lo destruimos
+            if (graficoTorta) {
+                graficoTorta.destroy();
+            }
             
-            new Chart(ctx2, {
+            graficoTorta = new Chart(ctx2, {
                 type: "doughnut",
                 data: {
                     labels: data.labels,
@@ -113,7 +147,7 @@ document.addEventListener("DOMContentLoaded", () => {
                             'rgba(130, 227, 125, 0.6)',
                         ],    
                         borderColor: [
-                            'rgba(12, 0, 142, 1)',
+                            'rgba(12, 0, 142, 0.6)',
                             'rgba(246, 255, 0, 1)',
                             'rgba(13, 255, 0, 1)',
                         ],
@@ -142,9 +176,7 @@ document.addEventListener("DOMContentLoaded", () => {
     async function cargarRecordatorios() {
         try{
             const res = await fetch("http://localhost:4000/api/obtenerRecordatorios")
-            
             if (!res.ok) throw new Error("Error al obtener datos");
-            
             const alertas = await res.json();
 
             const lista = document.getElementById("lista-alertas");
@@ -179,9 +211,7 @@ document.addEventListener("DOMContentLoaded", () => {
             const doc = new jsPDF();
         
             const res = await fetch("http://localhost:4000/api/obtenerTarjetasPdf")
-            
             if (!res.ok) throw new Error("Error al obtener datos para el PDF");
-
             const data = await res.json();
 
             const ventasMes = data.ventasMes || 0;
@@ -191,6 +221,9 @@ document.addEventListener("DOMContentLoaded", () => {
             const stockAlfajores = data.stockAlfajores || 0;
             const stockGalletasSS = data.stockGalletasSS || 0;
             const stockGalletasCS = data.stockGalletasCS || 0;
+            const ventaAlfajores = data.ventaAlfajores || 0;
+            const ventaGalletasSS = data.ventaGalletasSS || 0;
+            const ventaGalletasCS = data.ventaGalletasCS || 0;
             const mes = new Date().toLocaleString("default", { month: "long" });
 
             // Título
@@ -220,6 +253,14 @@ document.addEventListener("DOMContentLoaded", () => {
             doc.text(`Alfajores producidos: ${stockAlfajores}`, 10, 100);
             doc.text(`Galletas S/S producidas: ${stockGalletasSS}`, 10, 110);
             doc.text(`Galletas C/S Producidas: ${stockGalletasCS}`, 10, 120);
+
+            doc.setFont("helvetica", "bold");
+            doc.text(`PRODUCTOS VENDIDOS`, 10, 135); 
+
+            doc.setFont("helvetica", "normal");
+            doc.text(`Alfajores: ${ventaAlfajores}`, 10, 145);
+            doc.text(`Galletas S/S: ${ventaGalletasSS}`, 10, 155);
+            doc.text(`Galletas C/S: ${ventaGalletasCS}`, 10, 165);
         
             // Descargar el PDF
             doc.save(`Resumen_Mensual_${mes}.pdf`);
@@ -234,6 +275,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     //*                                             ------ INICIALIZACIONES ------                                                                *//
 
+    cargarNombreUsuario();
     cargarTarjetas();
     cargarGrafico();
     cargarGraficoTorta();
@@ -242,7 +284,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 //! =================================================================================================================================================
 
-//*                                                  ------ PORCENTAJES ------                                                                    *//
+//*                                              ------ PORCENTAJES TARJETAS------                                                               *//
 
 // Llamar a la función al cargar la página
 document.addEventListener("DOMContentLoaded", () => {
@@ -259,8 +301,8 @@ async function actualizarPorcentajes() {
 
         // porcentajes de cambio
         const porcentajes = {
-            ventasMes: ((datosActuales.ventasMes - datosMesPasado.ventasMesPasado) / datosMesPasado.ventasMesPasado) * 10,
-            ingresosMes: ((datosActuales.ingresosMes - datosMesPasado.ingresosMesPasado) / datosMesPasado.ingresosMesPasado) * 10,
+            ventasMes: ((datosActuales.ventasMes - datosMesPasado.ventasMesPasado) / datosMesPasado.ventasMesPasado) * 100,
+            ingresosMes: ((datosActuales.ingresosMes - datosMesPasado.ingresosMesPasado) / datosMesPasado.ingresosMesPasado) * 100,
         };
 
         // Actualizar los círculos
@@ -288,10 +330,10 @@ function actualizarCirculo(id, porcentaje) {
     // Cambiar el color según el porcentaje
     if (porcentajeRedondeado >= 0) {
         elemento.classList.remove("decrease");
-        elemento.style.backgroundColor = "var(--color-success-variant)"; // Verde
+        elemento.style.backgroundColor = "var(--color-success-variant)";
     } else {
         elemento.classList.add("decrease");
-        elemento.style.backgroundColor = "var(--color-danger)"; // Rojo
+        elemento.style.backgroundColor = "var(--color-danger)";
     }
 }
 
