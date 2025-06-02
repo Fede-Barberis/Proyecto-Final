@@ -69,7 +69,7 @@ document.getElementById("formMateriaPrima").addEventListener("submit", async (e)
     msjError.classList.add("escondido")
 
     try{
-        const res = await fetch("http://localhost:4000/api/guardarMateriaPrima", {
+        const res = await fetch("http://localhost:4000/api/materiaPrimaGuardar", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json"
@@ -110,8 +110,8 @@ function getStockMessage(stock, limits) {
 
 async function cargarStockMP() {
     try {
-        console.log("Ejecutando cargarStockMP");
-        const res = await fetch("http://localhost:4000/api/obtenerMateriaPrima")
+        console.log("\nEjecutando cargarStockMP");
+        const res = await fetch("http://localhost:4000/api/materiaPrimaObtener")
         const materiaPrima = await res.json()
         const materiaPrimaMap = new Map(materiaPrima.map(mp => [mp.nombre, mp.stock]));
 
@@ -186,7 +186,7 @@ async function cargarStockMP() {
 
 async function cargarMateriaPrima(filtroFecha = "todas", filtroProducto = "todos") {
     try {
-        const res = await fetch(`http://localhost:4000/api/obtenerCompra?filtroFecha=${filtroFecha}&filtroProducto=${filtroProducto}`);
+        const res = await fetch(`http://localhost:4000/api/materiaPrimaObtenerCompra?filtroFecha=${filtroFecha}&filtroProducto=${filtroProducto}`);
         const materiaPrima = await res.json();
 
         const bodyTable = document.querySelector(".body-table");
@@ -221,7 +221,7 @@ async function cargarMateriaPrima(filtroFecha = "todas", filtroProducto = "todos
                 const nuevoEstado = mp.isPagado ? false : true;
 
                 try {
-                    const res = await fetch(`http://localhost:4000/api/actualizarEstadoPago/${id}`, {
+                    const res = await fetch(`http://localhost:4000/api/materiaPrimaActualizarEstadoPago/${id}`, {
                         method: "PUT",
                         headers: { "Content-Type": "application/json" },
                         body: JSON.stringify({ isPagado: nuevoEstado })
@@ -238,7 +238,7 @@ async function cargarMateriaPrima(filtroFecha = "todas", filtroProducto = "todos
                 const id = this.getAttribute("data-id");
 
                 try {
-                    const res = await fetch(`http://localhost:4000/api/eliminarCompra/${id}`, {
+                    const res = await fetch(`http://localhost:4000/api/materiaPrimaEliminarCompra/${id}`, {
                         method: "DELETE"
                     });
 

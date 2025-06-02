@@ -118,7 +118,7 @@ document.getElementById('formProduccion').addEventListener('submit', async funct
     }
 
     try {
-        const res = await fetch("http://localhost:4000/api/guardarProduccion", {
+        const res = await fetch("http://localhost:4000/api/produccionGuardar", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ datos, productos }),
@@ -164,7 +164,7 @@ document.getElementById("formVentas").addEventListener("submit", async (e) => {
     msjError2.classList.add("escondido");
 
     try {
-        const res = await fetch("http://localhost:4000/api/guardarVenta", {
+        const res = await fetch("http://localhost:4000/api/ventaGuardar", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ fecha, idProducto, cantidad, precio, persona })
@@ -256,7 +256,7 @@ document.getElementById('formPedidos').addEventListener('submit', async function
     });
 
     try {
-        const res = await fetch("http://localhost:4000/api/guardarPedido", {
+        const res = await fetch("http://localhost:4000/api/pedidoGuardar", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ fechaEntrega, personaPedido, productos }),
@@ -287,10 +287,10 @@ document.getElementById('formPedidos').addEventListener('submit', async function
 
 async function cargarCantPedidos() {
     try {
-        const resPedidos = await fetch("http://localhost:4000/api/obtenerCantidadPedidos");
+        const resPedidos = await fetch("http://localhost:4000/api/pedidoObtenerCantidadPedidos");
         const pedidos = await resPedidos.json();
 
-        const resProductos = await fetch("http://localhost:4000/api/obtenerProductos");
+        const resProductos = await fetch("http://localhost:4000/api/productosObtener");
         const productos = await resProductos.json();
 
         const pedidosMap = new Map(pedidos.map(p => [p.nombre, p.cantidad]));
@@ -340,7 +340,7 @@ async function cargarCantPedidos() {
 
 async function cargarStock() {
     try {
-        const res = await fetch("http://localhost:4000/api/obtenerProductos");
+        const res = await fetch("http://localhost:4000/api/productosObtener");
         const productos = await res.json();
         const productosMap = new Map(productos.map(p => [p.nombre, p.stock]));
 
@@ -442,7 +442,7 @@ async function cargarStock() {
 
 
 async function cargarProduccion(filtroFecha = "todas", filtroProducto = "todos") {
-    const res = await fetch(`http://localhost:4000/api/obtenerProduccion?filtroFecha=${filtroFecha}&filtroProducto=${filtroProducto}`);
+    const res = await fetch(`http://localhost:4000/api/produccionObtener?filtroFecha=${filtroFecha}&filtroProducto=${filtroProducto}`);
     const data = await res.json();
     const body = document.querySelector(".body-table");
     if (!body) return;
@@ -476,7 +476,7 @@ async function cargarProduccion(filtroFecha = "todas", filtroProducto = "todos")
 
         row.querySelector(".btn-eliminar").addEventListener("click", async () => {
             try {
-                const res = await fetch(`http://localhost:4000/api/eliminarProduccion/${prod.id_produccion}`, { 
+                const res = await fetch(`http://localhost:4000/api/produccionEliminar/${prod.id_produccion}`, { 
                     method: "DELETE" 
                 });
 
@@ -499,7 +499,7 @@ async function cargarProduccion(filtroFecha = "todas", filtroProducto = "todos")
 
 
 async function cargarVentas(filtroFecha = "todas", filtroProducto = "todos") {
-    const res = await fetch(`http://localhost:4000/api/obtenerVentas?filtroFecha=${filtroFecha}&filtroProducto=${filtroProducto}`);
+    const res = await fetch(`http://localhost:4000/api/ventaObtener?filtroFecha=${filtroFecha}&filtroProducto=${filtroProducto}`);
     const ventas = await res.json();
     const body = document.querySelector(".body-table2");
     if (!body) return;
@@ -521,7 +521,7 @@ async function cargarVentas(filtroFecha = "todas", filtroProducto = "todos") {
 
         row.querySelector(".btn-eliminar").addEventListener("click", async () => {
             try {
-                const res = await fetch(`http://localhost:4000/api/eliminarVenta/${venta.id_venta}`, { 
+                const res = await fetch(`http://localhost:4000/api/ventaEliminar/${venta.id_venta}`, { 
                     method: "DELETE" 
                 });
 
@@ -544,7 +544,7 @@ async function cargarVentas(filtroFecha = "todas", filtroProducto = "todos") {
 
 
 async function cargarPedidos(filtroFecha = "todas", filtroProducto = "todos") {
-    const res = await fetch(`http://localhost:4000/api/obtenerPedidos?filtroFecha=${filtroFecha}&filtroProducto=${filtroProducto}`);
+    const res = await fetch(`http://localhost:4000/api/pedidoObtener?filtroFecha=${filtroFecha}&filtroProducto=${filtroProducto}`);
     const pedidos = await res.json();
     const body = document.querySelector(".body-table3");
     if (!body) return;
@@ -591,7 +591,7 @@ async function cargarPedidos(filtroFecha = "todas", filtroProducto = "todos") {
                 const nuevoEstado = pedido.estado ? false : true;
 
                 try {
-                    const res = await fetch(`http://localhost:4000/api/actualizarEstadoEntrega/${id}`, {
+                    const res = await fetch(`http://localhost:4000/api/pedidoActualizarEstadoEntrega/${id}`, {
                         method: "PUT",
                         headers: { "Content-Type": "application/json" },
                         body: JSON.stringify({ estado: nuevoEstado })
@@ -611,7 +611,7 @@ async function cargarPedidos(filtroFecha = "todas", filtroProducto = "todos") {
 
         row.querySelector(".btn-eliminar").addEventListener("click", async () => {
             try {
-                const res = await fetch(`http://localhost:4000/api/eliminarPedido/${pedido.id_pedido}`, { 
+                const res = await fetch(`http://localhost:4000/api/pedidoEliminar/${pedido.id_pedido}`, { 
                     method: "DELETE" 
                 });
 

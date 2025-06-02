@@ -4,7 +4,6 @@ import path from 'path';
 import cookieParser from "cookie-parser";
 import { fileURLToPath } from "url";
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
-import { methods as authentication } from "./controllers.js";
 import { methods as authorization } from "./middlewares/authorization.js";
 
 

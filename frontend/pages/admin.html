@@ -30,9 +30,9 @@
             <a href="/frontend/pages/personal.html" class="sidebar-text"><i class="icono-barra bi bi-person"></i>Personal</a>
         </nav>
         <div class="sidebar-footer">
-            <a href="#" class="sidebar-text"><i class="icono-barra bi bi-gear"></i>Settings</a>
+            <a href="#" class="sidebar-text"><i class="icono-barra bi bi-gear"></i>Configuracion</a>
             <button id="cerrarSesion" class="sidebar-text btn-logout">
-                <i class="icono-barra bi bi-box-arrow-right"></i>Logout
+                <i class="icono-barra bi bi-box-arrow-right"></i>Cerrar Sesión
             </button>
         </div>
     </aside>
@@ -99,33 +99,57 @@
             </div>
 
             <div class="container2">
-                <div class="resumen">
-                    <div class="resumen-header">
-                        <span><i class="bi bi-filetype-pdf"></i></i></span>
-                        <h4 class="text-header">Resumen del mes</h4>
-                    </div>
-                    <div class="resumen-content">
-                        <button id="btn-descargar-pdf" class="btn-imprimir"><i class="bi bi-file-earmark-arrow-down" title="Descargar"></i></button>
-                    </div>
-                </div>
-
                 <div class="estadoPedidos">
                     <div class="pedidos-header">
                         <span><i class="bi bi-ui-checks-grid"></i></i></span>
                         <h4 class="text-header">Estado Pedidos</h4>
                     </div>
                     <div class="pedidos-content">
-                        <div class="circulo1">
-                            <div class="estado-pedido" id="totalPedidos">9</div>
+                        <div class="circulo">
+                            <div class="circulo-header tooltip">
+                                <h4 class="text-circulo">
+                                    <i class="bi bi-graph-up"></i>
+                                </h4>
+                                <span class="tooltiptext">Total Pedidos</span>
+                            </div>
+                            <div class="circulo-content circulo1">
+                                <div class="estado-pedido" id="totalPedidos"></div>
+                            </div>
+                        </div>
+                        
+                        <div class="circulo">
+                            <div class="circulo-header tooltip">
+                                <h4 class="text-circulo">
+                                    <i class="bi bi-truck"></i>
+                                </h4>
+                                <span class="tooltiptext">Entregados</span>
+                            </div>
+                            <div class="circulo-content circulo2">
+                                <div class="estado-pedido" id="pedidosEntregados"></div>
+                            </div>
                         </div>
 
-                        <div class="circulo2">
-                            <div class="estado-pedido" id="pedidosEntregados">3</div>
+                        <div class="circulo">
+                            <div class="circulo-header tooltip">
+                                <h4 class="text-circulo">
+                                    <i class="bi bi-hourglass-split"></i>
+                                </h4>
+                                <span class="tooltiptext">Pendientes</span>
+                            </div>
+                            <div class="circulo-content circulo3">
+                                <div class="estado-pedido" id="pedidosPendientes"></div>
+                            </div>
                         </div>
+                    </div>
+                </div>
 
-                        <div class="circulo3">
-                            <div class="estado-pedido" id="pedidosPendientes">6</div>
-                        </div>
+                <div class="resumen">
+                    <div class="resumen-header">
+                        <span><i class="bi bi-filetype-pdf"></i></i></span>
+                        <h4 class="text-header">Resumen del mes</h4>
+                    </div>
+                    <div class="resumen-content">
+                        <button id="btn-descargar-pdf" class="btn-imprimir" title="Descargar"><i class="bi bi-file-earmark-arrow-down"></i></button>
                     </div>
                 </div>
             </div>

@@ -1,42 +1,60 @@
 import express from "express";
-import { methods as authentication } from "./controllers.js";
+import { methodsUsuarios as authentication } from "./controllers/usuarios/usuariosControllers.js";
+import { methodsProduccion  } from "./controllers/produccion/produccionControllers.js";
+import { methodsVentas } from "./controllers/ventas/ventasControllers.js";
+import { methodsMateriaPrima } from "./controllers/materiaPrima/materiaPrimaControllers.js";
+import { methodsPedidos } from "./controllers/pedidos/pedidosControllers.js";
+import { methodsEmpleados } from "./controllers/empleados/empleadosControllers.js";
+import { methodsGraficos } from "./controllers/graficos/graficosControllers.js";
+import { methodsAdicionales } from "./controllers/adicionales/utilsControllers.js";
+
 
 const router = express.Router();
 
-router.post("/register", authentication.register);
 router.post("/login", authentication.login);
-router.post("/guardarDatos", authentication.guardarDatos);
-router.get("/obtenerNombreUsuario", authentication.obtenerNombreUsuario);
-router.post("/guardarProduccion", authentication.guardarProduccion);
-router.post("/guardarVenta", authentication.guardarVenta);
-router.get("/obtenerProductos", authentication.obtenerProductos);
-router.get("/obtenerVentas", authentication.obtenerVentas);
-router.get("/obtenerTarjetas", authentication.obtenerTarjetas);
-router.get("/obtenerProduccion", authentication.obtenerProduccion);
-router.get("/verificarStock", authentication.verificarStock);
-router.post("/guardarMateriaPrima", authentication.guardarMateriaPrima);
-router.get("/obtenerMateriaPrima", authentication.obtenerMateriaPrima);
-router.get("/obtenerCompra", authentication.obtenerCompra);
-router.put("/actualizarEstadoPago/:id", authentication.actualizarEstadoPago);
-router.delete("/eliminarCompra/:id", authentication.eliminarCompra);
-router.delete("/eliminarProduccion/:id", authentication.eliminarProduccion);
-router.delete("/eliminarVenta/:id", authentication.eliminarVenta);
-router.post("/guardarPedido", authentication.guardarPedido);
-router.get("/obtenerPedidos", authentication.obtenerPedidos);
-router.get("/obtenerCantidadPedidos", authentication.obtenerCantidadPedidos);
-router.put("/actualizarEstadoEntrega/:id", authentication.actualizarEstadoEntrega);
-router.delete("/eliminarPedido/:id", authentication.eliminarPedido);
-router.get("/obtenerDatosGraficos", authentication.obtenerDatosGraficos);
-router.get("/obtenerDatosTorta", authentication.obtenerDatosTorta);
-router.get("/obtenerGraficoEmpleados", authentication.obtenerGraficoEmpleados);
-router.get("/obtenerEmpleados", authentication.obtenerEmpleados);
-router.post("/agregarEmpleado", authentication.agregarEmpleado);
-router.post("/agregarDetalle", authentication.agregarDetalle);
-router.get("/obtenerDetallesEmpleados/:id", authentication.obtenerDetallesEmpleados);
-router.delete("/eliminarEmpleado/:id", authentication.eliminarEmpleado);
-router.delete("/eliminarDetalleEmpleado/:id", authentication.eliminarDetalleEmpleado);
-router.get("/obtenerRecordatorios", authentication.obtenerRecordatorios);
-router.get("/obtenerTarjetasPdf", authentication.obtenerTarjetasPdf);
-router.get("/obtenerDatosMesPasado", authentication.obtenerDatosMesPasado);
+router.get("/usuarioObtenerNombre", authentication.usuarioObtenerNombre);
+// router.post("/register", authentication.register);
+// router.post("/usuarioGuardar", authentication.usuarioGuardar);
+
+router.get("/produccionObtener", methodsProduccion.produccionObtener);
+router.post("/produccionGuardar", methodsProduccion.produccionGuardar);
+router.delete("/produccionEliminar/:id", methodsProduccion.produccionEliminar);
+router.get("/productosObtener", methodsProduccion.productosObtener);
+
+router.get("/ventaObtener", methodsVentas.ventaObtener);
+router.post("/ventaGuardar", methodsVentas.ventaGuardar);
+router.delete("/ventaEliminar/:id", methodsVentas.ventaEliminar);
+router.get("/verificarStock", methodsVentas.verificarStock);
+
+router.get("/materiaPrimaObtener", methodsMateriaPrima.materiaPrimaObtener);
+router.post("/materiaPrimaGuardar", methodsMateriaPrima.materiaPrimaGuardar);
+router.get("/materiaPrimaObtenerCompra", methodsMateriaPrima.materiaPrimaObtenerCompra);
+router.delete("/materiaPrimaEliminarCompra/:id", methodsMateriaPrima.materiaPrimaEliminarCompra);
+router.put("/materiaPrimaActualizarEstadoPago/:id", methodsMateriaPrima.materiaPrimaActualizarEstadoPago);
+
+router.get("/pedidoObtener", methodsPedidos.pedidoObtener);
+router.post("/pedidoGuardar", methodsPedidos.pedidoGuardar);
+router.delete("/pedidoEliminar/:id", methodsPedidos.pedidoEliminar);
+router.get("/pedidoObtenerCantidadPedidos", methodsPedidos.pedidoObtenerCantidadPedidos);
+router.put("/pedidoActualizarEstadoEntrega/:id", methodsPedidos.pedidoActualizarEstadoEntrega);
+router.get("/pedidoObtenerEstadoPedidos", methodsPedidos.pedidoObtenerEstadoPedidos);
+
+router.get("/empleadoObtener", methodsEmpleados.empleadoObtener);
+router.post("/empleadoAgregar", methodsEmpleados.empleadoAgregar);
+router.delete("/empleadoEliminar/:id", methodsEmpleados.empleadoEliminar);
+router.get("/empleadoObtenerDetalle/:id", methodsEmpleados.empleadoObtenerDetalle);
+router.post("/empleadoAgregarDetalle", methodsEmpleados.empleadoAgregarDetalle);
+router.delete("/empleadoEliminarDetalle/:id", methodsEmpleados.empleadoEliminarDetalle);
+router.get("/empleadoObtenerGrafico", methodsEmpleados.empleadoObtenerGrafico);
+
+router.get("/obtenerDatosGraficos", methodsGraficos.obtenerDatosGraficos);
+router.get("/obtenerDatosTorta", methodsGraficos.obtenerDatosTorta);
+
+router.get("/adicionalesObtenerRecordatorios", methodsAdicionales.adicionalesObtenerRecordatorios);
+router.get("/adicionalesObtenerTarjetas", methodsAdicionales.adicionalesObtenerTarjetas);
+router.get("/adicionalesObtenerTarjetasPdf", methodsAdicionales.adicionalesObtenerTarjetasPdf);
+router.get("/adicionalesObtenerDatosMesPasado", methodsAdicionales.adicionalesObtenerDatosMesPasado);
 
 export default router;
+
+

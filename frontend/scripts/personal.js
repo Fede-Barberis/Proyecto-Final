@@ -27,7 +27,7 @@ document.addEventListener("DOMContentLoaded", () => {
     // Función para cargar los detalles de un empleado
     async function cargarDetallesEmpleado(id) {
         try {
-            const res = await fetch(`http://localhost:4000/api/obtenerDetallesEmpleados/${id}`);
+            const res = await fetch(`http://localhost:4000/api/empleadoObtenerDetalle/${id}`);
             if (!res.ok) throw new Error("Error al obtener detalles del empleado");
             
             const data = await res.json();
@@ -75,7 +75,7 @@ document.addEventListener("DOMContentLoaded", () => {
             if (!confirmar) return;
             
             try {
-                const res = await fetch(`http://localhost:4000/api/eliminarDetalleEmpleado/${idDetalle}`, {
+                const res = await fetch(`http://localhost:4000/api/empleadoEliminarDetalle/${idDetalle}`, {
                     method: "DELETE"
                 })
 
@@ -98,7 +98,7 @@ document.addEventListener("DOMContentLoaded", () => {
     //*                                              ----- TABLA EMPLEADOS -----                                                                 *//
 
     async function cargarEmpleados() {
-        const res = await fetch(`http://localhost:4000/api/obtenerEmpleados`);
+        const res = await fetch(`http://localhost:4000/api/empleadoObtener`);
         const data = await res.json();
         const body = document.querySelector(".body-table");
         if (!body) return;
@@ -123,7 +123,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 if (!confirmar) return;
 
                 try {
-                    const res = await fetch(`http://localhost:4000/api/eliminarEmpleado/${empl.id_empleado}`, { 
+                    const res = await fetch(`http://localhost:4000/api/empleadoEliminar/${empl.id_empleado}`, { 
                         method: "DELETE" 
                     });
 
@@ -144,7 +144,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     async function obtenerEmpleados() {
         try {
-            const res = await fetch('http://localhost:4000/api/obtenerEmpleados');
+            const res = await fetch('http://localhost:4000/api/empleadoObtener');
             const datos = await res.json();
             return datos;
         } catch (error) {
@@ -180,7 +180,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     async function cargarGraficoEmpleados(){
         try{
-            const res = await fetch("http://localhost:4000/api/obtenerGraficoEmpleados")
+            const res = await fetch("http://localhost:4000/api/empleadoObtenerGrafico")
             if (!res.ok) throw new Error("Error al obtener datos");
             const data = await res.json()
             console.log(data);
@@ -235,7 +235,7 @@ document.addEventListener("DOMContentLoaded", () => {
         msjError.textContent = "";
 
         try{
-            const res = await fetch(`http://localhost:4000/api/agregarEmpleado`,{
+            const res = await fetch(`http://localhost:4000/api/empleadoAgregar`,{
                 method: "POST",
                 headers:  { "Content-Type": "application/json" },
                 body: JSON.stringify({ empleado })
@@ -277,7 +277,7 @@ document.addEventListener("DOMContentLoaded", () => {
         msjError.textContent = "";
 
         try{
-            const res = await fetch(`http://localhost:4000/api/agregarDetalle`,{
+            const res = await fetch(`http://localhost:4000/api/empleadoAgregarDetalle`,{
                 method: "POST",
                 headers:  { "Content-Type": "application/json" },
                 body: JSON.stringify({ detalle })

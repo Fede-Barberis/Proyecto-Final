@@ -9,8 +9,7 @@ function soloAdmin(req,res,next){
     return res.redirect("/")
 }
 
-    // conectarse a la base de datos para acceder a los usuraios y comparar
-
+// conectarse a la base de datos para acceder a los usuraios y comparar
 
 function revisarCookie(req){
     try{
