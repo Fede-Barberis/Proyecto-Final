@@ -113,7 +113,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 <td>${empl.id_empleado}</td>
                 <td>${empl.nombre}</td>
                 <td>${empl.apellido}</td>
-                <td><button class="btn-detalle open-modal" data-form="form1" data-id="${empl.id_empleado}"><i class="bi bi-list-ul"></i></button></td>
+                <td><button class="btn-detalle open-modal" data-id="${empl.id_empleado}"><i class="bi bi-list-ul"></i></button></td>
                 <td><button class="btn-eliminar" data-id="${empl.id_empleado}"><i class="bi bi-trash3"></i></button></td>
             `;
             body.appendChild(row);

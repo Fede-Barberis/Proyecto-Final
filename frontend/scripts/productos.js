@@ -1,10 +1,3 @@
-//*                                              ----- VARIABLES GLOBALES -----                                                                  *//
-
-const modal = document.getElementById("modal");
-const closeModalBtn = document.querySelector(".close");
-const openModalBtns = document.querySelectorAll(".open-modal");
-const forms = document.querySelectorAll(".form-container");
-
 //! =================================================================================================================================================
 
 //*                                              ----- FUNCIONES AUXILIARES -----                                                                *//
@@ -15,31 +8,6 @@ function getStockMessage(stock, limits) {
     if (stock >= limits.bajo && stock <= limits.medio) return { text: "Stock suficiente", color: "orange" };
     return { text: "Stock alto", color: "green" };
 }
-
-//! =================================================================================================================================================
-
-//*                                                  ----- MODAL -----                                                                           *//
-
-openModalBtns.forEach(button => {
-    button.addEventListener("click", function () {
-        const formId = this.getAttribute("data-form");
-        forms.forEach(form => form.style.display = "none");
-        document.getElementById(formId).style.display = "block";
-        modal.style.display = "flex";
-    });
-});
-
-closeModalBtn.addEventListener("click", function () {
-    modal.style.display = "none";
-    document.getElementById("msj-error2").classList.add("escondido");
-});
-
-window.addEventListener("click", function (e) {
-    if (e.target === modal) {
-        modal.style.display = "none";
-        document.getElementById("msj-error2").classList.add("escondido");
-    }
-});
 
 //! =================================================================================================================================================
 
@@ -125,6 +93,7 @@ document.getElementById('formProduccion').addEventListener('submit', async funct
         });
 
         if (res.ok) {
+            alert("Produccion registrada correctamente");
             document.getElementById("formProduccion").reset();
             document.getElementById("productosProd").innerHTML = ""; // limpiar filas
 
@@ -171,6 +140,7 @@ document.getElementById("formVentas").addEventListener("submit", async (e) => {
         });
 
         if (res.ok) {
+            alert("Venta registrada correctamente");
             document.getElementById("formVentas").reset();
             await cargarStock();
             await cargarCantPedidos();
@@ -263,7 +233,7 @@ document.getElementById('formPedidos').addEventListener('submit', async function
         });
 
         if (res.ok) {
-            alert("✅ Pedido guardado correctamente");
+            alert("Pedido registrado correctamente");
             document.getElementById("productosPedido").innerHTML = "";
             document.getElementById("formPedidos").reset();
             cargarCantPedidos();
