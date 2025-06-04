@@ -374,8 +374,7 @@
     width: 100%;
     height: auto;
     max-height: 1000px;
-    margin: 0 auto;
-    margin: 20px 0;
+    margin-bottom: 20px;
     border-radius: 20px;
     padding: 0px 20px;
     box-shadow: 0 4px 15px var(--color-light);
@@ -452,9 +451,13 @@
     /* box-shadow: 0px 3px 15px var(--color-light);  */
 
     &::-webkit-scrollbar {
-        /* display: none; */
         background-color: var(--color-info-light);
         width: 10px;
+        border-radius: 0 10px 10px 0;
+    }
+
+    &::-webkit-scrollbar-thumb {
+        background: var(--color-info-dark); 
         border-radius: 0 10px 10px 0;
     }
 }
@@ -511,15 +514,16 @@ td {
 }
 
 .btn-eliminar {
+    display: flex;
+    align-items: center;
+    justify-content: center;
     width: 80%;
     height: 30px;
+    margin: 0 auto;
     border: none;
     border-radius: 50px;
     background-color: var(--color-contraste);
     color: var(--color-white);
-    display: flex;
-    align-items: center;
-    justify-content: center;
     cursor: pointer;
     position: relative;
     transition-duration: .3s;

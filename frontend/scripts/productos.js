@@ -476,6 +476,9 @@ async function cargarProduccion(filtroFecha = "todas", filtroProducto = "todos")
 
         row.querySelector(".btn-eliminar").addEventListener("click", async () => {
             try {
+                const confirmar = confirm("¿Estás seguro de que querés eliminar esta Produccion?");
+                if (!confirmar) return;
+
                 const res = await fetch(`http://localhost:4000/api/produccionEliminar/${prod.id_produccion}`, { 
                     method: "DELETE" 
                 });
@@ -521,6 +524,9 @@ async function cargarVentas(filtroFecha = "todas", filtroProducto = "todos") {
 
         row.querySelector(".btn-eliminar").addEventListener("click", async () => {
             try {
+                const confirmar = confirm("¿Estás seguro de que querés eliminar esta Venta?");
+                if (!confirmar) return;
+
                 const res = await fetch(`http://localhost:4000/api/ventaEliminar/${venta.id_venta}`, { 
                     method: "DELETE" 
                 });
@@ -611,6 +617,9 @@ async function cargarPedidos(filtroFecha = "todas", filtroProducto = "todos") {
 
         row.querySelector(".btn-eliminar").addEventListener("click", async () => {
             try {
+                const confirmar = confirm("¿Estás seguro de que querés eliminar este Pedido?");
+                if (!confirmar) return;
+
                 const res = await fetch(`http://localhost:4000/api/pedidoEliminar/${pedido.id_pedido}`, { 
                     method: "DELETE" 
                 });

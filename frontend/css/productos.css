@@ -388,6 +388,9 @@ input.producto-item {
     border: 1px solid #484848;
 }
 
+.form-input:focus {
+    border-color: var(--color-primary);
+}
 
 /* ======================= */
 /*    BOTONES GENERALES    */
@@ -689,10 +692,14 @@ input.producto-item {
     border-radius: 10px 10px 0 0;
 
     &::-webkit-scrollbar {
-        /* display: none; */
         background-color: var(--color-info-light);
         width: 10px;
         border-radius: 0 10px 10px 0;
+    }
+
+    &::-webkit-scrollbar-thumb {
+        background: var(--color-info-dark); 
+        border-radius: 0 5px 5px 0;
     }
 }
 
@@ -759,7 +766,7 @@ td {
 }
 
 .fila-color1 {
-    background-color: var(--color-background);
+    background-color: transparent;
 }
 
 .fila-color2 {
@@ -844,5 +851,3 @@ td {
 }
 
 /*********************************************************************/
-
-

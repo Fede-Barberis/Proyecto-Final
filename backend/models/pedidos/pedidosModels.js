@@ -145,11 +145,21 @@ export const obtenerEstadoPedidos = async () => {
     const [result] = await pool.query(`
         SELECT 
             COUNT(*) AS total,
-            SUM(CASE WHEN dp.estado = 1 THEN 1 ELSE 0 END) AS entregados,
-            SUM(CASE WHEN dp.estado = 0 THEN 1 ELSE 0 END) AS pendientes
-        FROM pedidos p
-        JOIN detalle_pedido dp ON p.id_pedido = dp.id_pedido
-        WHERE MONTH(p.fecha_entrega) = MONTH(CURDATE()) AND YEAR(p.fecha_entrega) = YEAR(CURDATE())
+            SUM(CASE WHEN estado_global = 'Entregado' THEN 1 ELSE 0 END) AS entregados,
+            SUM(CASE WHEN estado_global = 'Pendiente' THEN 1 ELSE 0 END) AS pendientes
+        FROM (
+            SELECT 
+                p.id_pedido,
+                CASE 
+                    WHEN MIN(dp.estado) = 1 THEN 'Entregado'
+                    ELSE 'Pendiente'
+                END AS estado_global
+            FROM pedidos p
+            JOIN detalle_pedido dp ON p.id_pedido = dp.id_pedido
+            WHERE MONTH(p.fecha_entrega) = MONTH(CURDATE()) 
+            AND YEAR(p.fecha_entrega) = YEAR(CURDATE())
+            GROUP BY p.id_pedido
+        ) AS resumen;
     `);
     return result[0]; 
 };

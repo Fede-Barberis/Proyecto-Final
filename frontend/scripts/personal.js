@@ -245,6 +245,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 document.getElementById("form-empleado").reset();
                 await cargarEmpleados();
                 await cargarGraficoEmpleados();
+                await cargarOpcionesSelect();
             } 
             else {
                 const errorData = await res.json();
@@ -300,6 +301,15 @@ document.addEventListener("DOMContentLoaded", () => {
             msjError.classList.remove("escondido");
         }
     })
+
+
+
+
+    document.getElementById("cerrarSesion").addEventListener("click", (e) => {
+        e.preventDefault();
+        document.cookie = "jwt=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+        window.location.href = "/frontend/pages/login.html";
+    });
 
 })
 

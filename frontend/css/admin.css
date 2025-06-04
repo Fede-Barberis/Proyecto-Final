@@ -181,7 +181,7 @@
     display: grid;
     grid-template-columns: 2fr 1fr;
     width: 100%;
-    gap: 50px;
+    gap: 80px;
 }
 
 .pendientes{
@@ -189,7 +189,7 @@
     flex-direction: column;
     gap: 20px;
     width: 100%;
-    max-height: 425px;
+    height: 425px;
     margin: 50px 0 20px 0;
     padding-bottom: 20px;
     background-color: var(--color-fondo);
@@ -232,10 +232,14 @@
     overflow-y: auto;
 
     &::-webkit-scrollbar {
-        /* display: none; */
         background-color: var(--color-info-light);
         width: 10px;
-        border-radius: 0 10px 10px 0;
+        border-radius: 10px;
+    }
+
+    &::-webkit-scrollbar-thumb {
+        background: var(--color-info-dark); 
+        border-radius: 5px;
     }
 }
 

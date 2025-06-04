@@ -128,7 +128,7 @@ async function cargarStockMP() {
             const anterior = parseFloat(localStorage.getItem(`stock-anterior-${productoNombre}`)) || 0;
             
             if (materiaPrimaMap.has(productoNombre)) {
-                const actual = materiaPrimaMap.get(productoNombre);
+                const actual = parseFloat(materiaPrimaMap.get(productoNombre));
                 
                 // Guardar actual como nuevo "anterior" para la próxima ejecución
                 localStorage.setItem(`stock-anterior-${productoNombre}`, actual);
@@ -238,6 +238,9 @@ async function cargarMateriaPrima(filtroFecha = "todas", filtroProducto = "todos
                 const id = this.getAttribute("data-id");
 
                 try {
+                    const confirmar = confirm("¿Estás seguro de que querés eliminar esta Compra?");
+                    if (!confirmar) return;
+
                     const res = await fetch(`http://localhost:4000/api/materiaPrimaEliminarCompra/${id}`, {
                         method: "DELETE"
                     });
