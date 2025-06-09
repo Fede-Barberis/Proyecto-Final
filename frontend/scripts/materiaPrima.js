@@ -4,16 +4,15 @@
 
 document.getElementById("formMateriaPrima").addEventListener("submit", async (e) => {
     e.preventDefault()
-        const fecha = document.getElementById("fecha").value.trim();
-        const idProducto = parseInt(document.getElementById("producto").value.trim(), 10);
-        const cantidad = document.getElementById("cantidad").value.trim();
-        const unidad = document.getElementById("unidad").value.trim();
-        const lote = document.getElementById("lote").value.trim();
-        const vencimiento = document.getElementById("vencimiento").value.trim();
-        const precio = document.getElementById("precio").value.trim();
-        const isPagado = document.getElementById("pago").checked;
+    const fecha = document.getElementById("fecha").value.trim();
+    const idProducto = parseInt(document.getElementById("producto").value.trim(), 10);
+    const cantidad = document.getElementById("cantidad").value.trim();
+    const unidad = document.getElementById("unidad").value.trim();
+    const lote = document.getElementById("lote").value.trim();
+    const vencimiento = document.getElementById("vencimiento").value.trim();
+    const precio = document.getElementById("precio").value.trim();
+    const isPagado = document.getElementById("pago").checked;
     
-
     const msjError = document.getElementById("msj-error")
     msjError.classList.add("escondido")
 

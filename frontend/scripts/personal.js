@@ -52,7 +52,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
                 row.innerHTML = `
                     <td>${det.nro_detalle || det.id_detalle}</td>
-                    <td>${det.nombre}</td>
                     <td>$ ${det.precioHora}</td>
                     <td><i class="bi bi-clock"></i> ${det.cantHoras}</td>
                     <td>$ ${(det.cantHoras * det.precioHora)}</td>
