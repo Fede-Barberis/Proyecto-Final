@@ -19,9 +19,10 @@ app.use(cookieParser());
 
 
 // Servir archivos estáticos desde la carpeta 'frontend'
+// Si me piden /algo.png, /css/style.css, /js/archivo.js, buscá en la carpeta /frontend”
 //* Configuracion
-app.use(express.static(path.join(__dirname, "../frontend")));
-app.use('/frontend', express.static(path.join(__dirname, '../frontend')));
+// app.use(express.static(path.join(__dirname, "../frontend")));                  /css/login.css 
+app.use('/frontend', express.static(path.join(__dirname, '../frontend')));    // /frontend/css/login.css
 
 
 //* Rutas

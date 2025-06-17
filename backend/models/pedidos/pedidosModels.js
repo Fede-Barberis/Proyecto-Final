@@ -82,6 +82,36 @@ export const obtenerPedidos = async (filtroFecha, filtroProducto) => {
     }
 };
 
+export const obtenerPedidoPorId = async (id) => {
+    try {
+        const [result] = await pool.query(`
+            SELECT 
+                p.id_pedido, 
+                p.fecha_entrega, 
+                p.persona, 
+                dp.id_producto,
+                pr.nombre AS producto, 
+                dp.cantidad, 
+                dp.precio, 
+                dp.estado 
+            FROM pedidos p 
+            JOIN detalle_pedido dp ON p.id_pedido = dp.id_pedido
+            JOIN productos pr ON dp.id_producto = pr.id_producto
+            WHERE p.id_pedido = ?
+        `, [id]);
+
+        if (result.length === 0) {
+            console.log("No se encontró el pedido con el ID proporcionado.");
+            return null;
+        }
+
+        return result;
+    }
+    catch(error) {
+        console.log(error);
+    }
+}
+
 //? **********   **********   **********   **********   **********   **********   **********   **********   **********   **********   **********    ?//
 
 export const obtenerCantidadPedidos = async () => {
@@ -163,3 +193,63 @@ export const obtenerEstadoPedidos = async () => {
     `);
     return result[0]; 
 };
+
+//? **********   **********   **********   **********   **********   **********   **********   **********   **********   **********   **********    ?//
+
+export async function crearVentaDesdePedido(id_pedido, detalles) {
+    try {
+        const fecha = new Date();
+
+        for (const item of detalles) {
+            const { id_producto, cantidad, precio, persona } = item;
+
+            await pool.query(`
+                INSERT INTO ventas (fecha, id_producto, cantidad, precio, persona, id_pedido)
+                VALUES (?, ?, ?, ?, ?, ?)
+            `, [fecha, id_producto, cantidad, precio, persona, id_pedido]);
+
+            // 2. Actualizar stock (restar)
+            await pool.query(`
+                UPDATE productos
+                SET stock = stock - ?
+                WHERE id_producto = ?
+            `, [cantidad, id_producto]);
+        }
+
+        console.log("Venta creada desde el pedido:", detalles[0].id_pedido);
+    } catch (error) {
+        console.error("Error al crear la venta desde el pedido:", error);
+        throw error;
+    }
+}
+
+//? **********   **********   **********   **********   **********   **********   **********   **********   **********   **********   **********    ?//
+
+export async function eliminarVentaYRestaurarStock(pedidoId) {
+    try {
+        const [ventas] = await pool.query(`
+            SELECT id_producto, cantidad 
+            FROM ventas
+            WHERE id_pedido = ?
+        `, [pedidoId]);
+
+        for (const venta of ventas) {
+            const { id_producto, cantidad } = venta;
+
+            await pool.query(`
+                UPDATE productos
+                SET stock = stock + ?
+                WHERE id_producto = ?
+            `, [cantidad, id_producto]);
+        }
+
+        await pool.query(`
+            DELETE FROM ventas WHERE id_pedido = ?
+        `, [pedidoId]);
+
+        console.log(`Ventas eliminadas y stock restaurado para el pedido ${pedidoId}`);
+    } catch (error) {
+        console.error("Error al eliminar ventas y restaurar stock:", error);
+        throw error;
+    }
+}

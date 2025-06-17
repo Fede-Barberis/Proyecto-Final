@@ -1,4 +1,5 @@
-import { agregarPedido, guardarDetallePedido, obtenerPedidos, obtenerCantidadPedidos, eliminarPedidos, actualizarEntregaPedido, obtenerEstadoPedidos  } from "../../models/pedidos/pedidosModels.js";
+import { agregarPedido, guardarDetallePedido, obtenerPedidos, obtenerPedidoPorId , obtenerCantidadPedidos, eliminarPedidos, actualizarEntregaPedido, obtenerEstadoPedidos, crearVentaDesdePedido, eliminarVentaYRestaurarStock  } from "../../models/pedidos/pedidosModels.js";
+import { verificarStock } from "../../controllers/ventas/ventasControllers.js";
 
 //! ==================================================================================================================================================
 
@@ -90,10 +91,34 @@ export const pedidoActualizarEstadoEntrega = async (req, res) => {
         const { id } = req.params;
         const { estado } = req.body; // recibimos true o false
 
-        const entregaActualizada = await actualizarEntregaPedido(id, estado);
+        const detalles = await obtenerPedidoPorId(id);
         
-        if (!entregaActualizada) {
-            return res.status(404).json({ error: "No se encontró el pedido" });
+        if (estado) {
+            // VALIDACIÓN DE STOCK
+            for (const item of detalles) {
+                const { id_producto, cantidad } = item;
+                const resultado = await verificarStock(id_producto, cantidad);
+
+                if (!resultado.valido) return res.status(400).json({ message: `No es posible efectuar esta venta.\nStock insuficiente para el producto: ${item.producto}`});
+            }
+
+            const entregaActualizada = await actualizarEntregaPedido(id, estado);
+            if (!entregaActualizada) {
+                return res.status(404).json({ error: "No se encontró el pedido" });
+            }
+
+            // Si se entregó, crear ventas por cada producto
+            await crearVentaDesdePedido(id, detalles);
+        }
+        else {
+            // Estado pendiente: eliminar ventas y restaurar stock
+            const entregaActualizada = await actualizarEntregaPedido(id, estado);
+            if (!entregaActualizada) {
+                return res.status(404).json({ error: "No se encontró el pedido" });
+            }
+            
+            // Estado pendiente: eliminar ventas y restaurar stock
+            await eliminarVentaYRestaurarStock(id);
         }
     
         return res.status(200).json({ success: true, message: "Estado de la entrega actualizado" });

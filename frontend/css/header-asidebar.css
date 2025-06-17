@@ -139,8 +139,8 @@ body {
 
 .sidebar-text.active,
 .sidebar-text:hover {
-    background: linear-gradient(90deg, var(--color-primary-variant) 0%, var(--color-primary) 100%);
-    /* background: linear-gradient(90deg, var(--color-dark) 0%, var(--color-dark-variant) 100%); */
+    /* background: linear-gradient(90deg, var(--color-primary-variant) 0%, var(--color-primary) 100%); */
+    background-color: var(--color-dark);
     color: var(--color-white);
     font-weight: 600;
     text-transform: uppercase;

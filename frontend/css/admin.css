@@ -92,6 +92,16 @@
     font-family: 'Lexend';
 }
 
+@media (max-width: 1024px) {
+    .card i {
+        display: none;
+    }
+    
+    .number{
+        font-size: 26px;
+    }
+}
+
 .card-name {
     font-size: 18px;
     font-weight: 600;

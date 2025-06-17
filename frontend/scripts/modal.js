@@ -5,8 +5,6 @@ document.addEventListener("DOMContentLoaded", () => {
     const forms = modal.querySelectorAll(".form-container");
 
     document.addEventListener("click", async function (e) {
-        // Botón para abrir modal con detalles de empleado
-        const openDetalleBtn = e.target.closest(".open-detalle-empleado");
 
         // Botón para abrir modal con formulario
         const openBtn = e.target.closest(".open-modal");

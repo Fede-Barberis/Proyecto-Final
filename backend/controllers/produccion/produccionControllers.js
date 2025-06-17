@@ -14,9 +14,9 @@ export const produccionGuardar = async (req, res) => {
             return res.status(400).json({ status: "Error", message: "Error, campos incompletos" });
         }
 
-        if (lote.length < 4 || lote.length > 8) {
-            return res.status(400).json({ status: "Error", message: "El lote debe tener entre 4 y 8 caracteres" });
-        }
+        // if (lote.length < 4 || lote.length > 8) {
+        //     return res.status(400).json({ status: "Error", message: "El lote debe tener entre 4 y 8 caracteres" });
+        // }
 
         for (const p of productos) {
             if (!p.idProducto || isNaN(p.idProducto) || p.cantidad <= 0 || !p.vencimiento) {

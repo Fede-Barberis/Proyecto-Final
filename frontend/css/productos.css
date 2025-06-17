@@ -478,7 +478,7 @@ input.producto-item {
     }
 }
 
-.btn-eliminarPedido {
+.btn-eliminar-prod {
     width: 100%;
     height: 30px;
     background-color: var(--color-contraste);

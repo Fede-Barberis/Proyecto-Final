@@ -1,14 +1,16 @@
 //*                                                ------ INICIAR SESION ------                                                                *//
 
+// Este script maneja la funcionalidad de inicio de sesión en la aplicación web.
+// Al enviar el formulario, se envían las credenciales al servidor y se maneja la respuesta.
+
 document.getElementById("iniciarSesion").addEventListener("submit", async (e) => {
     e.preventDefault()
 
-    const email = document.getElementById("email").value.trim()
-    const password = document.getElementById("password").value.trim()
-
-    const msjError = document.getElementById("msj-error")
-
     try{
+        const email = document.getElementById("email").value.trim()
+        const password = document.getElementById("password").value.trim()
+        const msjError = document.getElementById("msj-error")
+
         const res = await fetch("http://localhost:4000/api/login", {
             method: "POST",
             headers: {
