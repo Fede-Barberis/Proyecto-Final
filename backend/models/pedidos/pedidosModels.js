@@ -10,8 +10,8 @@ export const agregarPedido = async (fechaEntrega, personaPedido) => {
             INSERT INTO pedidos (fecha_entrega, persona) VALUES (?, ?)`, [fechaEntrega, personaPedido]
         );
 
-        console.log("Pedido registrado:", result.insertId);
-        return result.insertId
+        console.log({ "Mensaje": "Pedido registrado correctamente", "Id": result.insertId });
+        return result.insertId;
 
     } catch (error) {
         console.error("Error en addPedido:", error);
@@ -138,14 +138,14 @@ export const eliminarPedidos = async (id) => {
         const [rows] = await pool.query("SELECT id_pedido, cantidad FROM detalle_pedido WHERE id_pedido = ?", [id]);
         
         if(rows.length === 0) {
-            console.log("No se encontró el pedido con el ID proporcionado.");
+            console.log({ "Mensaje": "No se encontró el pedido con el ID proporcionado." });
             return;
         }
         
         // 2. Restar la cantidad al stock total
         await pool.query("DELETE FROM detalle_pedido WHERE id_pedido = ?", [id]);
         await pool.query("DELETE FROM pedidos WHERE id_pedido = ?", [id]);
-        console.log({ "mensaje": "Pedido eliminada correctamente y stock actualizado", "id": id});
+        console.log({ "Mensaje": "Pedido eliminada correctamente y stock actualizado", "Id": id });
 
         return true;
     }
@@ -160,7 +160,7 @@ export const eliminarPedidos = async (id) => {
 export const actualizarEntregaPedido = async (id, estado) => {
     try {
         const [result] = await pool.query("UPDATE detalle_pedido SET estado = ? WHERE id_pedido = ?", [estado, id]);
-        console.log({ "mensaje": "Pedido actualizada correctamente", "id": id});
+        console.log({ "Mensaje": "Estado del pedido actualizado correctamente", "Id": id});
         return result.affectedRows > 0;
     }
     catch(error){
@@ -216,7 +216,7 @@ export async function crearVentaDesdePedido(id_pedido, detalles) {
             `, [cantidad, id_producto]);
         }
 
-        console.log("Venta creada desde el pedido:", detalles[0].id_pedido);
+        console.log({ "Mensaje": "Venta creada desde el pedido", "Id": detalles[0].id_pedido });
     } catch (error) {
         console.error("Error al crear la venta desde el pedido:", error);
         throw error;
@@ -247,7 +247,7 @@ export async function eliminarVentaYRestaurarStock(pedidoId) {
             DELETE FROM ventas WHERE id_pedido = ?
         `, [pedidoId]);
 
-        console.log(`Ventas eliminadas y stock restaurado para el pedido ${pedidoId}`);
+        console.log({ "Mensaje": "Venta eliminada y stock restaurado para el pedido", "Id": pedidoId });
     } catch (error) {
         console.error("Error al eliminar ventas y restaurar stock:", error);
         throw error;

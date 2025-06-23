@@ -44,7 +44,7 @@ async function login(req, res) {
     }
 
     res.cookie("jwt", token, cookieOptions);
-    res.status(200).send({ status: "ok", message: "Usuario logueado", redirect: "/admin", nombre: usuarioARevisar.usuario  });
+    res.status(200).send({ status: "OK", message: "Usuario logueado", redirect: "/admin", nombre: usuarioARevisar.usuario  });
 }
 
 //? **********   **********   **********   **********   **********   **********   **********   **********   **********   **********   **********    ?//
@@ -54,7 +54,7 @@ export const usuarioObtenerNombre = async (req, res) => {
         const user = await obtenerNombreUsuario();
         res.json({ user: user?.usuario || null });
     } catch (error) {
-        res.status(400).json({ status: "Error", message: "Error al obtener nombre de usuario" });
+        res.status(500).json({ status: "Error", message: "Error al obtener nombre de usuario" });
     }
 };
 

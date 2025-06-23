@@ -21,62 +21,41 @@ export const obtenerTarjetasAdmin = async () => {
     }
 }
 
+
 export const obtenerTarjetasAdminPdf = async () => {
     try {
         const [result] = await pool.query(`
-            WITH
-            ventas_mes AS (
-                SELECT 
-                    COUNT(*) AS ventasMes,
-                    SUM(precio * cantidad) AS ingresosMes
-                FROM ventas
-                WHERE MONTH(fecha) = MONTH(CURDATE()) AND YEAR(fecha) = YEAR(CURDATE())
-            ),
-            ventas_totales AS (
-                SELECT 
-                    COUNT(*) AS totalVentas,
-                    SUM(precio * cantidad) AS ingresosTotales
-                FROM ventas
-            ),
-            stock_mes AS (
-                SELECT 
-                    dp.id_producto,
-                    SUM(dp.cantidad) AS cantidad
-                FROM detalle_produccion dp
-                JOIN produccion p ON dp.id_produccion = p.id_produccion
-                WHERE MONTH(p.fecha) = MONTH(CURDATE()) AND YEAR(p.fecha) = YEAR(CURDATE())
-                GROUP BY dp.id_producto
-            ),
-            ventas_productos AS (
-                SELECT 
-                    id_producto,
-                    SUM(cantidad) AS cantidad
-                FROM ventas
-                WHERE MONTH(fecha) = MONTH(CURDATE()) AND YEAR(fecha) = YEAR(CURDATE())
-                GROUP BY id_producto
-            )
             SELECT
-                vm.ventasMes,
-                vm.ingresosMes,
-                vt.totalVentas,
-                vt.ingresosTotales,
+                (SELECT COUNT(*) FROM ventas 
+                WHERE MONTH(fecha) = MONTH(CURDATE()) AND YEAR(fecha) = YEAR(CURDATE())) AS ventasMes,
 
-                COALESCE(sm1.cantidad, 0) AS stockAlfajores,
-                COALESCE(sm2.cantidad, 0) AS stockGalletasSS,
-                COALESCE(sm3.cantidad, 0) AS stockGalletasCS,
+                (SELECT SUM(precio * cantidad) FROM ventas 
+                WHERE MONTH(fecha) = MONTH(CURDATE()) AND YEAR(fecha) = YEAR(CURDATE())) AS ingresosMes,
 
-                COALESCE(vp1.cantidad, 0) AS ventaAlfajores,
-                COALESCE(vp2.cantidad, 0) AS ventaGalletasSS,
-                COALESCE(vp3.cantidad, 0) AS ventaGalletasCS
+                (SELECT COUNT(*) FROM ventas) AS totalVentas,
 
-            FROM ventas_mes vm
-            JOIN ventas_totales vt
-            LEFT JOIN stock_mes sm1 ON sm1.id_producto = 1
-            LEFT JOIN stock_mes sm2 ON sm2.id_producto = 2
-            LEFT JOIN stock_mes sm3 ON sm3.id_producto = 3
-            LEFT JOIN ventas_productos vp1 ON vp1.id_producto = 1
-            LEFT JOIN ventas_productos vp2 ON vp2.id_producto = 2
-            LEFT JOIN ventas_productos vp3 ON vp3.id_producto = 3
+                (SELECT SUM(precio * cantidad) FROM ventas) AS ingresosTotales,
+
+                (SELECT SUM(dp.cantidad) FROM detalle_produccion dp
+                JOIN produccion p ON dp.id_produccion = p.id_produccion
+                WHERE dp.id_producto = 1 AND MONTH(p.fecha) = MONTH(CURDATE()) AND YEAR(p.fecha) = YEAR(CURDATE())) AS stockAlfajores,
+                
+                (SELECT SUM(dp.cantidad) FROM detalle_produccion dp
+                JOIN produccion p ON dp.id_produccion = p.id_produccion
+                WHERE dp.id_producto = 2 AND MONTH(p.fecha) = MONTH(CURDATE()) AND YEAR(p.fecha) = YEAR(CURDATE())) AS stockGalletasSS,
+                
+                (SELECT SUM(dp.cantidad) FROM detalle_produccion dp
+                JOIN produccion p ON dp.id_produccion = p.id_produccion
+                WHERE dp.id_producto = 3 AND MONTH(p.fecha) = MONTH(CURDATE()) AND YEAR(p.fecha) = YEAR(CURDATE())) AS stockGalletasCS,
+
+                (SELECT SUM(cantidad) FROM ventas 
+                WHERE id_producto = 1 AND MONTH(fecha) = MONTH(CURDATE()) AND YEAR(fecha) = YEAR(CURDATE())) AS ventaAlfajores,
+                
+                (SELECT SUM(cantidad) FROM ventas 
+                WHERE id_producto = 2 AND MONTH(fecha) = MONTH(CURDATE()) AND YEAR(fecha) = YEAR(CURDATE())) AS ventaGalletasSS,
+                
+                (SELECT SUM(cantidad) FROM ventas 
+                WHERE id_producto = 3 AND MONTH(fecha) = MONTH(CURDATE()) AND YEAR(fecha) = YEAR(CURDATE())) AS ventaGalletasCS
         `);
         return result[0]
     } catch (error) {
@@ -92,6 +71,7 @@ export const obtenerTarjetasMesPasado = async () => {
                 (SELECT COUNT(*) FROM ventas 
                 WHERE MONTH(fecha) = IF(MONTH(CURDATE()) = 1, 12, MONTH(CURDATE()) - 1) 
                 AND YEAR(fecha) = IF(MONTH(CURDATE()) = 1, YEAR(CURDATE()) - 1, YEAR(CURDATE()))) AS ventasMesPasado,
+
                 (SELECT SUM(precio * cantidad) FROM ventas 
                 WHERE MONTH(fecha) = IF(MONTH(CURDATE()) = 1, 12, MONTH(CURDATE()) - 1) 
                 AND YEAR(fecha) = IF(MONTH(CURDATE()) = 1, YEAR(CURDATE()) - 1, YEAR(CURDATE()))) AS ingresosMesPasado
@@ -182,6 +162,7 @@ export const obtenerRecordatorios = async () => {
             `)
         ]);
 
+        // creo estructuras de acceso rápido para algunos datos
         const productosMap = new Map(productos.map(p => [p.producto, p.stock]));
         const materiaPrimaMap = new Map(mp.map(p => [p.materiaPrima, p.stock]));
         const pedidoProductosMap = new Map();

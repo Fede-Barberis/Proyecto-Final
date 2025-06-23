@@ -24,7 +24,7 @@ export const agregarEmpleados = async (empleado) => {
             INSERT INTO empleados (nombre, apellido) VALUES (?, ?)`, [empleado.nombre, empleado.apellido]
         );
 
-        console.log("Empleado agregado correctamente:", result.insertId);
+        console.log({ "Mensaje": "Empleado agregado correctamente", "Id": result.insertId });
         return result.insertId
 
     } catch (error) {
@@ -47,7 +47,7 @@ export const eliminarEmpleados = async (id) => {
         // 2. Restar tabla detalles y empleado
         await pool.query("DELETE FROM detalle_empleados WHERE id_empleado = ?", [id]);
         await pool.query("DELETE FROM empleados WHERE id_empleado = ?", [id]);
-        console.log({ "mensaje": "Empleado eliminado correctamente", id});
+        console.log({ "Mensaje": "Empleado eliminado correctamente", "Id": id });
 
         return true;
     }
@@ -67,7 +67,7 @@ export const agregarDetalle = async (detalle) => {
             `, [detalle.id_empleado, detalle.precioHora, detalle.cantHoras, detalle.fechaCobro]
         );
 
-        console.log("Detalle agregado correctamente:", result.insertId);
+        console.log({ "Mensaje": "Detalle agregado correctamente", "Id": result.insertId });
         return result.insertId
 
     } catch (error) {
@@ -89,7 +89,7 @@ export const eliminarDetalleEmpleados = async (id) => {
         
         // eliminar el detalle
         await pool.query("DELETE FROM detalle_empleados WHERE id_detalle = ?", [id]);
-        console.log({ "mensaje": "Detalle eliminado correctamente", id});
+        console.log({ "Mensaje": "Detalle eliminado correctamente", "Id": id });
 
         return true;
     }

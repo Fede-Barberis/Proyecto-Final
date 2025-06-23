@@ -28,7 +28,7 @@ export const ventaGuardar = async (req, res) => {
         res.status(200).json({ Status: "OK", message: "Venta guardada correctamente"})
     }
     catch(error){
-        res.status(400).json({ status: "Erorr", message: "Error al guardar los datos"})
+        res.status(500).json({ status: "Error", message: "Error al guardar los datos"})
     }
 }
 
@@ -45,7 +45,7 @@ export const ventaObtener = async (req, res) => {
 
         res.json(ventas);
     } catch (error) {
-        res.status(400).json({ status: "Error", message: "Error al obtener las ventas" });
+        res.status(500).json({ status: "Error", message: error.message || "Error al obtener las ventas" });
     }
 }
 
@@ -57,13 +57,13 @@ export const ventaEliminar = async (req, res) => {
         const exito = await eliminarVenta(id);
 
         if (!exito) {
-            return res.status(404).json({ error: "No se pudo eliminar la venta o no existe" });
+            return res.status(404).json({ status: "Error", message: "No se pudo eliminar la venta o no existe" });
         }
 
-        return res.status(200).json({ mensaje: "Venta eliminada y stock actualizado" });
+        return res.status(200).json({ status: "OK", message: "Venta eliminada y stock actualizado" });
     } catch (error) {
         console.error("Error en eliminarVentaController:", error);
-        return res.status(400).json({ error: "Error del servidor" });
+        return res.status(500).json({ status: "Error", message: "Error del servidor" });
     }
 };
 
@@ -73,7 +73,6 @@ export const verificarStock = async (idProducto, cantidad) => {
     try {
         // Obtener el producto específico por ID
         const productos = await obtenerProductos();
-        console.log("Productos obtenidos de la BD:", productos);
         const producto = productos.find(prod => prod.id_producto === idProducto); 
 
         if (!producto) {
@@ -87,7 +86,8 @@ export const verificarStock = async (idProducto, cantidad) => {
 
         return { valido: true, producto };
     } catch (error) {
-        res.status(500).json({ status: "Error", message: "Error al verificar el stock" });
+        console.error("Error al verificar el stock:", error);
+        return { valido: false, mensaje: "Error al verificar el stock" };
     }
 }
 

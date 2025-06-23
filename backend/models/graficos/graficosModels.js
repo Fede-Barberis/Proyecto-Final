@@ -27,7 +27,7 @@ export const obtenerGraficoLinea = async () => {
     }
     catch(error){
         console.log(error);
-        throw error; // Lanza el error para que pueda ser manejado por el llamador
+        throw error; 
     }
 }
 
@@ -48,6 +48,6 @@ export const obtenerGraficoTorta = async () => {
     }
     catch(error){
         console.log(error);
-        throw error; // Lanza el error para que pueda ser manejado por el llamador
+        throw error;
     }
 }

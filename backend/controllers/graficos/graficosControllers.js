@@ -28,7 +28,7 @@ export const obtenerDatosGraficos = async (req, res) => {
     }
     catch(error){
         console.error("Error al obtener los datos de los graficos:", error);
-        res.status(400).json({ status: "Error", message: "Error al obtener los datos de los graficos" });
+        res.status(500).json({ status: "Error", message: "Error al obtener los datos de los graficos" });
     }
 }
 
@@ -44,7 +44,7 @@ export const obtenerDatosTorta = async (req, res) => {
         res.json({ labels, value });
     } catch (error) {
         console.error(error);
-        res.status(400).json({ message: "Error al obtener datos de productos" });
+        res.status(500).json({ status: "Error", message: "Error al obtener datos de productos" });
     }
 }
 

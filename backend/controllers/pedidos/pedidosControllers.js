@@ -34,11 +34,10 @@ export const pedidoGuardar = async (req, res) => {
         const pedidoId = await agregarPedido(fechaEntrega, personaPedido, productos);
         await guardarDetallePedido(pedidoId, productos);
     
-        return res.status(201).json({ status: "Success", message: "Pedido guardado correctamente", pedidoId});
+        return res.status(200).json({ status: "OK", message: "Pedido guardado correctamente", pedidoId});
     }
     catch(error){
-        // Captura cualquier error inesperado (ej: error en DB)
-        console.error("ERROR REAL:", error); 
+        console.error("Error al guardar el pedido:", error);
         res.status(500).json({ status: "Error", message: "Error al guardar el pedido" });
     }
 }
@@ -74,13 +73,13 @@ export const pedidoEliminar = async (req, res) => {
         const exito = await eliminarPedidos(id);
 
         if (!exito) {
-            return res.status(404).json({ error: "No se pudo eliminar el pedido o no existe" });
+            return res.status(404).json({ status: "Error", message: "No se pudo eliminar el pedido o no existe" });
         }
 
-        return res.status(200).json({ mensaje: "Pedido eliminado y stock actualizado" });
+        return res.status(200).json({ status: "OK", message: "Pedido eliminado y stock actualizado" });
     } catch (error) {
         console.error("Error en eliminarPedidoController:", error);
-        return res.status(500).json({ error: "Error del servidor" });
+        return res.status(500).json({ status: "Error", message: "Error del servidor" });
     }
 };
 
@@ -99,12 +98,12 @@ export const pedidoActualizarEstadoEntrega = async (req, res) => {
                 const { id_producto, cantidad } = item;
                 const resultado = await verificarStock(id_producto, cantidad);
 
-                if (!resultado.valido) return res.status(400).json({ message: `No es posible efectuar esta venta.\nStock insuficiente para el producto: ${item.producto}`});
+                if (!resultado.valido) return res.status(400).json({ status: "Error", message: `No es posible efectuar esta venta.\nStock insuficiente para el producto: ${item.producto}`});
             }
 
             const entregaActualizada = await actualizarEntregaPedido(id, estado);
             if (!entregaActualizada) {
-                return res.status(404).json({ error: "No se encontró el pedido" });
+                return res.status(404).json({ status: "Error", message: "No se encontró el pedido" });
             }
 
             // Si se entregó, crear ventas por cada producto
@@ -114,18 +113,18 @@ export const pedidoActualizarEstadoEntrega = async (req, res) => {
             // Estado pendiente: eliminar ventas y restaurar stock
             const entregaActualizada = await actualizarEntregaPedido(id, estado);
             if (!entregaActualizada) {
-                return res.status(404).json({ error: "No se encontró el pedido" });
+                return res.status(404).json({ status: "Error", message: "No se encontró el pedido" });
             }
             
             // Estado pendiente: eliminar ventas y restaurar stock
             await eliminarVentaYRestaurarStock(id);
         }
-    
-        return res.status(200).json({ success: true, message: "Estado de la entrega actualizado" });
+
+        return res.status(200).json({ status: "OK", message: "Estado de la entrega actualizado" });
 
     } catch (error) {
         console.error("Error en actualizarEstadoEntrega:", error);
-        return res.status(400).json({ error: "Error al actualizar el estado de la entrega" });
+        return res.status(400).json({ status: "Error", message: "Error al actualizar el estado de la entrega" });
     }
 }
 
@@ -137,11 +136,11 @@ export const pedidoObtenerEstadoPedidos = async (req, res) => {
         res.json(data);
     } catch (error) {
         console.error("Error al obtener el estado de los pedidos:", error);
-        res.status(500).json({ message: "Error al obtener estado de los peedidos" });
+        res.status(500).json({ status: "Error", message: "Error al obtener estado de los pedidos" });
     }
 };
 
-
+//! ==================================================================================================================================================
 
 export const methodsPedidos = {
     pedidoGuardar,

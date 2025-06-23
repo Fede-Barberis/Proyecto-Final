@@ -8,7 +8,7 @@ export const empleadoObtener = async (req, res) => {
         res.json(datos)
     } catch (error) {
         console.error(error);
-        res.status(400).json({ message: "Error al obtener datos de empleados" });
+        res.status(500).json({ status: "Error", message: "Error al obtener datos de empleados" });
     }
 }
 
@@ -27,7 +27,7 @@ export const empleadoAgregar = async (req, res) => {
         res.status(200).json({ status: "OK", message: "Empleado registrado correctamente" });
     }
     catch(error){
-        res.status(400).json({ status: "Error", message: "Error al guardar empleado" });
+        res.status(500).json({ status: "Error", message: "Error al guardar empleado" });
     }
 }
 
@@ -62,7 +62,7 @@ export const empleadoAgregarDetalle = async (req, res) => {
         res.status(200).json({ status: "OK", message: "Detalle agregado correctamente" });
     }
     catch(error){
-        res.status(400).json({ status: "Error", message: "Error al guardar detalle" });
+        res.status(500).json({ status: "Error", message: "Error al guardar detalle" });
     }
 }
 
@@ -74,7 +74,7 @@ export const empleadoObtenerDetalle = async (req, res) => {
         res.json(datos)
     } catch (error) {
         console.error(error);
-        res.status(400).json({ message: "Error al obtener datos de empleados" });
+        res.status(500).json({ status: "Error", message: "Error al obtener datos de empleados" });
     }
 }
 
@@ -86,13 +86,13 @@ export const empleadoEliminar = async (req, res) => {
         const exito = await eliminarEmpleados(id);
 
         if (!exito) {
-            return res.status(404).json({ error: "No se pudo eliminar al empleado" });
+            return res.status(404).json({ status: "Error", message: "No se pudo eliminar al empleado" });
         }
 
-        return res.status(200).json({ mensaje: "Empleado eliminado" });
+        return res.status(200).json({ status: "OK", message: "Empleado eliminado correctamente" });
     } catch (error) {
         console.error("Error en eliminarEmpleadoController:", error);
-        return res.status(500).json({ error: "Error del servidor" });
+        return res.status(500).json({ status: "Error", message: "Error del servidor" });
     }
 };
 
@@ -102,19 +102,19 @@ export const empleadoEliminarDetalle = async (req, res) => {
     try {
         const { id } = req.params;
         if (!id) {
-            return res.status(400).json({ error: "ID no proporcionado" });
+            return res.status(400).json({ status: "Error", message: "ID no proporcionado" });
         }
 
         const exito = await eliminarDetalleEmpleados(id);
 
         if (!exito) {
-            return res.status(404).json({ error: "No se pudo eliminar el detalle del empleado" });
+            return res.status(404).json({ status: "Error", message: "No se pudo eliminar el detalle del empleado" });
         }
 
-        return res.status(200).json({ mensaje: "Detalle del empleado eliminado" });
+        return res.status(200).json({ status: "OK", message: "Detalle del empleado eliminado correctamente" });
     } catch (error) {
         console.error("Error en eliminarDetalleEmpleadoController:", error);
-        return res.status(500).json({ error: "Error del servidor" });
+        return res.status(500).json({ status: "Error", message: "Error del servidor" });
     }
 };
 
@@ -130,7 +130,7 @@ export const empleadoObtenerGrafico = async (req, res) => {
         res.json({ nombres:labels, horas: value });
     } catch (error) {
         console.error(error);
-        res.status(400).json({ message: "Error al obtener datos de empleados" });
+        res.status(500).json({ status: "Error", message: "Error al obtener datos de empleados" });
     }
 }
 

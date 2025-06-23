@@ -20,9 +20,9 @@ export const materiaPrimaGuardar = async (req, res) => {
             return res.status(400).json({ status:"Error", message: "La cantidad debe ser mayor a 0"})
         }
 
-        if(lote.length < 4 || lote.length > 8){
-            return res.status(400).json({ status: "Error", message: "El lote debe tener entre 4 y 8 caracteres" });
-        }
+        // if(lote.length < 4 || lote.length > 8){
+        //     return res.status(400).json({ status: "Error", message: "El lote debe tener entre 4 y 8 caracteres" });
+        // }
 
         if (vencimiento <= fecha) {
             return res.status(400).json({ status: "Error", message: "La fecha de vencimiento no puede ser menor o igual a la fecha de producción" });
@@ -33,11 +33,11 @@ export const materiaPrimaGuardar = async (req, res) => {
         }
 
         await agregarMateriaPrima(fecha, idProducto, cantidad, unidad, lote, vencimiento, precio, isPagado)
-        res.status(200).json({ status: "OK", message: "Datos guadados correctamente"})
+        res.status(200).json({ status: "OK", message: "Compra de materia prima registrada correctamente"})
     }
     catch(error){
-        console.error("Error al guardar la compra de materia prima:", error);
-        res.status(400).json({ status: "Error", message: error.message})
+        console.error("Error al registrar la compra de materia prima:", error);
+        res.status(500).json({ status: "Error", message: error.message})
     }
 }
 
@@ -49,7 +49,7 @@ export const materiaPrimaObtener = async (req, res) => {
         res.json(productos)
 
     } catch (error) {
-        res.status(400).json({ status: "Error", message: "Error al obtener las materia primas" });
+        res.status(500).json({ status: "Error", message: "Error al obtener las materia primas" });
     }
 };
 
@@ -66,8 +66,7 @@ export const materiaPrimaObtenerCompra = async (req, res) => {
 
         res.json(Mp);
     } catch (error) {
-        res.status(400).json({ status: "Error", message: "Error al obtener la materia prima" });
-        res.status(400).json({ status: "Error", message: error.message})
+        res.status(500).json({ status: "Error", message: error.message})
     }
 }
 
@@ -79,18 +78,19 @@ export const materiaPrimaEliminarCompra = async (req, res) => {
         const exito = await eliminarCompraMp(id);
 
         if (!exito) {
-            return res.status(404).json({ error: "No se pudo eliminar la compra o no existe" });
+            return res.status(404).json({ status: "Error", message: "No se pudo eliminar la compra o no existe" });
         }
 
-        return res.status(200).json({ message: "Compra eliminada y stock actualizado" });
+        return res.status(200).json({ status: "OK", message: "Compra eliminada y stock actualizado" });
     } catch (error) {
         console.error("Error en eliminarCompraController:", error);
-        return res.status(500).json({ error: "Error del servidor" });
+        return res.status(500).json({ status: "Error", message: "Error del servidor" });
     }
 };
 
+//! ==================================================================================================================================================
 
-//*                                        -------- ACTUALIZAR DE ESTADO --------                                                            *//
+//*                                        -------- ACTUALIZAR  ESTADO --------                                                            *//
 
 export const materiaPrimaActualizarEstadoPago = async (req, res) => {
     try {
@@ -100,18 +100,18 @@ export const materiaPrimaActualizarEstadoPago = async (req, res) => {
         const pagoActualizado = await actualizarPagoMp(id, isPagado);
         
         if (!pagoActualizado) {
-            return res.status(404).json({ error: "No se encontró la compra" });
+            return res.status(404).json({ status: "Error", message: "No se encontró la compra" });
         }
-    
-        return res.status(200).json({ success: true, message: "Estado de pago actualizado" });
+
+        return res.status(200).json({ status: "OK", message: "Estado de pago actualizado" });
 
     } catch (error) {
         console.error("Error en actualizarEstadoPago:", error);
-        return res.status(500).json({ error: "Error al actualizar el estado de pago" });
+        return res.status(500).json({ status: "Error", message: "Error al actualizar el estado de pago" });
     }
 }
 
-
+//! ==================================================================================================================================================
 
 export const methodsMateriaPrima = {
     materiaPrimaGuardar,

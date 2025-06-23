@@ -7,7 +7,7 @@ import {pool} from '../../../database/connectionMySQL.js';
 export const agregarMateriaPrima = async (fecha, idProducto, cantidad, unidad, lote, vencimiento, precio, isPagado) => {
     try{
         await pool.query("INSERT INTO comprar_mp (fecha, id_materiaPrima, cantidad, unidad, lote, fch_vencimiento, precio, isPagado) VALUES (?, ?, ?, ?, ?, ?, ?, ?)", [fecha, idProducto, cantidad, unidad, lote, vencimiento, precio, isPagado])
-        console.log("Compra materia prima cargada");
+        console.log({ "Mensaje": "Compra de materia prima registrada correctamente" });
 
         await pool.query(`
             UPDATE materia_prima
@@ -76,7 +76,7 @@ export const eliminarCompraMp = async (id) => {
         const [rows] = await pool.query("SELECT id_materiaPrima, cantidad FROM comprar_mp WHERE id_compra = ?", [id]);
         
         if(rows.length === 0) {
-            console.log("No se encontró la compra con el ID proporcionado.");
+            console.log("No se encontró la compra de materia prima con el ID proporcionado.");
             return;
         }
 
@@ -87,7 +87,7 @@ export const eliminarCompraMp = async (id) => {
 
         // 3. Eliminar la compra
         await pool.query("DELETE FROM comprar_mp WHERE id_compra = ?", [id]);
-        console.log({ "mensaje": "Compra eliminada correctamente y stock actualizado", "id": id});
+        console.log({ "Mensaje": "Compra (materia prima) eliminada correctamente y stock actualizado", "Id": id });
 
         return true;
     }
@@ -102,7 +102,7 @@ export const eliminarCompraMp = async (id) => {
 export const actualizarPagoMp = async (id, isPagado) => {
     try {
         const [result] = await pool.query("UPDATE comprar_mp SET isPagado = ? WHERE id_compra = ?", [isPagado, id]);
-        console.log({ "mensaje": "Compra actualizada correctamente", "id": id});
+        console.log({ "Mensaje": "Compra actualizada correctamente", "Id": id });
         return result.affectedRows > 0;
     }
     catch(error){

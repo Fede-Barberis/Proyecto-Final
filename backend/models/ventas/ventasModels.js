@@ -7,7 +7,7 @@ import {pool} from '../../../database/connectionMySQL.js';
 export const agregarVenta = async (fecha, idProducto, cantidad, precio, persona) => {
     try{
         const [result] = await pool.query("INSERT INTO ventas (fecha, id_producto, cantidad, precio, persona) VALUES (?, ?, ?, ?, ?)", [fecha, idProducto, cantidad, precio, persona])
-        console.log("Venta realizada");
+        console.log({ "Mensaje": "Venta registrada correctamente", "Id": result.insertId });
 
         await pool.query(`
             UPDATE productos 
@@ -86,7 +86,7 @@ export const eliminarVenta = async (id) => {
 
         // 3. Eliminar la produccion
         await pool.query("DELETE FROM ventas WHERE id_venta = ?", [id]);
-        console.log({ "mensaje": "Venta eliminada correctamente y stock actualizado", "id": id});
+        console.log({ "Mensaje": "Venta eliminada correctamente y stock actualizado", "Id": id });
 
         return true;
     }

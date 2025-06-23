@@ -8,7 +8,7 @@ export const adicionalesObtenerTarjetas = async (req, res) => {
     try {
         const datosTarjetas = await obtenerTarjetasAdmin()
         if (!datosTarjetas) {
-            return res.status(404).json({ error: "No se encontraron datos" });
+            return res.status(404).json({ status: "Error", message: "No se encontraron datos" });
         }
         res.json(datosTarjetas)
     }
@@ -21,7 +21,7 @@ export const adicionalesObtenerTarjetasPdf = async (req, res) => {
     try {
         const datosTarjetas = await obtenerTarjetasAdminPdf()
         if (!datosTarjetas) {
-            return res.status(404).json({ error: "No se encontraron datos" });
+            return res.status(404).json({ status: "Error", message: "No se encontraron datos" });
         }
         res.json(datosTarjetas)
     }
@@ -37,7 +37,7 @@ export const adicionalesObtenerDatosMesPasado = async (req, res) => {
         res.json(datosMesPasado);
     } catch (error) {
         console.error("Error al obtener los datos del mes pasado:", error);
-        res.status(500).json({ error: "Error al obtener los datos del mes pasado" });
+        res.status(500).json({ status: "Error", message: "Error al obtener los datos del mes pasado" });
     }
 };
 
@@ -52,17 +52,11 @@ export const adicionalesObtenerRecordatorios = async (req, res) => {
         res.json(alertas);
     } catch (error) {
         console.error("Error al obtener alertas:", error);
-        res.status(500).json({ message: "Error al obtener alertas" });
+        res.status(500).json({ status: "Error", message: "Error al obtener alertas" });
     }
 };
 
-
 //! ==================================================================================================================================================
-
-//*                                            -------- INFORMACION ADICIONAL --------                                                           *//  
-
-
-
 
 export const methodsAdicionales = { 
     adicionalesObtenerTarjetas,

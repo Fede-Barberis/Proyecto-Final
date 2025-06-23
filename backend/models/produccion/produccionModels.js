@@ -144,7 +144,7 @@ export const agregarProduccion = async (datos, productos) => {
             );
         }   
 
-        console.log("Producción cargada correctamente");
+        console.log({ "Mensaje": "Producción registrada correctamente"});
     } catch (error) {
         console.error("Error al cargar la producción:", error);
         throw error;
@@ -283,7 +283,7 @@ export const eliminarProduccion = async (id) => {
         await pool.query(`
             DELETE FROM produccion WHERE id_produccion = ?`, [id]);
 
-        console.log("Producción eliminada correctamente");
+        console.log({ "Mensaje": "Producción eliminada correctamente", "Id": id });
         return true;
     } catch (error) {
         console.error("Error al eliminar la producción:", error);

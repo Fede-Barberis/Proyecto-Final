@@ -161,14 +161,14 @@ async function descargarPDF() {
 
         doc.setFont("helvetica", "normal");
         doc.setFontSize(12);
-        doc.text(`Ventas: ${data.ventasMes || 0}`, 10, 45);
-        doc.text(`Ingresos: ${data.ingresosMes || 0}`, 10, 55);
+        doc.text(`Ventas del Mes: ${data.ventasMes || 0}`, 10, 45);
+        doc.text(`Ingresos del Mes: ${data.ingresosMes || 0}`, 10, 55);
         doc.text(`Ventas Totales: ${data.totalVentas || 0}`, 10, 65);
         doc.text(`Ingresos Totales: ${data.ingresosTotales || 0}`, 10, 75);
         doc.setFont("helvetica", "bold");
         doc.text(`PRODUCCION`, 10, 90);
         doc.setFont("helvetica", "normal");
-        doc.text(`Alfajores producidos: ${data.stockAlfajores || 0}`, 10, 100);
+        doc.text(`Alfajores: ${data.stockAlfajores || 0}`, 10, 100);
         doc.text(`Galletas S/S: ${data.stockGalletasSS || 0}`, 10, 110);
         doc.text(`Galletas C/S: ${data.stockGalletasCS || 0}`, 10, 120);
         doc.setFont("helvetica", "bold");

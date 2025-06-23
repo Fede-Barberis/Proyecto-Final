@@ -100,8 +100,6 @@ document.getElementById("formMateriaPrima").addEventListener("submit", async (e)
 
 async function cargarStockMP() {
     try {
-        console.log("\nEjecutando cargarStockMP");
-
         const materiaPrima = await obtenerDatos("http://localhost:4000/api/materiaPrimaObtener")
         if (!materiaPrima) return;
 
