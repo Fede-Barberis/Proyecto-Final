@@ -6,7 +6,7 @@ import {pool} from '../../../database/connectionMySQL.js';
 
 export const obtenerUsuariosRegistrados = async (email) => {
     try {
-        const [result] = await pool.query('SELECT usuario, contraseña, email FROM usuario_registrado WHERE email = ?', [email])
+        const [result] = await pool.query('SELECT usuario, contrasenia, email FROM usuario_registrado WHERE email = ?', [email])
         return result[0];
     } catch (error) {
         console.log(error);

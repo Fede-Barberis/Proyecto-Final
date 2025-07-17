@@ -74,7 +74,7 @@ async function verificarYDescontarGlasee(productos) {
     if (alfajores) {
         const docenasPorGlasee = 48;
         const glaseesNecesarios = Math.ceil(alfajores.cantidad / docenasPorGlasee);
-        const idRecetaGlasee = 100;
+        const idRecetaGlasee = 99;
 
         const [ingredientesGlasee] = await pool.query(
             "SELECT id_materiaPrima, cantidad_necesaria FROM receta_materiaPrima WHERE id_receta = ?",

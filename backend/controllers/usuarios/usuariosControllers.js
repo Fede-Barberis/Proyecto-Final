@@ -22,8 +22,8 @@ async function login(req, res) {
     if (!usuarioARevisar) {
         return res.status(400).json({ status: "Error", message: "Email o contraseña incorrectos" });
     }
-    
-    const loginCorrecto = await bcrypts.compare(password, usuarioARevisar.contraseña);
+
+    const loginCorrecto = password === usuarioARevisar.contrasenia;
 
     if (!loginCorrecto) {
         return res.status(400).json({ status: "Error", message: "Email o contraseña incorrectos" });
